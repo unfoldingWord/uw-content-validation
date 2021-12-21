@@ -672,7 +672,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
   const getFileListFromZip_ = checkingOptions?.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
   const folderpath = bookID === 'OBS' ? 'content/' : `${bookID.toLowerCase()}/`;
-  const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: branch, optionalPrefix: folderpath });
+  const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrReleaseTag: branch, optionalPrefix: folderpath });
   if (!Array.isArray(pathList) || !pathList.length) {
     // debugLog(`checkMarkdownBook for ${repoCode} failed to find ${username} ${repoName} ${branch} ${folderpath}`);
     const details = `folder=${folderpath}`;

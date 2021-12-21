@@ -243,7 +243,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
     return contents;
   }
 
-  contents = await getFileFromZip({ username, repository, path, branchOrRelease: branch });
+  contents = await getFileFromZip({ username, repository, path, branchOrReleaseTag: branch });
   // if (contents)
   //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ1 files coz too many
   //     userLog(`  cachedGetFile got ${filePath} from zipfile`);
@@ -339,8 +339,8 @@ export async function cachedGetBookFilenameFromManifest({ username, repository, 
  * @param {Array} repoList - optional, list of repos to pre-load
  * @return {Promise<Boolean>} resolves to true if file loads are successful
  */
-export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, bookIDList, branchOrRelease, repoList) {
-  // functionLog(`preloadReposIfNecessary(${givenUsername}, ${givenLanguageCode}, ${bookIDList} (${typeof bookID}), ${branchOrRelease}, [${repoList}])…`);
+export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, bookIDList, branchOrReleaseTag, repoList) {
+  // functionLog(`preloadReposIfNecessary(${givenUsername}, ${givenLanguageCode}, ${bookIDList} (${typeof bookID}), ${branchOrReleaseTag}, [${repoList}])…`);
   let success = true;
 
   const repos_ = [...repoList];
@@ -368,7 +368,7 @@ export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, 
   // for (const repoCode of repos_) {
   //   const repoName = formRepoName(languageCode, repoCode);
   //   // debugLog(`preloadReposIfNecessary: checking zip file for ${repoName}…`);
-  //   const uri = zipUri({ username, repository: repoName, branchOrRelease });
+  //   const uri = zipUri({ username, repository: repoName, branchOrReleaseTag });
   //   const zipBlob = await zippedJsonStore.getItem(uri.toLowerCase());
   //   if (!zipBlob) newRepoList.push(repoCode);
   // }
@@ -378,7 +378,7 @@ export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, 
   //   for (const repoCode of newRepoList) {
   //     const repoName = formRepoName(languageCode, repoCode);
   //     userLog(`preloadReposIfNecessary: preloading zip file for ${repoName}…`);
-  //     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branchOrRelease });
+  //     const zipFetchSucceeded = await cachedGetRepositoryZipFile({ username, repository: repoName, branchOrReleaseTag });
   //     if (!zipFetchSucceeded) {
   //       userLog(`preloadReposIfNecessary: misfetched zip file for ${repoCode} repo with ${zipFetchSucceeded}`);
   //       success = false;
@@ -399,21 +399,21 @@ export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, 
     let adjustedLanguageCode = givenLanguageCode;
     if ((givenLanguageCode === 'hbo' && thisRepoCode !== 'UHB') || (givenLanguageCode === 'el-x-koine' && thisRepoCode !== 'UGNT'))
       adjustedLanguageCode = 'en'; // Assume English then
-    let adjustedBranchOrRelease = branchOrRelease;
+    let adjustedBranchOrReleaseTag = branchOrReleaseTag;
     let adjustedRepoCode = thisRepoCode;
     if (thisRepoCode.endsWith('2')) {
       adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 1); // Remove the '2' from the end
-      adjustedBranchOrRelease = 'newFormat';
+      adjustedBranchOrReleaseTag = 'newFormat';
     }
     if (thisRepoCode.endsWith('tree')) {
       adjustedRepoCode = adjustedRepoCode.substring(0, adjustedRepoCode.length - 4); // Remove the 'tree' from the end
       fetchFunction = cachedGetRepositoryTreeFile;
     }
     // else if (repoCode === 'OBS-TN' || repoCode === 'OBS-TQ' || repoCode === 'OBS-SN' || repoCode === 'OBS-SQ')
-    //   adjustedBranchOrRelease = 'newFormat';
+    //   adjustedBranchOrReleaseTag = 'newFormat';
     const repoName = formRepoName(adjustedLanguageCode, adjustedRepoCode);
     // debugLog(`preloadReposIfNecessary: preloading zip or JSON file for ${repoName}…`);
-    const zipFetchSucceeded = await fetchFunction({ username: adjustedUsername, repository: repoName, branchOrRelease: adjustedBranchOrRelease });
+    const zipFetchSucceeded = await fetchFunction({ username: adjustedUsername, repository: repoName, branchOrReleaseTag: adjustedBranchOrReleaseTag });
     if (!zipFetchSucceeded) {
       console.error(`preloadReposIfNecessary: misfetched zip or JSON file for ${adjustedUsername} ${thisRepoCode} (${adjustedRepoCode}) repo with ${zipFetchSucceeded}`);
       success = false;
@@ -421,7 +421,7 @@ export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, 
     if (!success && (thisRepoCode === 'UHB' || thisRepoCode === 'UGNT') && adjustedUsername !== 'Door43-Catalog') { // Have a second try
       userLog(`preloadReposIfNecessary: trying username='Door43-Catalog' instead of '${adjustedUsername}' for ${repoName}…`);
       adjustedUsername = 'Door43-Catalog';
-      const zipFetchSucceeded = await fetchFunction({ username: adjustedUsername, repository: repoName, branchOrRelease: adjustedBranchOrRelease });
+      const zipFetchSucceeded = await fetchFunction({ username: adjustedUsername, repository: repoName, branchOrReleaseTag: adjustedBranchOrReleaseTag });
       if (zipFetchSucceeded)
         success = true;
       else {
@@ -685,66 +685,66 @@ function fetchRepositoriesZipFiles({username, languageId, branch}) {
  * @param {boolean} forceLoad - if not true, then use existing repo in zipstore
  * @return {Promise<[]|*[]>} resolves to true if downloaded
  */
-export async function cachedGetRepositoryZipFile({ username, repository, branchOrRelease }, forceLoad = false) {
+export async function cachedGetRepositoryZipFile({ username, repository, branchOrReleaseTag }, forceLoad = false) {
   // https://git.door43.org/{username}/{repository}/archive/{branch}.zip
-  // functionLog(`cachedGetRepositoryZipFile(${username}, ${repository}, ${branchOrRelease}, ${forceLoad})…`);
+  // functionLog(`cachedGetRepositoryZipFile(${username}, ${repository}, ${branchOrReleaseTag}, ${forceLoad})…`);
 
   if (!forceLoad) { // see if we already have in zippedJsonStore
-    const zipBlob = await getZipFromStore(username, repository, branchOrRelease);
+    const zipBlob = await getZipFromStore(username, repository, branchOrReleaseTag);
     if (zipBlob) {
-      // debugLog(`cachedGetRepositoryZipFile for ${username}, ${repository}, ${branchOrRelease} -- already loaded`);
+      // debugLog(`cachedGetRepositoryZipFile for ${username}, ${repository}, ${branchOrReleaseTag} -- already loaded`);
       return true;
     }
   }
-  return downloadRepositoryZipFile({ username, repository, branchOrRelease });
+  return downloadRepositoryZipFile({ username, repository, branchOrReleaseTag });
 };
 
 
-export async function cachedGetRepositoryTreeFile({ username, repository, branchOrRelease }, forceLoad = false) {
+export async function cachedGetRepositoryTreeFile({ username, repository, branchOrReleaseTag }, forceLoad = false) {
   // https://git.door43.org/{username}/{repository}/archive/{branch}.zip
-  // functionLog(`cachedGetRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease}, ${forceLoad})…`);
+  // functionLog(`cachedGetRepositoryTreeFile(${username}, ${repository}, ${branchOrReleaseTag}, ${forceLoad})…`);
 
   if (!forceLoad) { // see if we already have in zippedJsonStore
-    const treeJSON = await getTreeFromStore(username, repository, branchOrRelease);
+    const treeJSON = await getTreeFromStore(username, repository, branchOrReleaseTag);
     if (treeJSON) {
-      // debugLog(`cachedGetRepositoryTreeFile for ${username}, ${repository}, ${branchOrRelease} -- already loaded`);
+      // debugLog(`cachedGetRepositoryTreeFile for ${username}, ${repository}, ${branchOrReleaseTag} -- already loaded`);
       return true;
     }
   }
-  return downloadRepositoryTreeFile({ username, repository, branchOrRelease });
+  return downloadRepositoryTreeFile({ username, repository, branchOrReleaseTag });
 };
 
 
-async function downloadRepositoryZipFile({ username, repository, branchOrRelease }) {
-  functionLog(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrRelease})…`);
+async function downloadRepositoryZipFile({ username, repository, branchOrReleaseTag }) {
+  functionLog(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrReleaseTag})…`);
   // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
   // const repoExists = await repositoryExistsOnDoor43({ username, repository });
   // if (!repoExists) {
-  //   console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrRelease}) -- repo doesn’t even exist`);
+  //   console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrReleaseTag}) -- repo doesn’t even exist`);
   //   return null;
   // }
 
-  // Template is https://git.door43.org/{username}/{repository}/archive/{branchOrRelease}.zip
-  const uri = zipUri({ username, repository, branchOrRelease });
+  // Template is https://git.door43.org/{username}/{repository}/archive/{branchOrReleaseTag}.zip
+  const uri = zipUri({ username, repository, branchOrReleaseTag });
   const response = await fetch(uri);
   if (response.status === 200 || response.status === 0) {
     const zipArrayBuffer = await response.arrayBuffer(); // blob storage not supported on mobile
     await zippedJsonStore.setItem(uri.toLowerCase(), zipArrayBuffer);
-    // debugLog(`  downloadRepositoryZipFile(${username}, ${repository}, ${branchOrRelease}) -- saved zip: ${uri}`);
+    // debugLog(`  downloadRepositoryZipFile(${username}, ${repository}, ${branchOrReleaseTag}) -- saved zip: ${uri}`);
     return true;
   } else {
-    console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrRelease}) -- got response status: ${response.status}`);
+    console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrReleaseTag}) -- got response status: ${response.status}`);
     return false;
   }
 };
 
 
-async function downloadRepositoryTreeFile({ username, repository, branchOrRelease }) {
-  functionLog(`downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease})…`);
+async function downloadRepositoryTreeFile({ username, repository, branchOrReleaseTag }) {
+  functionLog(`downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrReleaseTag})…`);
 
-  // Template is https://git.door43.org/api/v1/repos/{username}/{repository}/git/trees/{branchOrRelease}?recursive=true&per_page=12345
-  const treeURI = treeUri({ username, repository, branchOrRelease });
+  // Template is https://git.door43.org/api/v1/repos/{username}/{repository}/git/trees/{branchOrReleaseTag}?recursive=true&per_page=12345
+  const treeURI = treeUri({ username, repository, branchOrReleaseTag });
   // debugLog(`  downloadRepositoryTreeFile got treeURI ${treeURI}`);
   let page_number = 0; // incremented before use
   let JSONTree = [];
@@ -769,7 +769,7 @@ async function downloadRepositoryTreeFile({ username, repository, branchOrReleas
       if (!thisPageJSON['truncated']) break; // Does nothing coz even the last page of data has 'truncated' set to true
       if (JSONTree.length === thisPageJSON['total_count']) break; // We've got them all!
     } else {
-      console.error(`  downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease}) page=${page_number} -- got response status: ${response.status}`);
+      console.error(`  downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrReleaseTag}) page=${page_number} -- got response status: ${response.status}`);
       return false;
     }
   }
@@ -781,7 +781,7 @@ async function downloadRepositoryTreeFile({ username, repository, branchOrReleas
   // const abbreviatedJSONTree = JSONTree.map(x => x.path);
   // debugLog(`  downloadRepositoryTreeFile saving ${repository} abbreviatedJSONTree[17]=${JSON.stringify(abbreviatedJSONTree[17])}`);
   await zippedJsonStore.setItem(treeURI.toLowerCase(), JSONTree.map(x => x.path));
-  // debugLog(`  downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrRelease}) -- saved ${JSONTree.length.toLocaleString()} JSON entries from ${treeURI}`);
+  // debugLog(`  downloadRepositoryTreeFile(${username}, ${repository}, ${branchOrReleaseTag}) -- saved ${JSONTree.length.toLocaleString()} JSON entries from ${treeURI}`);
   return true;
 };
 
@@ -790,17 +790,17 @@ async function downloadRepositoryTreeFile({ username, repository, branchOrReleas
  * pull repo from zipstore and get a file list
  * @param {string} username
  * @param {string} repository
- * @param {string} branchOrRelease
+ * @param {string} branchOrReleaseTag
  * @param {string} optionalPrefix - to filter by book, etc.
  * @return {Promise<[]|*[]>}  resolves to file list
  */
-export async function getFileListFromZip({ username, repository, branchOrRelease, optionalPrefix }) {
-  // functionLog(`getFileListFromZip(${username}, ${repository}, ${branchOrRelease}, ${optionalPrefix})…`);
+export async function getFileListFromZip({ username, repository, branchOrReleaseTag, optionalPrefix }) {
+  // functionLog(`getFileListFromZip(${username}, ${repository}, ${branchOrReleaseTag}, ${optionalPrefix})…`);
 
-  let zipBlob = await getZipFromStore(username, repository, branchOrRelease);
+  let zipBlob = await getZipFromStore(username, repository, branchOrReleaseTag);
 
   if (!zipBlob) { // Seems that we need to load the zip file first
-    const uri = zipUri({ username, repository, branchOrRelease });
+    const uri = zipUri({ username, repository, branchOrReleaseTag });
     const response = await fetch(uri);
     if (response.status === 200 || response.status === 0) {
       const zipArrayBuffer = await response.arrayBuffer(); // blob storage not supported on mobile
@@ -848,21 +848,21 @@ export async function getFileListFromZip({ username, repository, branchOrRelease
  * try to get zip file from cache
  * @param {string} username
  * @param {string} repository
- * @param {string} branchOrRelease
+ * @param {string} branchOrReleaseTag
  * @return {Promise<unknown>} resolves to null if not found
  */
-async function getZipFromStore(username, repository, branchOrRelease) {
-  // functionLog(`getZipFromStore(${username}, ${repository}, ${branchOrRelease})…`);
-  const uri = zipUri({ username, repository, branchOrRelease });
+async function getZipFromStore(username, repository, branchOrReleaseTag) {
+  // functionLog(`getZipFromStore(${username}, ${repository}, ${branchOrReleaseTag})…`);
+  const uri = zipUri({ username, repository, branchOrReleaseTag });
   // debugLog(`  uri=${uri}`);
   const zipBlob = await zippedJsonStore.getItem(uri.toLowerCase());
   // debugLog(`  getZipFromStore(${uri} -- empty: ${!zipBlob}`);
   return zipBlob;
 }
 
-async function getTreeFromStore(username, repository, branchOrRelease) {
-  // functionLog(`getZipFromStore(${username}, ${repository}, ${branchOrRelease})…`);
-  const treeURI = treeUri({ username, repository, branchOrRelease });
+async function getTreeFromStore(username, repository, branchOrReleaseTag) {
+  // functionLog(`getZipFromStore(${username}, ${repository}, ${branchOrReleaseTag})…`);
+  const treeURI = treeUri({ username, repository, branchOrReleaseTag });
   // debugLog(`  treeURI=${treeURI}`);
   const treeJSON = await zippedJsonStore.getItem(treeURI.toLowerCase());
   // debugLog(`  getZipFromStore(${treeURI} -- empty: ${!treeJSON}`);
@@ -874,14 +874,14 @@ async function getTreeFromStore(username, repository, branchOrRelease) {
  * pull repo from zipstore and get the unzipped file
  * @param {string} username
  * @param {string} repository
- * @param {string} branchOrRelease
+ * @param {string} branchOrReleaseTag
  * @param {object} optionalPrefix
  * @return {Promise<[]|*[]>} resolves to unzipped file if found or null
  */
-async function getFileFromZip({ username, repository, path, branchOrRelease }) {
-  // functionLog(`getFileFromZip(${username}, ${repository}, ${path}, ${branchOrRelease})…`);
+async function getFileFromZip({ username, repository, path, branchOrReleaseTag }) {
+  // functionLog(`getFileFromZip(${username}, ${repository}, ${path}, ${branchOrReleaseTag})…`);
   let file;
-  const zipBlob = await getZipFromStore(username, repository, branchOrRelease);
+  const zipBlob = await getZipFromStore(username, repository, branchOrReleaseTag);
   try {
     if (zipBlob) {
       // debugLog(`  Got zipBlob for uri=${uri}`);
@@ -894,25 +894,25 @@ async function getFileFromZip({ username, repository, path, branchOrRelease }) {
     // else userLog("  No zipBlob");
   } catch (error) {
     if (error.message.indexOf(' is null') < 0)
-      console.error(`getFileFromZip for ${username} ${repository} ${path} ${branchOrRelease} got: ${error.message}`);
+      console.error(`getFileFromZip for ${username} ${repository} ${path} ${branchOrReleaseTag} got: ${error.message}`);
     file = null;
   }
   return file;
 };
 
 
-function zipUri({ username, repository, branchOrRelease = 'master' }) {
-  // Template is https://git.door43.org/{username}/{repository}/archive/{branchOrRelease}.zip
-  // functionLog(`zipUri(${username}, ${repository}, ${branchOrRelease})…`);
-  const zipPath = Path.join(username, repository, 'archive', `${branchOrRelease}.zip`);
+function zipUri({ username, repository, branchOrReleaseTag = 'master' }) {
+  // Template is https://git.door43.org/{username}/{repository}/archive/{branchOrReleaseTag}.zip
+  // functionLog(`zipUri(${username}, ${repository}, ${branchOrReleaseTag})…`);
+  const zipPath = Path.join(username, repository, 'archive', `${branchOrReleaseTag}.zip`);
   const zipUri = DOOR43_BASE_URL + zipPath;
   return zipUri;
 };
 
-function treeUri({ username, repository, branchOrRelease = 'master' }) {
-  // Template is https://git.door43.org/api/v1/repos/{username}/{repository}/git/trees/{branchOrRelease}?recursive=true&per_page=12345
-  // functionLog(`treeUri(${username}, ${repository}, ${branchOrRelease})…`);
-  const treePath = Path.join('api', 'v1', 'repos', username, repository, 'git', 'trees', `${branchOrRelease}?recursive=true&per_page=12345`);
+function treeUri({ username, repository, branchOrReleaseTag = 'master' }) {
+  // Template is https://git.door43.org/api/v1/repos/{username}/{repository}/git/trees/{branchOrReleaseTag}?recursive=true&per_page=12345
+  // functionLog(`treeUri(${username}, ${repository}, ${branchOrReleaseTag})…`);
+  const treePath = Path.join('api', 'v1', 'repos', username, repository, 'git', 'trees', `${branchOrReleaseTag}?recursive=true&per_page=12345`);
   const treeUri = DOOR43_BASE_URL + treePath;
   return treeUri;
 };

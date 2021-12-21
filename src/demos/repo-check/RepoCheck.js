@@ -27,9 +27,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
     // debugLog(`username='${username}'`);
     const repoName = props.repoName;
     // debugLog(`repoName='${repoName}'`);
-    let branchOrRelease = props.branchOrRelease;
+    let branchOrReleaseTag = props.branchOrReleaseTag;
     // debugLog(`branch='${branch}'`);
-    if (branchOrRelease === undefined) branchOrRelease = 'master';
+    if (branchOrReleaseTag === undefined) branchOrReleaseTag = 'master';
 
     const checkingOptions = { // Uncomment any of these to test them
         // excerptLength: 25,
@@ -95,7 +95,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
             // Load whole repos, especially if we are going to check files in manifests
             // NOTE: We make TWO calls to preloadReposIfNecessary()
-            //          because the branchOrRelease only applies to the repo being checked
+            //          because the branchOrReleaseTag only applies to the repo being checked
             //          for all other repos, we just use `master`
             const repoPreloadList = []; // The repo being checked doesn't need to be added here as done separately below
             if (!checkingOptions.disableAllLinkFetchingFlag) {
@@ -121,7 +121,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             }
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoCode} and {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
             logicAssert(!repoPreloadList.includes(repoCode), `Shouldn't have our repoCode ${repoCode} in repoPreloadList: ${repoPreloadList}`);
-            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrRelease, [repoCode])
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrReleaseTag, [repoCode])
                 && await preloadReposIfNecessary(username, languageCode, [], 'master', repoPreloadList);
             if (!successFlag)
                 console.error(`RepoCheck error: Failed to pre-load all repos`)
@@ -135,7 +135,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 let rawCRResults = {};
                 try {
                     // Empty string below is for location
-                    rawCRResults = await checkRepo(username, repoName, branchOrRelease, "", setResultValue, checkingOptions);
+                    rawCRResults = await checkRepo(username, repoName, branchOrReleaseTag, "", setResultValue, checkingOptions);
                     // debugLog(`rawCRResults keys: ${Object.keys(rawCRResults)}`);
                     // debugLog(`rawCRResults: ${JSON.stringify(rawCRResults)}`);
                     // logicAssert('checkedFileCount' in rawCRResults, `Expected rawCBPsResults to contain 'checkedFileCount': ${Object.keys(rawCRResults)}`);
@@ -173,9 +173,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 if (props.displayType) displayType = props.displayType;
 
                 function renderSummary(processedResults) {
-                    const repoLink = branchOrRelease === undefined ? `https://git.door43.org/${username}/${repoName}/` : `https://git.door43.org/${username}/${repoName}/src/branch/${branchOrRelease}/`;
+                    const repoLink = branchOrReleaseTag === undefined ? `https://git.door43.org/${username}/${repoName}/` : `https://git.door43.org/${username}/${repoName}/src/branch/${branchOrReleaseTag}/`;
                     return (<div>
-                        <p>Checked <b>{username} {repoName}</b> (from <i>{branchOrRelease === undefined ? 'DEFAULT' : branchOrRelease}</i> <a rel="noopener noreferrer" target="_blank" href={repoLink}>branch</a>)</p>
+                        <p>Checked <b>{username} {repoName}</b> (from <i>{branchOrReleaseTag === undefined ? 'DEFAULT' : branchOrReleaseTag}</i> <a rel="noopener noreferrer" target="_blank" href={repoLink}>branch</a>)</p>
                         <RenderCheckedFilesList username={username} results={processedResults} />
                         <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults} />
                         {/* <RenderRawResults results={rawCRResults} /> */}

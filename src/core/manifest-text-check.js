@@ -782,7 +782,7 @@ export async function checkManifestText(username, languageCode, repoCode, repoNa
         // Check that the project files in the repo are included in the manifest
         // Use ourProjectPathList created by the above check
         // debugLog(`checkManifestText got projectPathList: (${ourProjectPathList.length}) ${ourProjectPathList}`);
-        const repoFileList = await getFileListFromZip({ username, repository: repoName, branchOrRelease: repoBranch }); // not using optionalPrefix
+        const repoFileList = await getFileListFromZip({ username, repository: repoName, branchOrReleaseTag: repoBranch }); // not using optionalPrefix
         // debugLog(`checkManifestText got repoFileList: (${repoFileList.length}) ${repoFileList}`);
         for (const repoFilepath of repoFileList)
             if (repoFilepath.endsWith('.tsv')

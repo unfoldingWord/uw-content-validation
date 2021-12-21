@@ -293,7 +293,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 const notice = { priority: 177, message: `Unexpected doubled ${punctChar} characters`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
-                if (punctChar === '.') notice.details = "might be intended to be … (ellipse)???";
+                if (punctChar === '.') notice.details = "might be intended to be … (ellipsis)???";
                 addNoticePartial(notice);
             }
         }

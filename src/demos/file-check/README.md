@@ -31,8 +31,8 @@ and then validates the content of one file selected from the repo.
   // NOTE: The filename below must be adjusted depending on the repository selected above
 
   // If we don’t put the branch or release version here, the default branch is used
-  // branchOrRelease='master'
-  // branchOrRelease='new Format' // for unreleased new TSV files
+  // branchOrReleaseTag='master'
+  // branchOrReleaseTag='new Format' // for unreleased new TSV files
 
   // Of course, the filename must be correct for the chosen repository
   // filename= '01-GEN.usfm' // e.g., for UHB, LT, or ST

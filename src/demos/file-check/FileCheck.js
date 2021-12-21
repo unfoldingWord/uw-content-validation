@@ -56,10 +56,10 @@ function FileCheck(props) {
 
       // Fetch the file that we need to check (but it might already be in the cache)
       // debugLog(`FileCheck about to call cachedGetFile(${username}, ${repoName}, ${filename}, ${branch})…`);
-      let fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branchOrRelease });
+      let fileContent = await cachedGetFile({ username: username, repository: repoName, path: filename, branch: branchOrReleaseTag });
       if (!fileContent) { // could it be a release, not a branch???
-        userLog(`Unable to fetch ${filename} from branch ${branchOrRelease}, so trying a release instead…`)
-        fileContent = await cachedFetchFileFromServerWithTag({ username: username, repository: repoName, path: filename, tag: branchOrRelease });
+        userLog(`Unable to fetch ${filename} from branch ${branchOrReleaseTag}, so trying a release instead…`)
+        fileContent = await cachedFetchFileFromServerWithTag({ username: username, repository: repoName, path: filename, tag: branchOrReleaseTag });
       }
 
       setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{username}</i> {repoName} <b>{filename}</b>…</p>);
@@ -107,7 +107,7 @@ function FileCheck(props) {
           // else debugLog(`RepoCheck preloaded repos ${repoCode} and ${repoPreloadList}`)
         }
 
-        rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, repoName, branchOrRelease, filename, fileContent, givenLocation, checkingOptions);
+        rawCFResults = await checkFileContents(username, languageCode, repoCodeGuess, repoName, branchOrReleaseTag, filename, fileContent, givenLocation, checkingOptions);
         // debugLog(`rawCFResults=${JSON.stringify(rawCFResults)}`);
 
         // Because we know here that we're only checking one file, we don’t need the filename field in the notices
@@ -158,7 +158,7 @@ function FileCheck(props) {
         if (rawCFResults && rawCFResults.checkedOptions && rawCFResults.checkedOptions.cutoffPriorityLevel)
           cutoffString = ` Priority level ${rawCFResults.checkedOptions.cutoffPriorityLevel} or lower were not included.`;
         return (<div>
-          <p>Checked <b>{filename}</b> (from <i>{username}</i> {repoName} <i>{branchOrRelease === undefined ? 'DEFAULT' : branchOrRelease}</i> branch)</p>
+          <p>Checked <b>{filename}</b> (from <i>{username}</i> {repoName} <i>{branchOrReleaseTag === undefined ? 'DEFAULT' : branchOrReleaseTag}</i> branch)</p>
           <p>&nbsp;&nbsp;&nbsp;&nbsp;Finished in <RenderElapsedTime elapsedSeconds={processedResults.elapsedSeconds} /> with {rawCFResults.noticeList.length === 0 ? 'no' : rawCFResults.noticeList.length.toLocaleString()} notice{rawCFResults.noticeList.length === 1 ? '' : 's'}
             {processedResults.numIgnoredNotices || processedResults.numDisabledNotices ? ' (but ' : ''}
             {processedResults.numIgnoredNotices ? `${processedResults.numIgnoredNotices.toLocaleString()} ignored notice(s)` : ""}
@@ -226,9 +226,9 @@ function FileCheck(props) {
   const repoName = props.repoName;
   // debugLog(`FileCheck repoName='${repoName}'`);
   if (!repoName) return <><b>ERROR</b>: The Door43 <b>repository name</b> must be specified</>;
-  let branchOrRelease = props.branchOrRelease;
-  // debugLog(`FileCheck branchOrRelease='${branchOrRelease}'`);
-  if (branchOrRelease === undefined) branchOrRelease = 'master';
+  let branchOrReleaseTag = props.branchOrReleaseTag;
+  // debugLog(`FileCheck branchOrReleaseTag='${branchOrReleaseTag}'`);
+  if (branchOrReleaseTag === undefined) branchOrReleaseTag = 'master';
   const filename = props.filename;
   // debugLog(`filename='${filename}'`);
   if (!filename) return <><b>ERROR</b>: The Door43 <b>filename</b> must be specified</>;

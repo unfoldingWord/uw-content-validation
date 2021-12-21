@@ -222,7 +222,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     // Let’s fetch the zipped repo since it should be much more efficient than individual fetches
     // functionLog(`checkRepo: fetch zip file for ${repoName}…`);
     const fetchRepositoryZipFile_ = givenCheckingOptions?.fetchRepositoryZipFile ? givenCheckingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
-    const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch: repoBranch, branchOrRelease: repoBranch });
+    const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch: repoBranch, branchOrReleaseTag: repoBranch });
     if (!zipFetchSucceeded) {
       console.error(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
       setResultValue(<p style={{ color: 'red' }}>Failed to fetching zipped files from <b>{username}/{repoName}</b> repository</p>);
@@ -234,7 +234,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
     // const pathList = await getFileListFromFetchedTreemaps(username, repoName, branch);
     const getFileListFromZip_ = givenCheckingOptions?.getFileListFromZip ? givenCheckingOptions.getFileListFromZip : getFileListFromZip;
-    const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: repoBranch });
+    const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrReleaseTag: repoBranch });
     // debugLog(`Got pathlist (${pathList.length}) = ${pathList}`);
 
 
