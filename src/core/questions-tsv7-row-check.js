@@ -403,7 +403,7 @@ export async function checkQuestionsTSV7DataRow(username, languageCode, repoCode
             }
             let tagsList = tags.split('; ');
             for (const thisTag of tagsList) {
-                if (!['intro', 'meaning', 'application', 'summary'].includes(thisTag)) // For TQs or SQs
+                if (!['intro', 'meaning', 'application', 'summary'].includes(thisTag)) // For TQs or SQs or OBS TQs or SQs
                     addNoticePartial({ priority: 740, message: "Unrecognized tag", details: thisTag, excerpt: tags, fieldName: 'Tags', rowID, location: ourRowLocation });
             }
         }

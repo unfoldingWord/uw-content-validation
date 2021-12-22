@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert, aboutToOverwrite } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '1.0.2';
+// const REPO_VALIDATOR_VERSION_STRING = '1.0.3';
 
 
 /**
@@ -162,9 +162,12 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
         // addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
         // const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
         if (cfBookID.length) cfcNoticeEntry.bookID = cfBookID;
-        if (/[0-5][0-9]/.test(cfBookOrFileCode)) {// Assume it's an OBS story number 01…50
-          // debugLog(`ourCheckRepoFileContents adding integer extra: 'Story ${cfBookOrFileCode}'`);
-          cfcNoticeEntry.extra = `Story ${cfBookOrFileCode}`;
+        if (/[0-5][0-9]/.test(cfBookOrFileCode)) {// Assume it's an OBS story or frame number 01…50
+          // debugLog(`ourCheckRepoFileContents adding two-digit extra: 'Story/Frame ${cfBookOrFileCode}' to ${JSON.stringify(cfcNoticeEntry)}`);
+          if (cfcNoticeEntry.filename?.length === 8 && cfcNoticeEntry.filename.endsWith('.md')) // {ss}/{ff}.md
+            cfcNoticeEntry.extra = `Frame ${cfcNoticeEntry.filename.slice(0, 5)}`; // drop the .md
+          else
+            cfcNoticeEntry.extra = `Story ${cfBookOrFileCode}`;
         } else if (cfBookOrFileCode !== '01' // UGL (from content/G04230/01.md)
           && (cfBookOrFileCode[0] !== 'H' || cfBookOrFileCode.length !== 5)) {// UHAL, e.g., H0612 from content/H0612.md
           // debugLog(`ourCheckRepoFileContents adding UC extra: '${cfBookOrFileCode.toUpperCase()}'`);

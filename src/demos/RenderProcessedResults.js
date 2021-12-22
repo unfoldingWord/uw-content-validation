@@ -428,7 +428,8 @@ function RenderFileDetails({ givenEntry }) {
     else if (lineResult.length) // we know the line number -- how can this happen
         return <> [DEBUG-CC] {resultStart}{inFileBit}<b>{lineResult}</b>{resultEnd}</>;
     else // we know the filename -- isn't that already covered above ???
-        return <> [DEBUG-DD] {resultStart} with file <b>{givenEntry.filename}</b>{resultEnd}</>;
+        // Well it does happen in RepoCheck: hi_obs-tn LICENSE: Missing LICENSE.md [DEBUG-DD] in hi_obs-tn repository with file (Priority 946)
+        return <>{resultStart} with file <b>{givenEntry.filename}</b>{resultEnd}</>;
 }
 // end of RenderFileDetails
 
