@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.3';
+// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.4';
 
 
 /**
@@ -378,7 +378,8 @@ function RenderFileDetails({ givenEntry }) {
             if (useFilename.endsWith('.tsv') || useFilename.endsWith('.md')) {
                 let folder = '';
                 if (useFilename !== 'README.md' && useFilename !== 'LICENSE.md') {
-                    if (adjustedRepoName.endsWith('_obs')) folder = 'content/';
+                    if (adjustedRepoName.indexOf('_obs') !== -1 && useFilename.endsWith('.md') && !useFilename.startsWith('content/'))
+                        folder = 'content/';
                     else if (adjustedRepoName.endsWith('_tw') && !useFilename.startsWith('bible/')) {
                         folder = 'bible/';
                         dataAssert(useFilename.split('/').length === 2, `RenderFileDetails expected TW filename '${useFilename}' to contain subfolder`); // filename actually contains the subfolder
