@@ -6,7 +6,7 @@ import { checkStrongsField } from './strongs-field-check'; // and this may call 
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from './utilities';
 
 
-const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '0.6.0';
+const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
 /**
@@ -240,7 +240,100 @@ export async function checkMarkdownFileContents(username, languageCode, repoCode
           addNoticePartial({ priority: 70, message: "Possible unusual TW Strong's line", details: "expected line to start with '* Strong’s: '", excerpt: line.slice(0, excerptLength - 1), location: ourLocation });
       }
     }
+  } else if (repoCode.endsWith('SQ') && /\d\d\/\d\d.md/.test(markdownFilename) && markdownFilename.indexOf('00') === -1) { // SQ or OBS-SQ but not intro file
+    debugLog(`Need to SQ check md structure ${repoCode} ${markdownFilename}: ${markdownText}`)
+    // This code was adapted from the Python TSV converter code at https://github.com/unfoldingWord-dev/tools/blob/develop/tsv/OBS_SQ_MD_to_TSV7.py#L55
+    let haveBadStructure = false;
+    let state = 'idle';
+    let tag = null, question = null, response = null;
+    const lines = markdownText.split('\n');
+    for (let n = 1; n <= lines.length; n++) {
+      const line = lines[n - 1].trimEnd(); // Remove trailing whitespace including nl char
+      debugLog(`  state=${state} tag=${tag} line=${line}`);
+      if (!line) continue // Ignore blank lines
+      if (line.startsWith('# ')) { // Ignore the story title
+        if (state !== 'idle') {
+          debugLog(`Oops, went badly wrong with state=${state}`);
+          haveBadStructure = true; break;
+        }
+      } else if (line.startsWith('## ')) {
+        logicAssert(!question);
+        logicAssert(!response);
+        tag = line.slice(3).trim();
+        if (tag === 'Summary') {
+          state = 'gettingSummary';
+          response = '';
+        } else
+          state = 'gotTag';
+      } else if (line.startsWith('1. ')) {
+        logicAssert(state === 'gotTag');
+        logicAssert(tag);
+        logicAssert(!question);
+        logicAssert(!response);
+        question = line.slice(3).trim();
+        response = null;
+        state = 'gotQuestion';
+      } else if (state === 'gotQuestion') {
+        logicAssert(tag);
+        logicAssert(question);
+        logicAssert(!response);
+        response = line.trim();
+        state = 'gotTag';
+        // We've completed that one!
+        question = null; response = null;
+      } else if (state === 'gettingSummary') {
+        response += (response ? '(' : '') + line.trim();
+      } else {
+        debugLog(`Losing SQ ${state} ${markdownFilename} line ${n}: '${line}'`);
+        haveBadStructure = true; break;
+      }
+      if (state !== 'idle') {
+        debugLog(`Why did we finish with SQ state='{state}' tag='{tag}' q='{question}' r='{response}'`);
+        haveBadStructure = true;
+      }
+    }
+    if (haveBadStructure)
+      addNoticePartial({ priority: 948, message: "Structure of markdown file seems wrong", location: ourLocation });
+  } else if (repoCode.endsWith('TQ') && /\d\d\/\d\d.md/.test(markdownFilename) && markdownFilename.indexOf('00') === -1) { // TQ or OBS-TQ, but not intro file
+    // debugLog(`Need to TQ check md structure ${repoCode} ${markdownFilename}: ${markdownText}`)
+    // This code was adapted from the Python TSV converter code at https://github.com/unfoldingWord-dev/tools/blob/develop/tsv/OBS_TQ_MD_to_TSV7.py#L62
+    let haveBadStructure = false;
+    let state = 0;
+    let question = null, response = null;
+    const lines = markdownText.split('\n');
+    for (let n = 1; n <= lines.length; n++) {
+      const line = lines[n - 1].trimEnd(); // Remove trailing whitespace including nl char
+      // debugLog(`  TQ state=${state} tag=${tag} line=${line}`);
+      if (!line) continue; // Ignore blank lines
+      if (line.startsWith('# ')) {
+        if (state === 0) {
+          logicAssert(!question);
+          logicAssert(!response);
+          question = line.slice(2);
+          response = null;
+          state = 1;
+        } else {
+          debugLog(`Something WRONG with TQ structure check!`);
+          haveBadStructure = true; break;
+        }
+        } else if (state === 1) {
+        logicAssert(question);
+        logicAssert(!response);
+        response = line;
+        // We've completed that one!
+        state = 0;
+        question = null;
+        response = null;
+      } else {
+        // debugLog(`Losing TQ state=${state} ${markdownFilename} line ${n}: '${line}'`);
+        haveBadStructure = true; break;
+      }
+    }
+    if (haveBadStructure)
+      addNoticePartial({ priority: 948, message: "Structure of markdown file seems wrong", location: ourLocation });
   }
+  // else debugLog(`Skipping checking ${repoCode} ${markdownFilename}`)
+
 
   addSuccessMessage(`Checked markdown file: ${markdownFilename}`);
   if (mfccResult.noticeList.length)
