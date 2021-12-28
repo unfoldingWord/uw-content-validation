@@ -142,7 +142,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     debugLog("Finished TextRegex."); */
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     const ctarResult = { noticeList: [], checkedFileCount: 0, checkedFilenames: [], checkedRepoNames: [] };
 

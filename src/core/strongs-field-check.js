@@ -65,7 +65,7 @@ export async function checkStrongsField(username, languageCode, repoCode, fieldN
     }
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     const csfResult = { noticeList: [], checkedFileCount: 0, checkedFilenames: [], checkedRepoNames: [], checkedFilenameExtensions: [] };
 

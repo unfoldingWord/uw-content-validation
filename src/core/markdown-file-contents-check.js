@@ -6,7 +6,7 @@ import { checkStrongsField } from './strongs-field-check'; // and this may call 
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert } from './utilities';
 
 
-const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '1.0.0';
+const MARKDOWN_FILE_VALIDATOR_VERSION_STRING = '1.0.1';
 
 
 /**
@@ -28,7 +28,7 @@ export async function checkMarkdownFileContents(username, languageCode, repoCode
 
    Returns a result object containing a successList and a noticeList
    */
-  // functionLog(`checkMarkdownFileContents(${username}, lC=${languageCode}, rC=${repoCode}, fn=${markdownFilename}, (${markdownText.length}), ${givenLocation})…`);
+  // functionLog(`checkMarkdownFileContents(${username}, lC=${languageCode}, rC=${repoCode}, fn=${markdownFilename}, (${markdownText.length}), gL='${givenLocation}')…`);
   //parameterAssert(languageCode !== undefined, "checkMarkdownFileContents: 'languageCode' parameter should be defined");
   //parameterAssert(typeof languageCode === 'string', `checkMarkdownFileContents: 'languageCode' parameter should be a string not a '${typeof languageCode}': ${languageCode}`);
   // TODO: Check if/why we have both forms below
@@ -42,12 +42,13 @@ export async function checkMarkdownFileContents(username, languageCode, repoCode
   //parameterAssert(givenLocation !== undefined, "checkMarkdownFileContents: 'givenLocation' parameter should be defined");
   //parameterAssert(typeof givenLocation === 'string', `checkMarkdownFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
   //parameterAssert(givenLocation.indexOf('true') === -1, `checkMarkdownFileContents: 'givenLocation' parameter should not be '${givenLocation}'`);
+  parameterAssert(givenLocation.indexOf(`${languageCode}_${repoCode}`) === -1, `checkMarkdownFileContents: repoName equivalent '${`${languageCode}_${repoCode}`}' shouldn't be in givenLocation '${givenLocation}'`)
   if (checkingOptions !== undefined) {
     //parameterAssert(typeof checkingOptions === 'object', `checkMarkdownFileContents: 'checkingOptions' parameter should be an object not a '${typeof checkingOptions}': ${JSON.stringify(checkingOptions)}`);
   }
 
   let ourLocation = givenLocation;
-  if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+  if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
   let excerptLength;
   try {
@@ -240,8 +241,86 @@ export async function checkMarkdownFileContents(username, languageCode, repoCode
           addNoticePartial({ priority: 70, message: "Possible unusual TW Strong's line", details: "expected line to start with '* Strong’s: '", excerpt: line.slice(0, excerptLength - 1), location: ourLocation });
       }
     }
+  } else if (repoCode.endsWith('SN') && /\d\d\/\d\d.md/.test(markdownFilename) && markdownFilename.indexOf('00') === -1) { // SN or OBS-SN but not intro file
+    // debugLog(`Need to check SN md structure ${repoCode} ${markdownFilename}: ${markdownText}`)
+    // This code was adapted from the Python TSV converter code at https://github.com/unfoldingWord-dev/tools/blob/develop/tsv/OBS_SN_MD_to_TSV7.py#L55
+    let haveBadStructure = false;
+    let state = 'idle';
+    let quote = null, note = null;
+    const lines = markdownText.split('\n');
+    for (let n = 1; n <= lines.length; n++) {
+      const line = lines[n - 1].trimEnd(); // Remove trailing whitespace including nl char
+      // debugLog(`  SN state=${state} quote=${quote} line=${line}`);
+      if (!line) continue // Ignore blank lines
+      if (line.startsWith('# ')) {
+        if (state === 'idle') {
+          logicAssert(!quote);
+          logicAssert(!note);
+          quote = line.slice(2);
+          note = null;
+          state = 1;
+        } else {
+          debugLog(`Something WRONG with SN structure check!`);
+          haveBadStructure = true; break;
+        }
+      } else if (state === 1) {
+        logicAssert(quote);
+        logicAssert(!note);
+        note = line;
+        state = 'idle';
+        // We've completed that one!
+        quote = null; note = null;
+      } else {
+        // debugLog(`Losing SN ${state} ${markdownFilename} line ${n}: '${line}'`);
+        haveBadStructure = true; break;
+      }
+    }
+    if (haveBadStructure)
+      addNoticePartial({ priority: 948, message: "Structure of markdown file seems wrong", location: ourLocation });
+  } else if (repoCode.endsWith('TN') && /\d\d\/\d\d.md/.test(markdownFilename) && markdownFilename.indexOf('00') === -1) { // TN or OBS-TN but not intro file
+    // debugLog(`Need to check TN md structure ${repoCode} ${markdownFilename}: ${markdownText}`)
+    // This code was adapted from the Python TSV converter code at https://github.com/unfoldingWord-dev/tools/blob/develop/tsv/OBS_TN_MD_to_TSV7.py#L55
+    let haveBadStructure = false;
+    let state = 'idle';
+    let quote = null, note = null;
+    const lines = markdownText.split('\n');
+    for (let n = 1; n <= lines.length; n++) {
+      const line = lines[n - 1].trimEnd(); // Remove trailing whitespace including nl char
+      // debugLog(`  TN state=${state} quote=${quote} line=${line}`);
+      if (!line) continue // Ignore blank lines
+      if (line.startsWith('# ')) {
+        if (state === 'idle') {
+          logicAssert(!quote);
+          logicAssert(!note);
+          quote = line.slice(2);
+          note = null;
+          state = 1
+        } else {
+          debugLog(`Something WRONG with TN structure check!`);
+          haveBadStructure = true; break;
+        }
+      } else if (state === 'idle') {
+        // debugLog(`Have continuation part ${markdownFilename} line ${n}: (${line.length})'${line}'`);
+        logicAssert(!quote);
+        note = line;
+        // We've completed that one!
+        note = null;
+      } else if (state === 1) {
+        logicAssert(quote);
+        logicAssert(!note);
+        note = line;
+        state = 'idle';
+        // We've completed that one!
+        quote = null; note = null;
+      } else {
+        // debugLog(`Losing TN ${state} ${markdownFilename} line ${n}: '${line}'`);
+        haveBadStructure = true; break;
+      }
+    }
+    if (haveBadStructure)
+      addNoticePartial({ priority: 948, message: "Structure of markdown file seems wrong", location: ourLocation });
   } else if (repoCode.endsWith('SQ') && /\d\d\/\d\d.md/.test(markdownFilename) && markdownFilename.indexOf('00') === -1) { // SQ or OBS-SQ but not intro file
-    debugLog(`Need to SQ check md structure ${repoCode} ${markdownFilename}: ${markdownText}`)
+    debugLog(`Need to check SQ md structure ${repoCode} ${markdownFilename}: ${markdownText}`)
     // This code was adapted from the Python TSV converter code at https://github.com/unfoldingWord-dev/tools/blob/develop/tsv/OBS_SQ_MD_to_TSV7.py#L55
     let haveBadStructure = false;
     let state = 'idle';
@@ -249,7 +328,7 @@ export async function checkMarkdownFileContents(username, languageCode, repoCode
     const lines = markdownText.split('\n');
     for (let n = 1; n <= lines.length; n++) {
       const line = lines[n - 1].trimEnd(); // Remove trailing whitespace including nl char
-      debugLog(`  state=${state} tag=${tag} line=${line}`);
+      debugLog(`  SQ state=${state} tag=${tag} line=${line}`);
       if (!line) continue // Ignore blank lines
       if (line.startsWith('# ')) { // Ignore the story title
         if (state !== 'idle') {
@@ -295,10 +374,10 @@ export async function checkMarkdownFileContents(username, languageCode, repoCode
     if (haveBadStructure)
       addNoticePartial({ priority: 948, message: "Structure of markdown file seems wrong", location: ourLocation });
   } else if (repoCode.endsWith('TQ') && /\d\d\/\d\d.md/.test(markdownFilename) && markdownFilename.indexOf('00') === -1) { // TQ or OBS-TQ, but not intro file
-    // debugLog(`Need to TQ check md structure ${repoCode} ${markdownFilename}: ${markdownText}`)
+    // debugLog(`Need to check TQ md structure ${repoCode} ${markdownFilename}: ${markdownText}`)
     // This code was adapted from the Python TSV converter code at https://github.com/unfoldingWord-dev/tools/blob/develop/tsv/OBS_TQ_MD_to_TSV7.py#L62
     let haveBadStructure = false;
-    let state = 0;
+    let state = 'idle';
     let question = null, response = null;
     const lines = markdownText.split('\n');
     for (let n = 1; n <= lines.length; n++) {
@@ -306,7 +385,7 @@ export async function checkMarkdownFileContents(username, languageCode, repoCode
       // debugLog(`  TQ state=${state} tag=${tag} line=${line}`);
       if (!line) continue; // Ignore blank lines
       if (line.startsWith('# ')) {
-        if (state === 0) {
+        if (state === 'idle') {
           logicAssert(!question);
           logicAssert(!response);
           question = line.slice(2);
@@ -316,14 +395,13 @@ export async function checkMarkdownFileContents(username, languageCode, repoCode
           debugLog(`Something WRONG with TQ structure check!`);
           haveBadStructure = true; break;
         }
-        } else if (state === 1) {
+      } else if (state === 1) {
         logicAssert(question);
         logicAssert(!response);
         response = line;
         // We've completed that one!
-        state = 0;
-        question = null;
-        response = null;
+        state = 'idle';
+        question = null; response = null;
       } else {
         // debugLog(`Losing TQ state=${state} ${markdownFilename} line ${n}: '${line}'`);
         haveBadStructure = true; break;

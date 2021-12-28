@@ -91,7 +91,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
 
     // Create our more detailed location string by prepending the fieldName
     let ourLocation = optionalFieldLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     const cutoffPriorityLevel = checkingOptions?.cutoffPriorityLevel ? checkingOptions?.cutoffPriorityLevel : 0;
     // debugLog(`checkTextField: Using cutoffPriorityLevel=${cutoffPriorityLevel} ${typeof cutoffPriorityLevel} ${cutoffPriorityLevel < 200}`);

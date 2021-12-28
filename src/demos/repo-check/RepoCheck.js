@@ -8,7 +8,7 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.3.5';
+// const REPO_VALIDATOR_VERSION_STRING = '0.3.6';
 
 
 function RepoCheck(/*username, languageCode,*/ props) {
@@ -141,7 +141,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
                     // logicAssert('checkedFileCount' in rawCRResults, `Expected rawCBPsResults to contain 'checkedFileCount': ${Object.keys(rawCRResults)}`);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
-                    rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, excerpt: checkRepoError, location: repoName });
+                    rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, excerpt: `${checkRepoError}`, location: 'RepoCheck.js' });
                     // debugLog("RepoCheck trace is", checkRepoError.trace);
                 }
                 // debugLog("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));

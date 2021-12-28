@@ -235,7 +235,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
     }
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let excerptLength;
     try {
@@ -1574,7 +1574,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         // functionLog(`checkUSFMText mainUSFMCheck(${bookID}, ${filename}, ${givenText.length}, ${location}) (can take quite a while for a large book)…`);
 
         let ourLocation = location;
-        if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+        if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
         // const lowercaseBookID = bookID.toLowerCase();
         // eslint-disable-next-line no-unused-vars

@@ -68,7 +68,7 @@ export async function checkOriginalLanguageQuoteAndOccurrence(username, language
     // debugLog(`Got discontiguousDivider='${discontiguousDivider}' for ${repoCode}`);
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let whichTestament = 'both'; // for OBS
     if (bookID !== 'OBS') {

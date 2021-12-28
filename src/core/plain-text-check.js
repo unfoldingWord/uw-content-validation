@@ -50,7 +50,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
     //parameterAssert(checkingOptions !== undefined, "checkPlainText: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let excerptLength;
     try {

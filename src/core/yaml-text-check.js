@@ -47,7 +47,7 @@ export function checkYAMLText(username, languageCode, repoCode, textName, YAMLTe
     }
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (textName) ourLocation = ` in ${textName}${ourLocation}`;
 
     let excerptLength;

@@ -234,7 +234,7 @@ function FileCheck(props) {
   if (!filename) return <><b>ERROR</b>: The Door43 <b>filename</b> must be specified</>;
 
   let givenLocation = props['location'] ? props['location'] : "";
-  if (givenLocation && givenLocation[0] !== ' ') givenLocation = ` ${givenLocation}`;
+  if (givenLocation?.length && givenLocation[0] !== ' ') givenLocation = ` ${givenLocation}`;
 
   const checkingOptions = { // Uncomment any of these to test them
     // excerptLength: 25,

@@ -183,7 +183,7 @@ export function checkUSFMGrammar(bookID, strictnessString, filename, givenText, 
     //parameterAssert(strictnessString === 'strict' || strictnessString === 'relaxed', `Unexpected strictnessString='${strictnessString}'`);
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
 
     const cugResult = { successList: [], noticeList: [] };

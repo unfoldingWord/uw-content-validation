@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert, aboutToOverwrite } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '1.0.3';
+// const REPO_VALIDATOR_VERSION_STRING = '1.0.4';
 
 
 /**
@@ -26,7 +26,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       successList: an array of strings to tell the use exactly what has been checked
       noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
   */
-  // functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', ${givenLocation}, (fn), ${JSON.stringify(givenCheckingOptions)})…`);
+  // functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', gL='${givenLocation}', (fn), ${JSON.stringify(givenCheckingOptions)})…`);
   //parameterAssert(username !== undefined, "checkRepo: 'username' parameter should be defined");
   //parameterAssert(typeof username === 'string', `checkRepo: 'username' parameter should be a string not a '${typeof username}'`);
   //parameterAssert(repoName !== undefined, "checkRepo: 'repoName' parameter should be defined");
@@ -35,6 +35,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   //parameterAssert(typeof repoBranch === 'string', `checkRepo: 'repoBranch' parameter should be a string not a '${typeof repoBranch}'`);
   //parameterAssert(givenLocation !== undefined, "checkRepo: 'givenRowLocation' parameter should be defined");
   //parameterAssert(typeof givenLocation === 'string', `checkRepo: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+  parameterAssert(givenLocation.indexOf(repoName) === -1, `checkRepo: repoName '${repoName}' shouldn't be in givenLocation '${givenLocation}'`)
 
   let abortFlag = false;
   const startTime = new Date();
@@ -210,7 +211,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
     // That doesn't seem to do what we require, so removed again
     // try {
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (ourLocation.indexOf(username) < 0)
     // ourLocation = ` in ${username} ${repoName} ${givenLocation}`
 

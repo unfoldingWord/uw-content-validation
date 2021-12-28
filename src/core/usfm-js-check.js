@@ -46,7 +46,7 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
     //parameterAssert(typeof givenLocation === 'string', `checkUSFMToJSON: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
     // if (filename) ourLocation = ` in ${filename}${ourLocation}`;
 
 
@@ -71,10 +71,12 @@ export function checkUSFMToJSON(bookID, filename, givenText, givenLocation, chec
         //parameterAssert(message !== undefined, "cUSFMjs addNoticePartial: 'message' parameter should be defined");
         //parameterAssert(typeof message === 'string', `cUSFMjs addNoticePartial: 'message' parameter should be a string not a '${typeof message}': ${message}`);
         // parameterAssert(characterIndex !== undefined, "cUSFMjs addNoticePartial: 'characterIndex' parameter should be defined");
-        if (characterIndex) { parameterAssert(typeof characterIndex === 'number', `cUSFMjs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
+        if (characterIndex) {
+            parameterAssert(typeof characterIndex === 'number', `cUSFMjs addNoticePartial: 'characterIndex' parameter should be a number not a '${typeof characterIndex}': ${characterIndex}`);
         }
         // parameterAssert(excerpt !== undefined, "cUSFMjs addNoticePartial: 'excerpt' parameter should be defined");
-        if (excerpt) { parameterAssert(typeof excerpt === 'string', `cUSFMjs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
+        if (excerpt) {
+            parameterAssert(typeof excerpt === 'string', `cUSFMjs addNoticePartial: 'excerpt' parameter should be a string not a '${typeof excerpt}': ${excerpt}`);
         }
         //parameterAssert(location !== undefined, "cUSFMjs addNoticePartial: 'location' parameter should be defined");
         //parameterAssert(typeof location === 'string', `cUSFMjs addNoticePartial: 'location' parameter should be a string not a '${typeof location}': ${location}`);

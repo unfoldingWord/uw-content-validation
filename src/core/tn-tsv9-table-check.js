@@ -46,7 +46,7 @@ export async function internalCheckTN_TSV9Table(username, languageCode, repoCode
     //parameterAssert(checkingOptions !== undefined, "internalCheckTN_TSV9Table: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     const cutoffPriorityLevel = checkingOptions?.cutoffPriorityLevel ? checkingOptions?.cutoffPriorityLevel : 0;
 

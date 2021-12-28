@@ -10,7 +10,7 @@ import {
 import { userLog, debugLog, functionLog, parameterAssert, logicAssert, aboutToOverwrite } from '../../core';
 
 
-// const CHECK_FILE_CONTENTS_VERSION_STRING = '1.1.1';
+// const CHECK_FILE_CONTENTS_VERSION_STRING = '1.1.2';
 
 
 /**
@@ -28,7 +28,7 @@ import { userLog, debugLog, functionLog, parameterAssert, logicAssert, aboutToOv
 export async function checkFileContents(username, BPLanguageCode, repoCode, repoName, branch, filepath, fileContent, givenLocation, givenCheckingOptions) {
   // Determine the file type from the filename extension
   //  and return the results of checking that kind of file text
-  // functionLog(`checkFileContents(un='${username}', lC='${languageCode}', rC='${repoCode}', rBr='${branch}', fn='${filepath}', ${fileContent.length} chars, ${givenLocation}, ${JSON.stringify(givenCheckingOptions)})…`);
+  // functionLog(`checkFileContents(un='${username}', lC='${BPLanguageCode}', rC='${repoCode}', rBr='${branch}', fp='${filepath}', ${fileContent.length} chars, gL='${givenLocation}', ${JSON.stringify(givenCheckingOptions)})…`);
   //parameterAssert(username !== undefined, "checkFileContents: 'username' parameter should be defined");
   //parameterAssert(typeof username === 'string', `checkFileContents: 'username' parameter should be a string not a '${typeof username}': ${username}`);
   //parameterAssert(languageCode !== undefined, "checkFileContents: 'languageCode' parameter should be defined");
@@ -45,11 +45,12 @@ export async function checkFileContents(username, BPLanguageCode, repoCode, repo
   //parameterAssert(givenLocation !== undefined, "checkFileContents: 'givenLocation' parameter should be defined");
   //parameterAssert(typeof givenLocation === 'string', `checkFileContents: 'givenLocation' parameter should be a string not a '${typeof givenLocation}': ${givenLocation}`);
   //parameterAssert(givenCheckingOptions !== undefined, "checkFileContents: 'givenCheckingOptions' parameter should be defined");
+  parameterAssert(givenLocation.indexOf(repoName) === -1, `checkFileContents: repoName '${repoName}' shouldn't be in givenLocation '${givenLocation}'`)
 
   const startTime = new Date();
 
   let ourCFLocation = givenLocation;
-  if (ourCFLocation[0] !== ' ') ourCFLocation = ' ' + ourCFLocation;
+  if (ourCFLocation.length && ourCFLocation[0] !== ' ') ourCFLocation = ' ' + ourCFLocation;
 
   let adjustedLanguageCode = BPLanguageCode;
   if (repoCode === 'UHB') adjustedLanguageCode = 'hbo';

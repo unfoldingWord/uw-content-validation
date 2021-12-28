@@ -144,7 +144,7 @@ Object {
   ],
   "successList": Array [
     "Checked markdown file: translate/something",
-    "checkMarkdownFileContents v1.0.0 finished with 5 notices",
+    "checkMarkdownFileContents v1.0.1 finished with 5 notices",
   ],
 }
 `;
@@ -299,7 +299,7 @@ Object {
   "noticeList": Array [],
   "successList": Array [
     "Checked markdown file: names/something",
-    "No errors or warnings found by checkMarkdownFileContents v1.0.0",
+    "No errors or warnings found by checkMarkdownFileContents v1.0.1",
   ],
 }
 `;

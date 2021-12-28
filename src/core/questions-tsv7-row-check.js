@@ -74,7 +74,7 @@ export async function checkQuestionsTSV7DataRow(username, languageCode, repoCode
     //parameterAssert(givenRowLocation.indexOf('true') === -1, "checkQuestionsTSV7DataRow: 'givenRowLocation' parameter should not be 'true'");
 
     let ourRowLocation = givenRowLocation;
-    if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
+    if (ourRowLocation?.length && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
 
     const linkCheckingOptions = { ...checkingOptions };
     linkCheckingOptions.taRepoLanguageCode = languageCode;

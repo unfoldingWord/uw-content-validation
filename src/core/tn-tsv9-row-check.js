@@ -66,7 +66,7 @@ export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line
     //parameterAssert(typeof givenRowLocation === 'string', `checkTN_TSV9DataRow: 'givenRowLocation' parameter should be a string not a '${typeof givenRowLocation}'`);
 
     let ourRowLocation = givenRowLocation;
-    if (ourRowLocation && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
+    if (ourRowLocation?.length && ourRowLocation[0] !== ' ') ourRowLocation = ` ${ourRowLocation}`;
 
     const linkCheckingOptions = { ...checkingOptions };
     linkCheckingOptions.taRepoLanguageCode = languageCode;
