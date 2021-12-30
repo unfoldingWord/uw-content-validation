@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+// import { withStyles } from '@material-ui/core/styles';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderTotals } from '../RenderProcessedResults';
 import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
@@ -8,10 +8,10 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.3.6';
+// const REPO_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
-function RepoCheck(/*username, languageCode,*/ props) {
+function RepoCheck(props) {
     /*
     Check an entire repository
 
@@ -19,7 +19,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
         and then checks all the individual files
     */
 
-    // debugLog(`I'm here in RepoCheck v${REPO_VALIDATOR_VERSION_STRING}`);
+    // functionLog(`I'm here in RepoCheck v${REPO_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
@@ -57,7 +57,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
     const [result, setResultValue] = useState("Waiting-checkRepo");
     useEffect(() => {
-        // debugLog("RepoCheck.useEffect() called with ", JSON.stringify(props));
+        // functionLog("RepoCheck.useEffect() called with ", JSON.stringify(props));
 
         // Use an IIFE (Immediately Invoked Function Expression)
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -240,13 +240,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 </>);
             }
         })(); // end of async part in unnamedFunction
-        // Doesn’t work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // end of useEffect part
+    }, [username, repoName, branchOrReleaseTag, JSON.stringify(checkingOptions), JSON.stringify(props)]); // end of useEffect part -- I don't know what this list actually does
 
     // {/* <div className={classes.root}> */}
     return (
-        <div className="Fred">
+        <div className="mainDiv">
             {result}
         </div>
     );
@@ -260,9 +259,10 @@ function RepoCheck(/*username, languageCode,*/ props) {
 //   props: PropTypes.object,
 // };
 
-const styles = theme => ({
-    root: {
-    },
-});
+// const styles = theme => ({
+//     root: {
+//     },
+// });
 
-export default withStyles(styles)(RepoCheck);
+// export default withStyles(styles)(RepoCheck);
+export default RepoCheck;

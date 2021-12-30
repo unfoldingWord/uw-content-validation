@@ -12,7 +12,7 @@ import { userLog, debugLog, parameterAssert, logicAssert } from '../../core/util
 // const BP_VALIDATOR_VERSION_STRING = '0.5.19';
 
 
-function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
+function BookPackageCheck(props) {
     // Check a single Bible book across many repositories
     const [result, setResultValue] = useState("Waiting-CheckBookPackage");
 
@@ -233,11 +233,11 @@ function BookPackageCheck(/*username, languageCode, bookID,*/ props) {
             // debugLog("Finished rendering bit.");
         })(); // end of async part in unnamedFunction
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [bookID, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
+    }, [bookID, username, languageCode, branch, JSON.stringify(checkingOptions), JSON.stringify(props)]); // end of useEffect part -- I don't know what this list actually does
 
     // {/* <div className={classes.root}> */}
     return (
-        <div className="Fred">
+        <div className="mainDiv">
             {result}
         </div>
     );

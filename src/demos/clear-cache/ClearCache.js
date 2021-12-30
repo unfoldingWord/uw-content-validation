@@ -16,7 +16,7 @@ function ClearCache({areYouSure}) {
 
     // {/* <div className={classes.root}> */}
     return (
-        <div className="Fred">
+        <div className="mainDiv">
         {ccResult}
         </div>
     );

@@ -72,7 +72,7 @@ function OurCheckQuestionsTSV7Table(props) {
         </div>
       );
     })(); // end of async part in unnamedFunction
-  }, []); // end of useEffect part
+  }, []); // end of useEffect part -- I don't know what this list actually does
 
   return results;
 } // end of OurCheckQuestionsTSV7Table function

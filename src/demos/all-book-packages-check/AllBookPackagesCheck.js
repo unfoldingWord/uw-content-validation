@@ -236,7 +236,7 @@ function AllBookPackagesCheck(/*username, languageCode, bookIDs,*/ props) {
     })(); // end of async part in unnamedFunction
     // Doesn’t work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(bookIDList), bookIDsString, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
+  }, [JSON.stringify(bookIDList), bookIDsString, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part -- I don't know what this list actually does
 
   if (bookIDInvalid) {
     return (<p>Please enter only valid USFM book identifiers separated by commas. ('{bookIDInvalid}' is not valid.)</p>);

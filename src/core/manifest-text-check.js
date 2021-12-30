@@ -558,7 +558,7 @@ const MANIFEST_SCHEMA = {
 const ajv = new Ajv({strict:"log"}); // We need this strict parameter because of the warnings below
 // See https://github.com/ajv-validator/ajv/blob/master/docs/options.md
 const validate = ajv.compile(MANIFEST_SCHEMA);
-/* Produces the following two warnings:
+/* Produces the following two warnings (when running and also in tests):
 strict mode: unknown keyword: "$$target"
 strict mode: use allowUnionTypes to allow union type keyword at "https://resource-container.readthedocs.io/schema/rc.schema.json#/properties/checking/properties/checking_level" (strictTypes)
 */

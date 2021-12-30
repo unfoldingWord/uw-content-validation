@@ -217,11 +217,11 @@ function GlBookPackageCheck(/*username, languageCode, bookIDs,*/ props) {
         })(); // end of async part in unnamedFunction
         // Doesn’t work if we add this to next line: bookIDList,bookIDs,username,branch,checkingOptions,languageCode,props
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [bookID, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part
+    }, [bookID, branch, JSON.stringify(checkingOptions), languageCode, JSON.stringify(props), username]); // end of useEffect part -- I don't know what this list actually does
 
     // {/* <div className={classes.root}> */}
     return (
-        <div className="Fred">
+        <div className="mainDiv">
             {result}
         </div>
     );

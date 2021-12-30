@@ -1,23 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+// import { withStyles } from '@material-ui/core/styles';
 import { clearCaches, clearCheckedArticleCache, ourParseInt, preloadReposIfNecessary, cachedGetFile, cachedFetchFileFromServerWithTag } from '../../core';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderElapsedTime } from '../RenderProcessedResults';
 import { checkFileContents } from './checkFileContents';
 // eslint-disable-next-line no-unused-vars
-import { debugLog, userLog, aboutToOverwrite } from '../../core/utilities';
+import { debugLog, userLog, functionLog, aboutToOverwrite } from '../../core/utilities';
 
 
-// const FILE_CHECK_VERSION_STRING = '1.0.0';
+// const FILE_CHECK_VERSION_STRING = '1.1.0';
 
 
 function FileCheck(props) {
-  // debugLog(`I'm here in FileCheck v${FILE_CHECK_VERSION_STRING}`);
+  // functionLog(`I'm here in FileCheck v${FILE_CHECK_VERSION_STRING} with props=${JSON.stringify(props)}`);
   // consoleLogObject("props", props);
 
   const [result, setResultValue] = useState("Waiting-FileCheck");
+
+
+  const username = props.username;
+  // debugLog(`FileCheck username='${username}'`);
+  // if (!username) return <><b>ERROR</b>: The Door43 <b>username</b> must be specified</>;
+  const repoName = props.repoName;
+  // debugLog(`FileCheck repoName='${repoName}'`);
+  // if (!repoName) return <><b>ERROR</b>: The Door43 <b>repository name</b> must be specified</>;
+  let branchOrReleaseTag = props.branchOrReleaseTag;
+  // debugLog(`FileCheck branchOrReleaseTag='${branchOrReleaseTag}'`);
+  if (branchOrReleaseTag === undefined) branchOrReleaseTag = 'master';
+  const filename = props.filename;
+  // debugLog(`filename='${filename}'`);
+  // if (!filename) return <><b>ERROR</b>: The Door43 <b>filename</b> must be specified</>;
+
+  let givenLocation = props['location'] ? props['location'] : "";
+  // NOTE: Couldn’t figure out why ?. was not allowed in the statement below
+  if (givenLocation && givenLocation.length && givenLocation[0] !== ' ') givenLocation = ` ${givenLocation}`;
+
+  const checkingOptions = { // Uncomment any of these to test them
+    // excerptLength: 25,
+    suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
+    checkType: 'File', // Always leave this one in
+  };
+  // Or this allows the parameters to be specified as a FileCheck property
+  if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
+  if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
+  if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
+  if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
+  if (props.disableLexiconLinkFetchingFlag) checkingOptions.disableLexiconLinkFetchingFlag = props.disableLexiconLinkFetchingFlag.toLowerCase() === 'true';
+  if (props.disableLinkedLexiconEntriesCheckFlag) checkingOptions.disableLinkedLexiconEntriesCheckFlag = props.disableLinkedLexiconEntriesCheckFlag.toLowerCase() === 'true';
+
+
   useEffect(() => {
-    // debugLog("FileCheck.useEffect() called with ", JSON.stringify(props));
+    // functionLog("FileCheck.useEffect() called with ", JSON.stringify(props));
 
     // Use an IIFE (Immediately Invoked Function Expression)
     //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -218,50 +252,21 @@ function FileCheck(props) {
     })(); // end of async part in unnamedFunction
     // Doesn’t work if we add this to next line: username,repoName,branch,checkingOptions,filename,givenLocation,props
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // end of useEffect part
+  }, [username, repoName, filename, JSON.stringify(checkingOptions), JSON.stringify(props)]); // end of useEffect part -- I don't know what this list actually does
 
-  const username = props.username;
-  // debugLog(`FileCheck username='${username}'`);
-  if (!username) return <><b>ERROR</b>: The Door43 <b>username</b> must be specified</>;
-  const repoName = props.repoName;
-  // debugLog(`FileCheck repoName='${repoName}'`);
-  if (!repoName) return <><b>ERROR</b>: The Door43 <b>repository name</b> must be specified</>;
-  let branchOrReleaseTag = props.branchOrReleaseTag;
-  // debugLog(`FileCheck branchOrReleaseTag='${branchOrReleaseTag}'`);
-  if (branchOrReleaseTag === undefined) branchOrReleaseTag = 'master';
-  const filename = props.filename;
-  // debugLog(`filename='${filename}'`);
-  if (!filename) return <><b>ERROR</b>: The Door43 <b>filename</b> must be specified</>;
-
-  let givenLocation = props['location'] ? props['location'] : "";
-  if (givenLocation?.length && givenLocation[0] !== ' ') givenLocation = ` ${givenLocation}`;
-
-  const checkingOptions = { // Uncomment any of these to test them
-    // excerptLength: 25,
-    suppressNoticeDisablingFlag: true, // Leave this one as true (otherwise demo checks are less efficient)
-    checkType: 'File', // Always leave this one in
-  };
-  // Or this allows the parameters to be specified as a FileCheck property
-  if (props.excerptLength) checkingOptions.excerptLength = ourParseInt(props.excerptLength);
-  if (props.cutoffPriorityLevel) checkingOptions.cutoffPriorityLevel = ourParseInt(props.cutoffPriorityLevel);
-  if (props.disableAllLinkFetchingFlag) checkingOptions.disableAllLinkFetchingFlag = props.disableAllLinkFetchingFlag.toLowerCase() === 'true';
-  if (props.disableLinkedTAArticlesCheckFlag) checkingOptions.disableLinkedTAArticlesCheckFlag = props.disableLinkedTAArticlesCheckFlag.toLowerCase() === 'true';
-  if (props.disableLinkedTWArticlesCheckFlag) checkingOptions.disableLinkedTWArticlesCheckFlag = props.disableLinkedTWArticlesCheckFlag.toLowerCase() === 'true';
-  if (props.disableLexiconLinkFetchingFlag) checkingOptions.disableLexiconLinkFetchingFlag = props.disableLexiconLinkFetchingFlag.toLowerCase() === 'true';
-  if (props.disableLinkedLexiconEntriesCheckFlag) checkingOptions.disableLinkedLexiconEntriesCheckFlag = props.disableLinkedLexiconEntriesCheckFlag.toLowerCase() === 'true';
 
   // {/* <div className={classes.root}> */}
   return (
-    <div className="Fred">
+    <div className="mainDiv">
       {result}
     </div>
   );
 };
 // end of FileCheck()
 
-const styles = theme => ({
-  root: {
-  },
-});
+// const styles = theme => ({
+//   root: {
+//   },
+// });
 
-export default withStyles(styles)(FileCheck);
+export default FileCheck;
