@@ -9,7 +9,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { debugLog, functionLog, parameterAssert, logicAssert } from './utilities';
 
 
-const MANIFEST_VALIDATOR_VERSION_STRING = '1.0.0';
+const MANIFEST_VALIDATOR_VERSION_STRING = '1.0.1';
 
 // Pasted in 2020-10-02 from https://raw.githubusercontent.com/unfoldingWord/dcs/master/options/schema/rc.schema.json
 // Updated 2021-02-19
@@ -555,8 +555,13 @@ const MANIFEST_SCHEMA = {
 };
 
 
-const ajv = new Ajv();
+const ajv = new Ajv({strict:"log"}); // We need this strict parameter because of the warnings below
+// See https://github.com/ajv-validator/ajv/blob/master/docs/options.md
 const validate = ajv.compile(MANIFEST_SCHEMA);
+/* Produces the following two warnings:
+strict mode: unknown keyword: "$$target"
+strict mode: use allowUnionTypes to allow union type keyword at "https://resource-container.readthedocs.io/schema/rc.schema.json#/properties/checking/properties/checking_level" (strictTypes)
+*/
 
 
 /**
