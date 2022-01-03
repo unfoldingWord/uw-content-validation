@@ -69,6 +69,13 @@ describe('checkPlainText() - ', () => {
       expect(rawResults).toMatchSnapshot();
     });
 
+    it('should pass on year', async () => {
+      const rawResults = await checkPlainText(username, languageCode, repoCode, 'text', 'snippet', "This test was written in 2021 by Rob.\n", 'from test snippet', optionalCheckingOptions);
+      // console.log(`checkPlainText rawResults=${JSON.stringify(rawResults)}`);
+      expect(rawResults.noticeList.length).toEqual(0);
+      expect(rawResults).toMatchSnapshot();
+    });
+
   });
 
 });

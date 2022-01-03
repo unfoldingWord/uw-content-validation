@@ -43,7 +43,7 @@ export async function startLiveLinksCheck(linksList, existingNoticeList, callbac
         const uri = linkEntry[1] ? linkEntry[1] : linkEntry[2]; // Why ??? !!!
         userLog(`startLiveLinksCheck attempting to fetch ${uri}…`);
         try {
-            const responseData = await cachedGetFileUsingFullURL({uri, params:{}});
+            const responseData = await cachedGetFileUsingFullURL({ uri, params: {} });
             const responseText = responseData;
             userLog(`startLiveLinksCheck got response: ${responseText.length}`);
         } catch (lcError) {
@@ -99,7 +99,7 @@ export function checkFieldLinks(username, languageCode, repoCode, fieldName, fie
     //parameterAssert(optionalFieldLocation.indexOf('true') === -1, `checkFieldLinks: 'optionalFieldLocation' parameter should not be '${optionalFieldLocation}'`);
 
     let ourLocation = optionalFieldLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let result = { noticeList: [] };
 

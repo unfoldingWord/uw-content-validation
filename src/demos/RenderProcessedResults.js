@@ -42,7 +42,7 @@ const tableIcons = {
 };
 
 
-// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.2';
+// const RENDER_PROCESSED_RESULTS_VERSION = '1.0.4';
 
 
 /**
@@ -378,7 +378,8 @@ function RenderFileDetails({ givenEntry }) {
             if (useFilename.endsWith('.tsv') || useFilename.endsWith('.md')) {
                 let folder = '';
                 if (useFilename !== 'README.md' && useFilename !== 'LICENSE.md') {
-                    if (adjustedRepoName.endsWith('_obs')) folder = 'content/';
+                    if (adjustedRepoName.indexOf('_obs') !== -1 && useFilename.endsWith('.md') && !useFilename.startsWith('content/'))
+                        folder = 'content/';
                     else if (adjustedRepoName.endsWith('_tw') && !useFilename.startsWith('bible/')) {
                         folder = 'bible/';
                         dataAssert(useFilename.split('/').length === 2, `RenderFileDetails expected TW filename '${useFilename}' to contain subfolder`); // filename actually contains the subfolder
@@ -411,7 +412,7 @@ function RenderFileDetails({ givenEntry }) {
         resultEnd = <>{resultEnd} in {givenEntry.fieldName} field</>;
 
     let adjustedFilename = givenEntry.filename;// could be undefined
-    if (adjustedFilename.startsWith('bible/')) adjustedFilename = adjustedFilename.slice(6); // drop that first foldername
+    if (adjustedFilename?.startsWith('bible/')) adjustedFilename = adjustedFilename.slice(6); // drop that first foldername
     let inFileBit = adjustedFilename ? ` in file ${adjustedFilename}` : '';
 
     // debugLog(`RenderFileDetails got resultStart='${resultStart}'`);
@@ -428,7 +429,8 @@ function RenderFileDetails({ givenEntry }) {
     else if (lineResult.length) // we know the line number -- how can this happen
         return <> [DEBUG-CC] {resultStart}{inFileBit}<b>{lineResult}</b>{resultEnd}</>;
     else // we know the filename -- isn't that already covered above ???
-        return <> [DEBUG-DD] {resultStart} with file <b>{givenEntry.filename}</b>{resultEnd}</>;
+        // Well it does happen in RepoCheck: hi_obs-tn LICENSE: Missing LICENSE.md [DEBUG-DD] in hi_obs-tn repository with file (Priority 946)
+        return <>{resultStart} with file <b>{givenEntry.filename}</b>{resultEnd}</>;
 }
 // end of RenderFileDetails
 

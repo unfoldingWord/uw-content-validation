@@ -24,6 +24,7 @@ import RepoCheck from './RepoCheck';
 
   username = 'unfoldingWord'
   // username = 'Door43-Catalog'
+  // username = 'RepoConversions'
 
   // Lines starting with // are ignored -- you can add or remove // as desired
   // NOTE: Some of these whole repository checks can take a looong time!
@@ -48,7 +49,7 @@ import RepoCheck from './RepoCheck';
   // repoName='fr_ulb' // No alignment so smaller files (faster demo)
 
   // If we don’t put the branch or release version here, the default branch is used
-  // branchOrRelease='master'
+  // branchOrReleaseTag='master'
 
   // The location field appears in check messages to help the user locate the issue
   location="as specified in repo-check/README.md"

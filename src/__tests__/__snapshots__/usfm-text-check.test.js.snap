@@ -238,6 +238,7 @@ Object {
       "V": "1",
       "bookID": "RUT",
       "characterIndex": 259,
+      "details": "might be intended to be … (ellipsis)???",
       "excerpt": "…[Doublet](../figs-do…",
       "fieldName": "\\\\NONE",
       "filename": "test.usfm",

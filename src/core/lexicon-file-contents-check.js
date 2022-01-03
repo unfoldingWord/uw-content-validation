@@ -38,7 +38,7 @@ export async function checkLexiconFileContents(username, languageCode, repoCode,
     }
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     // let excerptLength;
     // try {

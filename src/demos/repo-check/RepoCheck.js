@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+// import { withStyles } from '@material-ui/core/styles';
 import { processNoticesToErrorsWarnings, processNoticesToSevereMediumLow, processNoticesToSingleList } from '../notice-processing-functions';
 import { RenderCheckedFilesList, RenderSuccessesErrorsWarnings, RenderSuccessesSevereMediumLow, RenderSuccessesNoticesGradient, RenderTotals } from '../RenderProcessedResults';
 import { clearCaches, clearCheckedArticleCache, preloadReposIfNecessary, ourParseInt } from '../../core';
@@ -8,10 +8,10 @@ import { checkRepo } from './checkRepo';
 import { logicAssert, userLog, debugLog } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '0.3.5';
+// const REPO_VALIDATOR_VERSION_STRING = '1.0.0';
 
 
-function RepoCheck(/*username, languageCode,*/ props) {
+function RepoCheck(props) {
     /*
     Check an entire repository
 
@@ -19,7 +19,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
         and then checks all the individual files
     */
 
-    // debugLog(`I'm here in RepoCheck v${REPO_VALIDATOR_VERSION_STRING}`);
+    // functionLog(`I'm here in RepoCheck v${REPO_VALIDATOR_VERSION_STRING}`);
     // consoleLogObject("props", props);
     // consoleLogObject("props.classes", props.classes);
 
@@ -27,9 +27,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
     // debugLog(`username='${username}'`);
     const repoName = props.repoName;
     // debugLog(`repoName='${repoName}'`);
-    let branchOrRelease = props.branchOrRelease;
+    let branchOrReleaseTag = props.branchOrReleaseTag;
     // debugLog(`branch='${branch}'`);
-    if (branchOrRelease === undefined) branchOrRelease = 'master';
+    if (branchOrReleaseTag === undefined) branchOrReleaseTag = 'master';
 
     const checkingOptions = { // Uncomment any of these to test them
         // excerptLength: 25,
@@ -57,7 +57,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
     const [result, setResultValue] = useState("Waiting-checkRepo");
     useEffect(() => {
-        // debugLog("RepoCheck.useEffect() called with ", JSON.stringify(props));
+        // functionLog("RepoCheck.useEffect() called with ", JSON.stringify(props));
 
         // Use an IIFE (Immediately Invoked Function Expression)
         //  e.g., see https://medium.com/javascript-in-plain-english/https-medium-com-javascript-in-plain-english-stop-feeling-iffy-about-using-an-iife-7b0292aba174
@@ -95,7 +95,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
 
             // Load whole repos, especially if we are going to check files in manifests
             // NOTE: We make TWO calls to preloadReposIfNecessary()
-            //          because the branchOrRelease only applies to the repo being checked
+            //          because the branchOrReleaseTag only applies to the repo being checked
             //          for all other repos, we just use `master`
             const repoPreloadList = []; // The repo being checked doesn't need to be added here as done separately below
             if (!checkingOptions.disableAllLinkFetchingFlag) {
@@ -121,7 +121,7 @@ function RepoCheck(/*username, languageCode,*/ props) {
             }
             setResultValue(<p style={{ color: 'magenta' }}>Preloading {repoCode} and {repoPreloadList.length} repos for <i>{username}</i> {languageCode} ready for {repoName} repo check…</p>);
             logicAssert(!repoPreloadList.includes(repoCode), `Shouldn't have our repoCode ${repoCode} in repoPreloadList: ${repoPreloadList}`);
-            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrRelease, [repoCode])
+            const successFlag = await preloadReposIfNecessary(username, languageCode, [], branchOrReleaseTag, [repoCode])
                 && await preloadReposIfNecessary(username, languageCode, [], 'master', repoPreloadList);
             if (!successFlag)
                 console.error(`RepoCheck error: Failed to pre-load all repos`)
@@ -135,13 +135,13 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 let rawCRResults = {};
                 try {
                     // Empty string below is for location
-                    rawCRResults = await checkRepo(username, repoName, branchOrRelease, "", setResultValue, checkingOptions);
+                    rawCRResults = await checkRepo(username, repoName, branchOrReleaseTag, "", setResultValue, checkingOptions);
                     // debugLog(`rawCRResults keys: ${Object.keys(rawCRResults)}`);
                     // debugLog(`rawCRResults: ${JSON.stringify(rawCRResults)}`);
                     // logicAssert('checkedFileCount' in rawCRResults, `Expected rawCBPsResults to contain 'checkedFileCount': ${Object.keys(rawCRResults)}`);
                 } catch (checkRepoError) {
                     rawCRResults = { successList: [], noticeList: [] };
-                    rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, excerpt: checkRepoError, location: repoName });
+                    rawCRResults.noticeList.push({ priority: 999, message: "checkRepo function FAILED", repoName, excerpt: `${checkRepoError}`, location: 'RepoCheck.js' });
                     // debugLog("RepoCheck trace is", checkRepoError.trace);
                 }
                 // debugLog("checkRepo() returned", typeof rawCRResults); //, JSON.stringify(rawCRResults));
@@ -173,9 +173,9 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 if (props.displayType) displayType = props.displayType;
 
                 function renderSummary(processedResults) {
-                    const repoLink = branchOrRelease === undefined ? `https://git.door43.org/${username}/${repoName}/` : `https://git.door43.org/${username}/${repoName}/src/branch/${branchOrRelease}/`;
+                    const repoLink = branchOrReleaseTag === undefined ? `https://git.door43.org/${username}/${repoName}/` : `https://git.door43.org/${username}/${repoName}/src/branch/${branchOrReleaseTag}/`;
                     return (<div>
-                        <p>Checked <b>{username} {repoName}</b> (from <i>{branchOrRelease === undefined ? 'DEFAULT' : branchOrRelease}</i> <a rel="noopener noreferrer" target="_blank" href={repoLink}>branch</a>)</p>
+                        <p>Checked <b>{username} {repoName}</b> (from <i>{branchOrReleaseTag === undefined ? 'DEFAULT' : branchOrReleaseTag}</i> <a rel="noopener noreferrer" target="_blank" href={repoLink}>branch</a>)</p>
                         <RenderCheckedFilesList username={username} results={processedResults} />
                         <RenderTotals rawNoticeListLength={rawCRResults.noticeList.length} results={processedResults} />
                         {/* <RenderRawResults results={rawCRResults} /> */}
@@ -240,13 +240,12 @@ function RepoCheck(/*username, languageCode,*/ props) {
                 </>);
             }
         })(); // end of async part in unnamedFunction
-        // Doesn’t work if we add this to next line: languageCode,username,repoName,branch,checkingOptions,props
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // end of useEffect part
+    }, [username, repoName, branchOrReleaseTag, JSON.stringify(checkingOptions), JSON.stringify(props)]); // end of useEffect part -- I don't know what this list actually does
 
     // {/* <div className={classes.root}> */}
     return (
-        <div className="Fred">
+        <div className="mainDiv">
             {result}
         </div>
     );
@@ -260,9 +259,10 @@ function RepoCheck(/*username, languageCode,*/ props) {
 //   props: PropTypes.object,
 // };
 
-const styles = theme => ({
-    root: {
-    },
-});
+// const styles = theme => ({
+//     root: {
+//     },
+// });
 
-export default withStyles(styles)(RepoCheck);
+// export default withStyles(styles)(RepoCheck);
+export default RepoCheck;

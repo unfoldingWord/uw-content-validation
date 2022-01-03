@@ -8,7 +8,7 @@ import { removeDisabledNotices } from './disabled-notices';
 import { parameterAssert, dataAssert, debugLog, functionLog } from './utilities';
 
 
-const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '1.0.0';
+const MARKDOWN_TEXT_VALIDATOR_VERSION_STRING = '1.0.1';
 
 
 /**
@@ -51,7 +51,7 @@ export async function checkMarkdownText(username, languageCode, repoCode, textOr
     }
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let excerptLength;
     try {
@@ -319,11 +319,17 @@ export async function checkMarkdownText(username, languageCode, repoCode, textOr
             const thisHeaderLevel = line.match(/^#*/)[0].length;
             if (thisHeaderLevel > 0)
                 if (line.length === thisHeaderLevel)
-                    addNoticePartial({ priority: 780, message: "Markdown header has no text", lineNumber: n, characterIndex: 0, excerpt: line, location: ourLocation });
+                    addNoticePartial({ priority: 780, message: "Markdown header has no text at all", lineNumber: n, characterIndex: 0, excerpt: line, location: ourLocation });
                 else // have more characters after the hashes
-                    if (line[thisHeaderLevel] !== ' ') {
+                    if (line[thisHeaderLevel] === ' ') {
+                        const postHeaderLine = line.slice(thisHeaderLevel);
+                        if (!postHeaderLine.trim().length) {
+                            const excerpt = line.slice(0, excerptLength) + (line.length > excerptLength ? '…' : '');
+                            addNoticePartial({ priority: 793, message: "Markdown header has only whitespace", lineNumber: n, characterIndex: thisHeaderLevel, excerpt, location: ourLocation });
+                        }
+                    } else { // it's not a space following the hash(es)
                         const excerpt = line.slice(0, excerptLength) + (line.length > excerptLength ? '…' : '');
-                        addNoticePartial({ priority: 779, message: "Markdown header is missing the following space", lineNumber: n, characterIndex: 0, excerpt, location: ourLocation });
+                        addNoticePartial({ priority: 779, message: "Markdown header is missing the following space", lineNumber: n, characterIndex: thisHeaderLevel, excerpt, location: ourLocation });
                     }
 
             // if (thisHeaderLevel) debugLog(`checkMarkdownText: Got1 thisHeaderLevel=${thisHeaderLevel} after ${currentHeaderLevel} for line ${n}: ${line}`);

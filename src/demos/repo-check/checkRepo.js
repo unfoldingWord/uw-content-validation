@@ -8,7 +8,7 @@ import { repositoryExistsOnDoor43, getFileListFromZip, cachedGetFile, cachedGetR
 import { userLog, functionLog, debugLog, logicAssert, parameterAssert, aboutToOverwrite } from '../../core/utilities';
 
 
-// const REPO_VALIDATOR_VERSION_STRING = '1.0.0';
+// const REPO_VALIDATOR_VERSION_STRING = '1.0.4';
 
 
 /**
@@ -26,7 +26,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
       successList: an array of strings to tell the use exactly what has been checked
       noticeList: an array of 9 (i.e., with extra bookOrFileCode parameter at end) notice components
   */
-  // functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', ${givenLocation}, (fn), ${JSON.stringify(givenCheckingOptions)})…`);
+  // functionLog(`checkRepo(un='${username}', rN='${repoName}', rBr='${repoBranch}', gL='${givenLocation}', (fn), ${JSON.stringify(givenCheckingOptions)})…`);
   //parameterAssert(username !== undefined, "checkRepo: 'username' parameter should be defined");
   //parameterAssert(typeof username === 'string', `checkRepo: 'username' parameter should be a string not a '${typeof username}'`);
   //parameterAssert(repoName !== undefined, "checkRepo: 'repoName' parameter should be defined");
@@ -35,6 +35,7 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   //parameterAssert(typeof repoBranch === 'string', `checkRepo: 'repoBranch' parameter should be a string not a '${typeof repoBranch}'`);
   //parameterAssert(givenLocation !== undefined, "checkRepo: 'givenRowLocation' parameter should be defined");
   //parameterAssert(typeof givenLocation === 'string', `checkRepo: 'givenRowLocation' parameter should be a string not a '${typeof givenLocation}'`);
+  parameterAssert(givenLocation.indexOf(repoName) === -1, `checkRepo: repoName '${repoName}' shouldn't be in givenLocation '${givenLocation}'`)
 
   let abortFlag = false;
   const startTime = new Date();
@@ -162,9 +163,12 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
         // addNoticePartial({ ...cfcNoticeEntry, bookID: cfBookID, extra: bookOrFileCode.toUpperCase() });
         // const newNoticeObject = { ...cfcNoticeEntry, bookID: cfBookID };
         if (cfBookID.length) cfcNoticeEntry.bookID = cfBookID;
-        if (/[0-5][0-9]/.test(cfBookOrFileCode)) {// Assume it's an OBS story number 01…50
-          // debugLog(`ourCheckRepoFileContents adding integer extra: 'Story ${cfBookOrFileCode}'`);
-          cfcNoticeEntry.extra = `Story ${cfBookOrFileCode}`;
+        if (/[0-5][0-9]/.test(cfBookOrFileCode)) {// Assume it's an OBS story or frame number 01…50
+          // debugLog(`ourCheckRepoFileContents adding two-digit extra: 'Story/Frame ${cfBookOrFileCode}' to ${JSON.stringify(cfcNoticeEntry)}`);
+          if (cfcNoticeEntry.filename?.length === 8 && cfcNoticeEntry.filename.endsWith('.md')) // {ss}/{ff}.md
+            cfcNoticeEntry.extra = `Frame ${cfcNoticeEntry.filename.slice(0, 5)}`; // drop the .md
+          else
+            cfcNoticeEntry.extra = `Story ${cfBookOrFileCode}`;
         } else if (cfBookOrFileCode !== '01' // UGL (from content/G04230/01.md)
           && (cfBookOrFileCode[0] !== 'H' || cfBookOrFileCode.length !== 5)) {// UHAL, e.g., H0612 from content/H0612.md
           // debugLog(`ourCheckRepoFileContents adding UC extra: '${cfBookOrFileCode.toUpperCase()}'`);
@@ -204,174 +208,175 @@ export async function checkRepo(username, repoName, repoBranch, givenLocation, s
   } else {
 
     // Put all this in a try/catch block coz otherwise it’s difficult to debug/view errors
-    try {
-      let ourLocation = givenLocation;
-      if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
-      // if (ourLocation.indexOf(username) < 0)
-      // ourLocation = ` in ${username} ${repoName} ${givenLocation}`
+    // That doesn't seem to do what we require, so removed again
+    // try {
+    let ourLocation = givenLocation;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    // if (ourLocation.indexOf(username) < 0)
+    // ourLocation = ` in ${username} ${repoName} ${givenLocation}`
+
+    // Update our "waiting" message
+    setResultValue(<p style={{ color: 'magenta' }}>Fetching zipped files from <b>{username}/{repoName}</b> repository…</p>);
+
+    const repoNamePart2 = repoName.split('_')[1]
+    if ((username !== 'unfoldingWord' || (languageCode !== 'en' && languageCode !== 'hbo' && languageCode !== 'el-x-koine'))
+      && repoNamePart2.startsWith('u'))
+      addNoticePartial({ priority: 980, message: "Unexpected repo name", details: `expected ‘g${repoNamePart2.slice(1)}’`, excerpt: repoNamePart2, location: ourLocation });
+
+    // Let’s fetch the zipped repo since it should be much more efficient than individual fetches
+    // functionLog(`checkRepo: fetch zip file for ${repoName}…`);
+    const fetchRepositoryZipFile_ = givenCheckingOptions?.fetchRepositoryZipFile ? givenCheckingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
+    const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch: repoBranch, branchOrReleaseTag: repoBranch });
+    if (!zipFetchSucceeded) {
+      console.error(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
+      setResultValue(<p style={{ color: 'red' }}>Failed to fetching zipped files from <b>{username}/{repoName}</b> repository</p>);
+      addNoticePartial({ priority: 989, message: "Unable to find/load repository", location: ourLocation });
+      return checkRepoResult;
+    }
+
+    // Now we need to fetch the list of files from the repo
+    setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
+    // const pathList = await getFileListFromFetchedTreemaps(username, repoName, branch);
+    const getFileListFromZip_ = givenCheckingOptions?.getFileListFromZip ? givenCheckingOptions.getFileListFromZip : getFileListFromZip;
+    const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrReleaseTag: repoBranch });
+    // debugLog(`Got pathlist (${pathList.length}) = ${pathList}`);
+
+
+    // So now we want to work through checking all the files in this repo
+    // Main loop for checkRepo()
+    // const countString = `${pathList.length.toLocaleString()} file${pathList.length === 1 ? '' : 's'}`;
+    let filesToCheckCount = pathList.length;
+    let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
+    for (const thisFilepath of pathList) {
+      // debugLog(`checkRepo: at top of loop: thisFilepath='${thisFilepath}'`);
+      // if (repoCode === 'UHAL' || repoCode === 'UGL') { // temp .........................XXXXXXXXXXXXXXXXXXX
+      //   if (thisFilepath.startsWith('LXX_Mapping/')) continue; // skip
+      //   if (checkedFileCount > 100) break;
+      // }
+      if (abortFlag) break;
 
       // Update our "waiting" message
-      setResultValue(<p style={{ color: 'magenta' }}>Fetching zipped files from <b>{username}/{repoName}</b> repository…</p>);
+      setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{filesToCheckCount.toLocaleString()} file{filesToCheckCount === 1 ? '' : 's'}…</p>);
 
-      const repoNamePart2 = repoName.split('_')[1]
-      if ((username !== 'unfoldingWord' || languageCode !== 'en') && repoNamePart2.startsWith('u'))
-        addNoticePartial({ priority: 980, message: "Unexpected repo name", details: `expected ‘g${repoNamePart2.slice(1)}’`, excerpt: repoNamePart2, location: ourLocation });
+      const thisFilename = thisFilepath.split('/').pop();
+      // debugLog(`thisFilename=${thisFilename}`);
+      const thisFilenameExtension = thisFilename.split('.').pop();
+      // debugLog(`thisFilenameExtension=${thisFilenameExtension}`);
 
-      // Let’s fetch the zipped repo since it should be much more efficient than individual fetches
-      // functionLog(`checkRepo: fetch zip file for ${repoName}…`);
-      const fetchRepositoryZipFile_ = givenCheckingOptions?.fetchRepositoryZipFile ? givenCheckingOptions.fetchRepositoryZipFile : cachedGetRepositoryZipFile;
-      const zipFetchSucceeded = await fetchRepositoryZipFile_({ username, repository: repoName, branch: repoBranch, branchOrRelease: repoBranch });
-      if (!zipFetchSucceeded) {
-        console.error(`checkRepo: misfetched zip file for repo with ${zipFetchSucceeded}`);
-        setResultValue(<p style={{ color: 'red' }}>Failed to fetching zipped files from <b>{username}/{repoName}</b> repository</p>);
-        addNoticePartial({ priority: 989, message: "Unable to find/load repository", location: ourLocation });
-        return checkRepoResult;
+      // Default to the main filename without the extension
+      let bookOrFileCode = thisFilename.slice(0, thisFilename.length - thisFilenameExtension.length - 1);
+      let ourBookID = ''; // Stays blank for OBS files
+      if (thisFilenameExtension === 'usfm') {
+        // const filenameMain = thisFilename.slice(0, thisFilename.length - 5); // drop .usfm
+        // debugLog(`Have USFM filenameMain=${bookOrFileCode}`);
+        const bookID = bookOrFileCode.slice(bookOrFileCode.length - 3).toUpperCase();
+        // debugLog(`Have USFM bookcode=${bookID}`);
+        //parameterAssert(books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for USFM)`);
+        bookOrFileCode = bookID;
+        ourBookID = bookID;
       }
-
-      // Now we need to fetch the list of files from the repo
-      setResultValue(<p style={{ color: 'magenta' }}>Preprocessing file list from <b>{username}/{repoName}</b> repository…</p>);
-      // const pathList = await getFileListFromFetchedTreemaps(username, repoName, branch);
-      const getFileListFromZip_ = givenCheckingOptions?.getFileListFromZip ? givenCheckingOptions.getFileListFromZip : getFileListFromZip;
-      const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: repoBranch });
-      // debugLog(`Got pathlist (${pathList.length}) = ${pathList}`);
-
-
-      // So now we want to work through checking all the files in this repo
-      // Main loop for checkRepo()
-      // const countString = `${pathList.length.toLocaleString()} file${pathList.length === 1 ? '' : 's'}`;
-      let filesToCheckCount = pathList.length;
-      let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
-      for (const thisFilepath of pathList) {
-        // debugLog(`checkRepo: at top of loop: thisFilepath='${thisFilepath}'`);
-        // if (repoCode === 'UHAL' || repoCode === 'UGL') { // temp .........................XXXXXXXXXXXXXXXXXXX
-        //   if (thisFilepath.startsWith('LXX_Mapping/')) continue; // skip
-        //   if (checkedFileCount > 100) break;
-        // }
-        if (abortFlag) break;
-
-        // Update our "waiting" message
-        setResultValue(<p style={{ color: 'magenta' }}>Checking <b>{username}/{repoName}</b> repo: checked {checkedFileCount.toLocaleString()}/{filesToCheckCount.toLocaleString()} file{filesToCheckCount === 1 ? '' : 's'}…</p>);
-
-        const thisFilename = thisFilepath.split('/').pop();
-        // debugLog(`thisFilename=${thisFilename}`);
-        const thisFilenameExtension = thisFilename.split('.').pop();
-        // debugLog(`thisFilenameExtension=${thisFilenameExtension}`);
-
-        // Default to the main filename without the extension
-        let bookOrFileCode = thisFilename.slice(0, thisFilename.length - thisFilenameExtension.length - 1);
-        let ourBookID = ''; // Stays blank for OBS files
-        if (thisFilenameExtension === 'usfm') {
-          // const filenameMain = thisFilename.slice(0, thisFilename.length - 5); // drop .usfm
-          // debugLog(`Have USFM filenameMain=${bookOrFileCode}`);
-          const bookID = bookOrFileCode.slice(bookOrFileCode.length - 3).toUpperCase();
-          // debugLog(`Have USFM bookcode=${bookID}`);
-          //parameterAssert(books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for USFM)`);
-          bookOrFileCode = bookID;
-          ourBookID = bookID;
+      else if (thisFilenameExtension === 'tsv') {
+        // debugLog(`Have TSV thisFilename(${thisFilename.length})='${thisFilename}'`);
+        // debugLog(`Have TSV bookOrFileCode(${bookOrFileCode.length})='${bookOrFileCode}'`);
+        let bookID;
+        // bookOrFileCode could be something like 'en_tn_09-1SA.tsv ' or 'tn_2CO' or 'twl_1CH'
+        // bookID = (bookOrFileCode.length === 6 || bookOrFileCode.length === 7) ? bookOrFileCode.slice(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
+        bookID = bookOrFileCode.slice(-3).toUpperCase();
+        logicAssert(bookID !== 'twl' && bookID !== 'TWL', `Should get a valid bookID here, not '${bookID}'`)
+        // debugLog(`Have TSV bookcode(${bookID.length})='${bookID}'`);
+        if (repoCode === 'TWL' || repoCode === 'SN' || repoCode === 'SQ' || repoCode === 'TN2' || repoCode === 'TQ') {// new repos allow `OBS`
+          //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
+        } else {
+          //parameterAssert(bookID !== 'OBS' && books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
         }
-        else if (thisFilenameExtension === 'tsv') {
-          // debugLog(`Have TSV thisFilename(${thisFilename.length})='${thisFilename}'`);
-          // debugLog(`Have TSV bookOrFileCode(${bookOrFileCode.length})='${bookOrFileCode}'`);
-          let bookID;
-          // bookOrFileCode could be something like 'en_tn_09-1SA.tsv ' or 'tn_2CO' or 'twl_1CH'
-          // bookID = (bookOrFileCode.length === 6 || bookOrFileCode.length === 7) ? bookOrFileCode.slice(0, 3) : bookOrFileCode.slice(-3).toUpperCase();
-          bookID = bookOrFileCode.slice(-3).toUpperCase();
-          logicAssert(bookID !== 'twl' && bookID !== 'TWL', `Should get a valid bookID here, not '${bookID}'`)
-          // debugLog(`Have TSV bookcode(${bookID.length})='${bookID}'`);
-          if (repoCode === 'TWL' || repoCode === 'SN' || repoCode === 'SQ' || repoCode === 'TN2' || repoCode === 'TQ') {// new repos allow `OBS`
-            //parameterAssert(bookID === 'OBS' || books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
-          } else {
-            //parameterAssert(bookID !== 'OBS' && books.isValidBookID(bookID), `checkRepo: '${bookID}' is not a valid USFM book identifier (for TSV)`);
-          }
-          bookOrFileCode = bookID;
-          ourBookID = bookID;
-        }
-        else if (repoName.endsWith('_ta') && thisFilepath.indexOf('/') > 0)
-          bookOrFileCode = thisFilepath.split('/')[1];
-        else if (repoName.endsWith('_tq') && thisFilepath.indexOf('/') > 0)
-          bookOrFileCode = thisFilepath.split('/')[0];
+        bookOrFileCode = bookID;
+        ourBookID = bookID;
+      }
+      else if (repoName.endsWith('_ta') && thisFilepath.indexOf('/') > 0)
+        bookOrFileCode = thisFilepath.split('/')[1];
+      else if (repoName.endsWith('_tq') && thisFilepath.indexOf('/') > 0)
+        bookOrFileCode = thisFilepath.split('/')[0];
 
-        let whichTestament = 'none'; // For non-book repos, e.g., TW, TA
-        if (bookOrFileCode === 'OBS')
-          whichTestament = 'both';
-        else if (bookOrFileCode.length === 3) { // but not OBS
-          try {
-            whichTestament = books.testament(bookOrFileCode); // returns 'old' or 'new'
-          } catch (bNNerror) {
-            if (books.isValidBookID(bookOrFileCode)) // must be in FRT, BAK, etc.
-              whichTestament = 'other';
-          }
-          // logicAssert(whichTestament === 'old' || whichTestament === 'new', `checkRepo() couldn’t find testament for '${bookOrFileCode}': got ${whichTestament}`);
-        }
-        // debugLog(`checkRepo: Found testament '${whichTestament}' for '${bookOrFileCode}'`);
-        if ((givenCheckingOptions?.skipOTBooks && whichTestament === 'old')
-          || (givenCheckingOptions?.skipNTBooks && whichTestament === 'new')) {
-          // debugLog(`checkRepo skipping ${repoName} '${bookOrFileCode}' (${whichTestament}) because skipOTBooks=${givenCheckingOptions.skipOTBooks} and skipNTBooks=${givenCheckingOptions.skipNTBooks}`);
-          --filesToCheckCount;
-          continue;
-        }
-
-        // debugLog(`checkRepo: Try to load ${username} ${repoName} ${thisFilepath} ${repoBranch}`);
-        // debugLog(`checkRepo:        bookOrFileCode='${bookOrFileCode}' ourBookID='${ourBookID}'`);
-        const getFile_ = givenCheckingOptions?.getFile ? givenCheckingOptions.getFile : cachedGetFile;
-        let repoFileContent;
+      let whichTestament = 'none'; // For non-book repos, e.g., TW, TA
+      if (bookOrFileCode === 'OBS')
+        whichTestament = 'both';
+      else if (bookOrFileCode.length === 3) { // but not OBS
         try {
-          repoFileContent = await getFile_({ username, repository: repoName, path: thisFilepath, branch: repoBranch });
-          // debugLog("Fetched fileContent for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
-        } catch (cRgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
-          console.error(`checkRepo(${username}, ${repoName}, ${repoBranch}, ${givenLocation}, (fn), ${JSON.stringify(givenCheckingOptions)})) failed to load`, thisFilepath, repoBranch, `${cRgfError}`);
-          if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
-            checkRepoResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", username, repoCode, repoName, location: givenLocation, extra: repoCode });
-          else {
-            const notice = { priority: 996, message: "Unable to load file", username, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName };
-            // eslint-disable-next-line eqeqeq
-            if (cRgfError != 'TypeError: repoFileContent is null') notice.details = `error=${cRgfError}`;
-            addNoticePartial(notice);
-          }
-          return;
+          whichTestament = books.testament(bookOrFileCode); // returns 'old' or 'new'
+        } catch (bNNerror) {
+          if (books.isValidBookID(bookOrFileCode)) // must be in FRT, BAK, etc.
+            whichTestament = 'other';
         }
-        if (repoFileContent) {
-          if (pathList.length < 100) // assume they might be lots of very small files if >= 100
-            userLog(`checkRepo for ${repoName} checking ${thisFilename}…`);
-          await ourCheckRepoFileContents(bookOrFileCode, ourBookID,
-            // OBS has many files with the same name, so we have to give some of the path as well
-            // repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
-            thisFilenameExtension === 'md' ? thisFilepath.replace('content/', '').replace('bible/', '') : thisFilename,
-            repoFileContent, ourLocation, newCheckingOptions);
-          checkedFileCount += 1;
-          checkedFilenames.push(thisFilename);
-          checkedFilenameExtensions.add(thisFilenameExtension);
-          totalCheckedSize += repoFileContent.length;
-          // functionLog(`checkRepo checked ${thisFilename}`);
-          if (thisFilenameExtension !== 'md') // There’s often far, far too many of these
-            addSuccessMessage(`Checked ${repoName} ${bookOrFileCode.toUpperCase()} file: ${thisFilename.endsWith('.yaml') ? thisFilepath : thisFilename}`);
-        }
+        // logicAssert(whichTestament === 'old' || whichTestament === 'new', `checkRepo() couldn’t find testament for '${bookOrFileCode}': got ${whichTestament}`);
+      }
+      // debugLog(`checkRepo: Found testament '${whichTestament}' for '${bookOrFileCode}'`);
+      if ((givenCheckingOptions?.skipOTBooks && whichTestament === 'old')
+        || (givenCheckingOptions?.skipNTBooks && whichTestament === 'new')) {
+        // debugLog(`checkRepo skipping ${repoName} '${bookOrFileCode}' (${whichTestament}) because skipOTBooks=${givenCheckingOptions.skipOTBooks} and skipNTBooks=${givenCheckingOptions.skipNTBooks}`);
+        --filesToCheckCount;
+        continue;
       }
 
-      // Check that we processed a license and a manifest
-      if (checkedFilenames.indexOf('LICENSE.md') < 0)
-        addNoticePartial({ priority: 946, message: "Missing LICENSE.md", location: ourLocation, extra: `${repoName} LICENSE` });
-      if (checkedFilenames.indexOf('manifest.yaml') < 0)
-        addNoticePartial({ priority: 947, message: "Missing manifest.yaml", location: ourLocation, extra: `${repoName} MANIFEST` });
-
-      // Add some extra fields to our checkRepoResult object
-      //  in case we need this information again later
-      checkRepoResult.checkedFileCount += checkedFileCount;
-      checkRepoResult.checkedFilenames = checkedFilenames;
-      checkRepoResult.checkedFilenameExtensions = [...checkRepoResult.checkedFilenameExtensions, ...checkedFilenameExtensions]; // convert Set to Array
-      checkRepoResult.checkedFilesizes += totalCheckedSize;
-      checkRepoResult.checkedRepoNames.unshift(`${username}/${repoName}`);
-      // checkRepoResult.checkedOptions = checkingOptions; // This is done at the caller level
-
-      addSuccessMessage(`Checked ${username} repo: ${repoName}`);
-      // functionLog(`checkRepo() is returning ${checkRepoResult.successList.length.toLocaleString()} success message(s) and ${checkRepoResult.noticeList.length.toLocaleString()} notice(s)`);
-    } catch (cRerror) {
-      console.error(`checkRepo main code block got error: ${cRerror.message}`);
-      setResultValue(<>
-        <p style={{ color: 'red' }}>checkRepo main code block got error: <b>{cRerror.message}</b> with {cRerror.trace}</p>
-      </>);
-
+      // debugLog(`checkRepo: Try to load ${username} ${repoName} ${thisFilepath} ${repoBranch}`);
+      // debugLog(`checkRepo:        bookOrFileCode='${bookOrFileCode}' ourBookID='${ourBookID}'`);
+      const getFile_ = givenCheckingOptions?.getFile ? givenCheckingOptions.getFile : cachedGetFile;
+      let repoFileContent;
+      try {
+        repoFileContent = await getFile_({ username, repository: repoName, path: thisFilepath, branch: repoBranch });
+        // debugLog("Fetched fileContent for", repoName, thisPath, typeof repoFileContent, repoFileContent.length);
+      } catch (cRgfError) { // NOTE: The error can depend on whether the zipped repo is cached or not
+        console.error(`checkRepo(${username}, ${repoName}, ${repoBranch}, ${givenLocation}, (fn), ${JSON.stringify(givenCheckingOptions)})) failed to load`, thisFilepath, repoBranch, `${cRgfError}`);
+        if (! await repositoryExistsOnDoor43({ username, repository: repoName }))
+          checkRepoResult.noticeList.push({ priority: 997, message: "Repository doesn’t exist", username, repoCode, repoName, location: givenLocation, extra: repoCode });
+        else {
+          const notice = { priority: 996, message: "Unable to load file", username, bookID: ourBookID, filename: thisFilename, location: `${givenLocation} ${thisFilepath}`, extra: repoName };
+          // eslint-disable-next-line eqeqeq
+          if (cRgfError != 'TypeError: repoFileContent is null') notice.details = `error=${cRgfError}`;
+          addNoticePartial(notice);
+        }
+        return;
+      }
+      if (repoFileContent) {
+        if (pathList.length < 100) // assume they might be lots of very small files if >= 100
+          userLog(`checkRepo for ${repoName} checking ${thisFilename}…`);
+        await ourCheckRepoFileContents(bookOrFileCode, ourBookID,
+          // OBS has many files with the same name, so we have to give some of the path as well
+          // repoName.endsWith('_obs') ? thisFilepath.replace('content/', '') : thisFilename,
+          thisFilenameExtension === 'md' ? thisFilepath.replace('content/', '').replace('bible/', '') : thisFilename,
+          repoFileContent, ourLocation, newCheckingOptions);
+        checkedFileCount += 1;
+        checkedFilenames.push(thisFilename);
+        checkedFilenameExtensions.add(thisFilenameExtension);
+        totalCheckedSize += repoFileContent.length;
+        // functionLog(`checkRepo checked ${thisFilename}`);
+        if (thisFilenameExtension !== 'md') // There’s often far, far too many of these
+          addSuccessMessage(`Checked ${repoName} ${bookOrFileCode.toUpperCase()} file: ${thisFilename.endsWith('.yaml') ? thisFilepath : thisFilename}`);
+      }
     }
+
+    // Check that we processed a license and a manifest
+    if (checkedFilenames.indexOf('LICENSE.md') < 0)
+      addNoticePartial({ priority: 946, message: "Missing LICENSE.md", location: ourLocation, extra: `${repoName} LICENSE` });
+    if (checkedFilenames.indexOf('manifest.yaml') < 0)
+      addNoticePartial({ priority: 947, message: "Missing manifest.yaml", location: ourLocation, extra: `${repoName} MANIFEST` });
+
+    // Add some extra fields to our checkRepoResult object
+    //  in case we need this information again later
+    checkRepoResult.checkedFileCount += checkedFileCount;
+    checkRepoResult.checkedFilenames = checkedFilenames;
+    checkRepoResult.checkedFilenameExtensions = [...checkRepoResult.checkedFilenameExtensions, ...checkedFilenameExtensions]; // convert Set to Array
+    checkRepoResult.checkedFilesizes += totalCheckedSize;
+    checkRepoResult.checkedRepoNames.unshift(`${username}/${repoName}`);
+    // checkRepoResult.checkedOptions = checkingOptions; // This is done at the caller level
+
+    addSuccessMessage(`Checked ${username} repo: ${repoName}`);
+    // functionLog(`checkRepo() is returning ${checkRepoResult.successList.length.toLocaleString()} success message(s) and ${checkRepoResult.noticeList.length.toLocaleString()} notice(s)`);
+    // } catch (cRerror) {
+    //   console.error(`checkRepo main code block got error: ${cRerror.message}`);
+    //   setResultValue(<>
+    //     <p style={{ color: 'red' }}>checkRepo main code block got error: <b>{cRerror.message}</b> with {cRerror.trace}</p>
+    //   </>);
+    // }
   }
   checkRepoResult.elapsedSeconds = (new Date() - startTime) / 1000; // seconds
   // debugLog(`checkRepo() returning ${JSON.stringify(checkRepoResult)}`);

@@ -2,7 +2,23 @@
 
 ## [Unreleased](https://github.com/unfoldingWord/uw-content-validation/tree/HEAD)
 
-[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.5...HEAD)
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/3.1.0...HEAD)
+
+**Implemented enhancements:**
+
+- Squiggly brackets are now allowed/used in the ULT [\#232](https://github.com/unfoldingWord/uw-content-validation/issues/232)
+- Check x-occurrences in aligned materials [\#231](https://github.com/unfoldingWord/uw-content-validation/issues/231)
+- Handle alignment across verse ranges [\#228](https://github.com/unfoldingWord/uw-content-validation/issues/228)
+- Check for text numbers without thousands dividers [\#193](https://github.com/unfoldingWord/uw-content-validation/issues/193)
+
+**Closed issues:**
+
+- Check if we catch a space after a comma in a number [\#201](https://github.com/unfoldingWord/uw-content-validation/issues/201)
+- Cache OrigL verse lookups [\#196](https://github.com/unfoldingWord/uw-content-validation/issues/196)
+
+## [3.1.0](https://github.com/unfoldingWord/uw-content-validation/tree/3.1.0) (2021-12-10)
+
+[Full Changelog](https://github.com/unfoldingWord/uw-content-validation/compare/2.2.5...3.1.0)
 
 **Implemented enhancements:**
 
@@ -14,9 +30,18 @@
 
 **Closed issues:**
 
+- Content Validation v3 [\#226](https://github.com/unfoldingWord/uw-content-validation/issues/226)
+- Enhancement: Do existence check for linked articles instead of downloads [\#222](https://github.com/unfoldingWord/uw-content-validation/issues/222)
 - TWL CV Results for Book of Acts [\#221](https://github.com/unfoldingWord/uw-content-validation/issues/221)
 - Problems with TWL [\#220](https://github.com/unfoldingWord/uw-content-validation/issues/220)
+- Suggestion: use resource specific API wrappers instead of repoCodes [\#219](https://github.com/unfoldingWord/uw-content-validation/issues/219)
 - Possible false notices for the tN resource for book of Acts [\#218](https://github.com/unfoldingWord/uw-content-validation/issues/218)
+- Try to make parameter order more consistent at next version change [\#187](https://github.com/unfoldingWord/uw-content-validation/issues/187)
+
+**Merged pull requests:**
+
+- v3.1 with various small fixes and improvements [\#229](https://github.com/unfoldingWord/uw-content-validation/pull/229) ([RobH123](https://github.com/RobH123))
+- v3.0.0 [\#217](https://github.com/unfoldingWord/uw-content-validation/pull/217) ([RobH123](https://github.com/RobH123))
 
 ## [2.2.5](https://github.com/unfoldingWord/uw-content-validation/tree/2.2.5) (2021-09-28)
 

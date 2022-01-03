@@ -50,7 +50,7 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
     //parameterAssert(checkingOptions !== undefined, "checkPlainText: 'checkingOptions' parameter should be defined");
 
     let ourLocation = givenLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     let excerptLength;
     try {
@@ -229,7 +229,8 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
             // NOTE: Need to eliminate Strongs numbers, zip codes, ISBN numbers, copyright years, commit SHAs, etc.
             if (cutoffPriorityLevel < 91 && !textName.endsWith('manifest') && !line.startsWith('\\id') && line.indexOf('strong="') === -1 && line.indexOf('Strong’s:') === -1 && line.indexOf('©') === -1 && line.indexOf('ISBN') === -1 && line.indexOf('USA.') === -1 && line.indexOf('/commit/') === -1 && line.indexOf('Version') === -1)
                 while ((regexMatchObject = tooManyDigitsRegex.exec(line)))
-                    addNotice({ priority: 91, message: "Possible missing separator in digit string", excerpt: regexMatchObject[0], lineNumber: n, location: ourLocation });
+                    if (!['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026'].includes(regexMatchObject[0].slice(1))) // regex includes the preceding char
+                        addNotice({ priority: 91, message: "Possible missing separator in digit string", excerpt: regexMatchObject[0], lineNumber: n, location: ourLocation });
 
             // Check for nested brackets and quotes, etc.
             if (cutoffPriorityLevel < 777)
@@ -306,8 +307,10 @@ export function checkPlainText(username, languageCode, repoCode, textType, textN
                 const characterIndex = regexMatchObject.index;
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + plainText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < plainText.length ? '…' : '')
                 // debugLog(`checkPlainText for ${textType} found no capital with '${regexMatchObject[0]}' at index ${characterIndex} giving excerpt='${excerpt}'`);
-                const details = `the ‘${plainText.slice(characterIndex + 2, characterIndex + 3)}’ after ${plainText.slice(characterIndex, characterIndex + 1)}`;
-                addNotice({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", details, excerpt, location: ourLocation });
+                if (['en'].includes(languageCode) && excerpt.indexOf(' vs. ') === -1) {
+                    const details = `the ‘${plainText.slice(characterIndex + 2, characterIndex + 3)}’ after ${plainText.slice(characterIndex, characterIndex + 1)}`;
+                    addNotice({ priority: ['en'].includes(languageCode) ? 197 : 97, message: "Sentence may not start with capital letter", details, excerpt, location: ourLocation });
+                }
             }
 
     if (!checkingOptions?.suppressNoticeDisablingFlag) {

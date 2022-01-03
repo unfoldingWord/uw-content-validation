@@ -109,7 +109,7 @@ export function checkTextfileContents(username, languageCode, repoCode, fileType
         return result;
 
     let ourLocation = optionalFileLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     /*
     let excerptLength;

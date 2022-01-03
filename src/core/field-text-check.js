@@ -5,7 +5,7 @@ import { OPEN_CLOSE_PUNCTUATION_PAIRS, BAD_CHARACTER_COMBINATIONS, BAD_CHARACTER
 import { debugLog, parameterAssert } from './utilities';
 
 
-// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.2';
+// const FIELD_TEXT_VALIDATOR_VERSION_STRING = '1.0.5';
 
 
 /**
@@ -91,7 +91,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
 
     // Create our more detailed location string by prepending the fieldName
     let ourLocation = optionalFieldLocation;
-    if (ourLocation && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
+    if (ourLocation?.length && ourLocation[0] !== ' ') ourLocation = ` ${ourLocation}`;
 
     const cutoffPriorityLevel = checkingOptions?.cutoffPriorityLevel ? checkingOptions?.cutoffPriorityLevel : 0;
     // debugLog(`checkTextField: Using cutoffPriorityLevel=${cutoffPriorityLevel} ${typeof cutoffPriorityLevel} ${cutoffPriorityLevel < 200}`);
@@ -116,7 +116,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     if (cutoffPriorityLevel < 895 && (characterIndex = fieldText.indexOf('\u200B')) !== -1) {
         const charCount = countOccurrencesInString(fieldText, '\u200B');
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/\u200B/g, '‡') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-        addNoticePartial({ priority: 895, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, characterIndex, excerpt, location: ourLocation });
+        addNoticePartial({ priority: fieldName === 'OrigQuote' ? 895 : 767, message: "Field contains zero-width space(s)", details: `${charCount} occurrence${charCount === 1 ? '' : 's'} found`, characterIndex, excerpt, location: ourLocation });
         suggestion = suggestion.replace(/\u200B/g, ''); // Or should it be space ???
     }
 
@@ -293,6 +293,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 const notice = { priority: 177, message: `Unexpected doubled ${punctChar} characters`, excerpt, location: ourLocation };
                 if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
                     notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
+                if (punctChar === '.') notice.details = "might be intended to be … (ellipsis)???";
                 addNoticePartial(notice);
             }
         }
@@ -317,6 +318,8 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                     if (punctCharBeingChecked === '–') optionalName = ' (en-dash)';
                     else if (punctCharBeingChecked === '—') optionalName = ' (em-dash)';
                     const notice = { priority: 191 /* can be lowered to 71 */, message: `Unexpected ${punctCharBeingChecked}${optionalName} character after space`, excerpt, location: ourLocation };
+                    if ((punctCharBeingChecked === '-' || punctCharBeingChecked === '–') && (nextChar === ' ' || nextChar === '-')) // hyphen or en-dash
+                        notice.details = "should this be an em-dash (—)?";
                     if (((punctCharBeingChecked === '—' || punctCharBeingChecked === '/') && fieldType.startsWith('markdown'))
                         || (punctCharBeingChecked === '’' && !['en', 'hbo', 'el-x-koine'].includes(languageCode))) // Some other languages allow words to start with apostrophes
                         notice.priority = 71; // Lower the priority from 191

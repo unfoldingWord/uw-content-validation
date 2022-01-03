@@ -147,8 +147,8 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
         checkBookPackageResult.noticeList.push(cfcNoticeEntry); // Just copy the complete notice as is
       else {// For our direct checks, we add the repoCode as an extra value (unless it’s already there from a TA or TW check)
         if (cfcNoticeEntry.filename === undefined) cfcNoticeEntry.filename = cfFilename;
-    aboutToOverwrite('ourCheckBPFileContents', ['repoCode', 'repoName', 'branch', 'extra'], cfcNoticeEntry, { repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
-    addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+        aboutToOverwrite('ourCheckBPFileContents', ['repoCode', 'repoName', 'branch', 'extra'], cfcNoticeEntry, { repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
+        addNoticePartial({ ...cfcNoticeEntry, repoCode, repoName, branch: repoBranch, extra: cfcNoticeEntry.extra ? cfcNoticeEntry.extra : repoCode });
       }
 
     // The following is needed coz we might be checking the linked TA/TW articles from TN2 TSV files or UHAL/UGL entries
@@ -385,7 +385,7 @@ export async function checkBookPackage(username, languageCode, bookID, setResult
     }
     // if (bookID === 'OBS' && dataSet === 'OLD' && repoCode !== 'OBS' && repoCode !== 'TWL' && repoName === `${languageCode}_${adjustedRepoCode.toLowerCase()}`)
     //   repoName = `${languageCode}_obs-${adjustedRepoCode.toLowerCase()}`;
-    userLog(`checkBookPackage: check ${languageCode} ${bookID} in ${thisRepoCode} (${adjustedRepoCode}) from ${adjustedUsername} ${repoName} ${adjustedBranch}…`);
+    userLog(`checkBookPackage: check ${languageCode} BP ${bookID} in ${thisRepoCode} (${adjustedRepoCode}) from ${adjustedUsername} ${repoName} ${adjustedBranch}…`);
 
     // Update our "waiting" message
     setResultValue(<p style={{ color: 'magenta' }}>Checking <i>{adjustedUsername}</i> {languageCode} <b>{bookID}</b> book package in <b>{thisRepoCode}</b> (checked <b>{numCheckedRepos}</b>/{repoCodeList.length} repos)…</p>);
@@ -672,7 +672,7 @@ async function checkMarkdownBook(username, languageCode, repoCode, repoName, bra
   const getFileListFromZip_ = checkingOptions?.getFileListFromZip ? checkingOptions.getFileListFromZip : getFileListFromZip;
   let checkedFileCount = 0, checkedFilenames = [], checkedFilenameExtensions = new Set(), totalCheckedSize = 0;
   const folderpath = bookID === 'OBS' ? 'content/' : `${bookID.toLowerCase()}/`;
-  const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrRelease: branch, optionalPrefix: folderpath });
+  const pathList = await getFileListFromZip_({ username, repository: repoName, branchOrReleaseTag: branch, optionalPrefix: folderpath });
   if (!Array.isArray(pathList) || !pathList.length) {
     // debugLog(`checkMarkdownBook for ${repoCode} failed to find ${username} ${repoName} ${branch} ${folderpath}`);
     const details = `folder=${folderpath}`;
