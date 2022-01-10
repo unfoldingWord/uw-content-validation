@@ -15,7 +15,7 @@ import { userLog, functionLog, debugLog, parameterAssert, logicAssert, dataAsser
 import { removeDisabledNotices } from './disabled-notices';
 
 
-// const USFM_VALIDATOR_VERSION_STRING = '1.2.4';
+// const USFM_VALIDATOR_VERSION_STRING = '1.2.5';
 
 
 const VALID_LINE_START_CHARACTERS = `([“‘—`; // Last one is em-dash — '{' gets added later for LTs and STs
@@ -1386,9 +1386,9 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                     // Now, check that the given occurrence is correct
                     if (gotCount !== oOccurrenceInt) // Can’t do checks below coz ix is invalid
                         if (gotCount === 0)
-                            addNoticePartial({ priority: 803, message: "Aligned word can’t be found in original text", details: `found NO occurrences of '${oWord}' instead of ${oOccurrence} from ${originalLanguageVerseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 803, message: "Aligned word can’t be found in original text", details: `found NO occurrences of word '${oWord}' instead of ${oOccurrence} from ${originalLanguageVerseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                         else
-                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of '${oWord}' instead of ${oOccurrence} from ${originalLanguageVerseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
+                            addNoticePartial({ priority: 802, message: "Aligned x-occurrence for original word is too high", details: `only found ${gotCount} occurrence${gotCount === 1 ? '' : 's'} of word '${oWord}' instead of ${oOccurrence} from ${originalLanguageVerseWordList.join(', ')}`, lineNumber, C, V, excerpt: zalnContents, location: lineLocation });
                     else {
                         const vwolStrongs = originalLanguageVerseWordObjectList[originalLanguageWordIndex]?.strongs;
                         if (vwolStrongs !== oStrong) {
