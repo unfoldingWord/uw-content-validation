@@ -1684,6 +1684,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 lastIntC = intC; lastIntV = 0;
             } else if (marker === 'v') {
                 V = (rest) ? rest.split(' ', 1)[0] : '?';
+                console.log(C, V);
                 if (V.indexOf('-') < 0) { // no hyphen -> no verse bridge
                     try {
                         intV = ourParseInt(V);
