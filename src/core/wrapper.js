@@ -18,7 +18,7 @@ import { removeDisabledNotices } from './disabled-notices';
 
 export async function checkTN_TSV7Table(username, languageCode, bookID, filename, tableText, checkingOptions) {
   // Note: the givenLocation parameter is left blank
-  let checkResults = await checkNotesTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-TN' : 'TN', bookID, filename, tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
+  let checkResults = await checkNotesTSV7Table(username, languageCode, bookID === 'OBS' ? 'OBS-TN' : 'TN2', bookID, filename, tableText, '', { ...checkingOptions, suppressNoticeDisablingFlag: false });
   if (!checkingOptions?.suppressNoticeDisablingFlag) {
     checkResults.noticeList = removeDisabledNotices(checkResults.noticeList);
   }
