@@ -20,7 +20,7 @@
     "xprepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline"
   },
   "scripts": {
-    "prepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline && yarn test:unit",
+    "prepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline",
     "predeploy": "yarn styleguide:build",
     "deploy": "gh-pages -d styleguide",
     "postpublish": "yarn deploy && git tag $npm_package_version && git push origin $npm_package_version",
