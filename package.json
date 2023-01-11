@@ -12,14 +12,14 @@
   "engines": {
     "node": ">=4"
   },
-  "yscripts": {
+  "scripts": {
     "_comment1": "use this for the scripts when using yalc",
     "_comment2": "change name of this object to 'scripts' and the current scripts to say 'xscripts'",
     "_comment3": "and revert when done.",
     "prepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline && rm -rf ./dist/demos ./dist/__tests__",
     "xprepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline"
   },
-  "scripts": {
+  "xscripts": {
     "prepublishOnly": "rm -fr ./dist & babel ./src --out-dir ./dist -s inline && yarn test:unit",
     "predeploy": "yarn styleguide:build",
     "deploy": "gh-pages -d styleguide",

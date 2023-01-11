@@ -41,15 +41,18 @@ const lineA7 = "1:8\tss9r\tfigs-merism\t\t0\tevening and morning\tThis refers to
 const lineA8 = "1:9\tzu6f\tfigs-activepassive\t\t0\tLet the waters…be gathered\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://en/ta/man/translate/figs-activepassive]] and [[rc://en/ta/man/translate/figs-imperative]])";
 const lineA9 = "1:9\tha33\t\t\t0\tIt was so\t“It happened like that” or “That is what happened.” What God commanded happened just as he said it should. This phrase appears throughout the chapter and has the same meaning wherever it appears. See how you translated it in [Genesis 1:7](../01/07.md).";
 
+const lineAmp = "1:3\tswi9\t\trc://*/ta/man/translate/figs-metaphor\tἐφανέρωσεν & τὸν λόγον αὐτοῦ\t1\tPaul speaks of God’s word as if it were an object that could be visibly shown to people. Alternate translation: “he caused me to understand his message” (See: [[rc://*/ta/man/translate/figs-metaphor]])";
+
+
 const data = {
   // You can choose any of the above lines here
   //  (to demonstrate differing results)
   username: 'unfoldingWord',
   languageCode: 'en',
   repoCode: 'TN2',
-  tableLineName : 'lineA9',
-  tableLine : lineA9,
-  bookID : 'GEN', C:'1', V:'2',
+  tableLineName : 'lineAmp',
+  tableLine : lineAmp,
+  bookID : 'TIT', C:'1', V:'3',
   givenLocation : 'that was supplied',
 }
 
