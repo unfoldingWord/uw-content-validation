@@ -313,6 +313,20 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
         // let atString = ` at ${B} ${C}:${V} (${rowID})${inString}`;
         let characterIndex;
 
+        const verseRangeRegex = /^(\d+)-?(\d*)$/;
+
+        function isValidVerseRange(range) {
+            const result = range.match(/^(\d+)(-?)(\d*)$/);
+            if (!result) return false;
+
+            const [, firstDigit, dash, secondDigit] = result;
+            
+            if (dash && !secondDigit) return false;
+            if (!secondDigit) return true;
+
+            return Number(firstDigit) < Number(secondDigit);
+        }
+
         // Check the fields one-by-one
         const [C, V] = reference.split(':');
         let numVersesThisChapter, haveGoodChapterNumber;
@@ -356,7 +370,10 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
             if (V !== givenV)
                 addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
             if (bookID === 'OBS' || V === 'intro') { }
-            else if (/^\d+$/.test(V)) {
+            else if (verseRangeRegex.test(V)) {
+                if (!isValidVerseRange(V)) {
+                    addNoticePartial({ priority: 811, message: "Bad verse number", rowID, fieldName: 'Reference', location: ` '${V}'${ourRowLocation}` });
+                }
                 let intV = Number(V);
                 if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
                     addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });

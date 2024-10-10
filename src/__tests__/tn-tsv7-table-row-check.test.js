@@ -354,6 +354,7 @@ describe('checkNotesTSV7DataRow() - ', () => {
   it('should find mismatched chapter verse', async () => {
     const chosenLine = "2:3\ts7qw\t\tfigs-imperative\t\t0\tThis is a command. By commanding that light should exist, God made it exist. (See: [[rc://*/ta/man/translate/figs-imperative]])";
     const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '22', '33', 'from test line', optionalCheckingOptions);
+    console.log(`rawResults=${JSON.stringify(rawResults)}`);
     expect(rawResults.noticeList.length).toEqual(3);
     expect(rawResults).toMatchSnapshot();
   });

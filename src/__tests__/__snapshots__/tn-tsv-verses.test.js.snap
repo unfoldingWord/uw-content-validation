@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should find mismatched chapter verse 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "22",
+      "V": "33",
+      "bookID": "GEN",
+      "details": "expected ‘22’",
+      "excerpt": "2",
+      "fieldName": "Reference",
+      "location": " from test line",
+      "message": "Wrong chapter number",
+      "priority": 976,
+      "rowID": "s7qw",
+    },
+    Object {
+      "C": "22",
+      "V": "33",
+      "bookID": "GEN",
+      "details": "expected ‘33’",
+      "excerpt": "3",
+      "fieldName": "Reference",
+      "location": " from test line",
+      "message": "Wrong verse number",
+      "priority": 975,
+      "rowID": "s7qw",
+    },
+    Object {
+      "C": "22",
+      "V": "33",
+      "bookID": "GEN",
+      "details": "SR=‘figs-imperative’",
+      "excerpt": "figs-imperative",
+      "fieldName": "OccurrenceNote",
+      "location": " from test line",
+      "message": "Should have a SupportReference when Note has a TA link",
+      "priority": 789,
+      "rowID": "s7qw",
+    },
+  ],
+}
+`;
+
+exports[`should not report verse ranges 1`] = `
+Object {
+  "noticeList": Array [],
+}
+`;
+
+exports[`should report unordered verse range 1`] = `
+Object {
+  "noticeList": Array [
+    Object {
+      "C": "2",
+      "V": "11-8",
+      "bookID": "GEN",
+      "fieldName": "Reference",
+      "location": " '11-8' from test line",
+      "message": "Bad verse number",
+      "priority": 811,
+      "rowID": "s7qw",
+    },
+  ],
+}
+`;

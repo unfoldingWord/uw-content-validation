@@ -28,6 +28,7 @@
     "styleguide:start": "styleguidist server",
     "styleguide:build": "styleguidist build",
     "test:unit": "eslint ./src && jest --watchAll=false --coverage",
+    "test:tsv": "eslint ./src && jest --watchAll=false --coverage --testNamePattern=tn-tsv-verses",
     "test": "yarn test:unit",
     "create-coverage-badge": "bash scripts/create-badge-json.sh"
   },
