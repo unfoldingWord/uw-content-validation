@@ -41,7 +41,7 @@
     "lodash": "^4.17.21",
     "usfm-grammar": "^2.2.0",
     "usfm-js": "^3.3.1",
-    "yaml": "^1.10.2"
+    "yaml": "^2.2.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
