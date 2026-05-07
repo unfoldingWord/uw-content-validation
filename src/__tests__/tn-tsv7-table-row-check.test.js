@@ -69,7 +69,7 @@ describe('checkNotesTSV7DataRow() - ', () => {
     it('should fail if SupportReference link differs from link in OccurrenceNote', async () => {
       const chosenLine = "1:6\turb3\t\tfigs-imperative\t\t0\tThese are commands. By commanding that the expanse should exist and that it divide the waters, God made it exist and divide the waters. (See: [[rc://*/ta/man/figs-parallelism]])";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '1', '6', 'from test line', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(2);
+      expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -241,14 +241,14 @@ describe('checkNotesTSV7DataRow() - ', () => {
       const chosenLine = "1:2\tm7qw\t\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\t ";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '1', '2', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.some((entry) => entry.message.indexOf('whitespace') !== -1));
-      expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(2);
+      expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should find empty note', async () => {
       const chosenLine = "1:2\tn7qw\t\tfigs-imperative\tוְ⁠חֹ֖שֶׁךְ\t1\t";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '1', '2', 'from test line', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(2);
+      expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
@@ -287,7 +287,7 @@ describe('checkNotesTSV7DataRow() - ', () => {
     it('header should fail', async () => {
       const chosenLine = "Reference\tID\tTagg\tSupportReference\tBadQuote\tOccurrence\tNote";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '1', '2', 'from test line', optionalCheckingOptions);
-      expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(8);
+      expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(7);
     });
 
     it('should find wrong row count', async () => {
@@ -334,7 +334,7 @@ describe('checkNotesTSV7DataRow() - ', () => {
   it('should find invalid SupportReference and missing quotes', async () => {
     const chosenLine = "2:3\tw3r5\t\tLaugh\t\t1\tNote5";
     const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '2', '3', 'from test line', optionalCheckingOptions);
-    expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(3);
+    expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(2);
     expect(rawResults).toMatchSnapshot();
   });
 

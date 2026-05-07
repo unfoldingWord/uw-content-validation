@@ -29,12 +29,12 @@
     "styleguide:build": "styleguidist build",
     "test:unit": "eslint ./src && jest --watchAll=false --coverage",
     "test": "yarn test:unit",
-    "create-coverage-badge": "bash scripts/create-badge-json.sh"
+    "create-coverage-badge": "bash scripts/create-badge-json.sh",
+    "validate-local": "node -r @babel/register scripts/validate-local.js"
   },
   "dependencies": {
     "ajv": "^8.8.2",
     "axios": "^0.30.2",
-    "axios-cache-adapter": "^2.7.3",
     "jquery": "^3.6.0",
     "jszip": "^3.7.1",
     "localforage": "^1.10.0",
@@ -47,9 +47,11 @@
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.5",
     "@babel/eslint-parser": "^7.16.5",
+    "@babel/node": "^7.29.0",
     "@babel/plugin-transform-runtime": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
     "@babel/preset-react": "^7.16.5",
+    "@babel/register": "^7.29.3",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@types/jest": "^27.0.3",

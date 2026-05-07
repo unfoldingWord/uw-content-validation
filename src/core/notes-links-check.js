@@ -1628,7 +1628,13 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
             const urlMatch = x.match(/\[([^\]]*)\]\(([^)]+)\)/);
             if (!urlMatch) return true;
             const url = urlMatch[2].trim();
-            return url.includes('/') || url.includes('://') || url.startsWith('rc:');
+            if (!(url.includes('/') || url.includes('://') || url.startsWith('rc:'))) return false;
+            // Allow relative Bible cross-reference links used in TN notes:
+            //   ../CC/VV.md  (same book, different chapter)
+            //   ../../bbb/CC/VV.md  (different book)
+            if (/^\.\.\/\d{2}\/\d{2}(\.md)?$/.test(url)) return false;
+            if (/^\.\.\/\.\.\/[a-z0-9]{3}\/\d{2}\/\d{2}(\.md)?$/.test(url)) return false;
+            return true;
         });
     if (singlePartLeftoverLinksList.length)
         // if (singlePartLeftoverLinksList.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        singlePartLinksList(${singlePartLinksList.length})=${JSON.stringify(singlePartLinksList)}\nsinglePartLeftoverLinksList(${singlePartLeftoverLinksList.length})=${JSON.stringify(singlePartLeftoverLinksList)}`);

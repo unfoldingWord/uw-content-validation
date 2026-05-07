@@ -445,8 +445,6 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
                 SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, checkingOptions);
                 if (checkingOptions?.disableAllLinkFetchingFlag !== true)
                     await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, checkingOptions);
-                if (note.indexOf(supportReference) < 0)
-                    addNoticePartial({ priority: 787, message: "Link to TA should also be in Note", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
             }
             if ((characterIndex = supportReference.indexOf('\u200B') !== -1)) {
                 const charCount = countOccurrencesInString(supportReference, '\u200B');

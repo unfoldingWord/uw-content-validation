@@ -733,6 +733,10 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         //  but not worried about double spaces, etc, here -- more on word/punctuation stuff
         let cleanishText = extractTextFromComplexUSFM(fileText);
         // debugLog(`checkUSFMFileContents got ${repoCode} cleanishText (${cleanishText.length}) ${cleanishText}`);
+        // Rejoin thousands-separator digits split by the alignment-to-plain-text conversion,
+        //   e.g., "1, 000" -> "1,000" and "10, 000, 000" -> "10,000,000".
+        // Run repeatedly to handle multi-group numbers like 10,000,000.
+        { let prev; do { prev = cleanishText; cleanishText = cleanishText.replace(/(\d), (\d{3})(?!\d)/g, '$1,$2'); } while (cleanishText !== prev); }
         if (!cleanishText.endsWith('\n')) cleanishText += '\n'; // Don't want duplicated "file ends without newline" warnings
         // debugLog(`checkUSFMFileContents doing basic file checks on ${repoCode} (${fileText.length}) ${cleanishText}`);
         // NOTE: This could conceivably get some notice double-ups, but it's a quite different text being checked than in the above call
@@ -983,7 +987,9 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             const ixFEnd = adjustedRest.indexOf('\\f*');
             if (ixFEnd >= 0) {
                 dataAssert(ixFEnd > nextWIndex, `Expected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
-                adjustedRest = `${adjustedRest.slice(0, nextFIndex)} ${adjustedRest.slice(nextFIndex + 5, ixFEnd)}${adjustedRest.slice(ixFEnd + 3, adjustedRest.length)}`;
+                // Remove the footnote entirely — inlining its text causes false positives
+                // when a footnote sentence ends with punctuation before a main-text punctuation mark.
+                adjustedRest = adjustedRest.slice(0, nextFIndex) + adjustedRest.slice(ixFEnd + 3, adjustedRest.length);
                 // functionLog(`checkUSFMLineText(${lineNumber}, ${C}:${V}, ${marker}='${rest}', ${lineLocation}, ${JSON.stringify(checkingOptions)})…`);
                 // debugLog(`After removing footnote: '${adjustedRest}'`);
             } else {
