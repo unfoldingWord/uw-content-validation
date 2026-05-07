@@ -64,7 +64,7 @@ export const BibleBookData = {
   '2JN': { 'title': '2 John', 'usfm': '64-2JN', 'testament': 'new', 'verseCount': 13, 'verseList': [13] },
   '3JN': { 'title': '3 John', 'usfm': '65-3JN', 'testament': 'new', 'verseCount': 15, 'verseList': [15] },
   'JUD': { 'title': 'Jude', 'usfm': '66-JUD', 'testament': 'new', 'verseCount': 25, 'verseList': [25] },
-  'REV': { 'title': 'Revelation', 'usfm': '67-REV', 'testament': 'new', 'verseCount': 404, 'verseList': [20, 29, 22, 11, 14, 17, 17, 13, 21, 11, 19, 17, 18, 20, 8, 21, 18, 24, 21, 15, 27, 21] }
+  'REV': { 'title': 'Revelation', 'usfm': '67-REV', 'testament': 'new', 'verseCount': 404, 'verseList': [20, 29, 22, 11, 14, 17, 17, 13, 21, 11, 19, 18, 18, 20, 8, 21, 18, 24, 21, 15, 27, 21] }
 }
 
 const oftenMissingBCVList = [

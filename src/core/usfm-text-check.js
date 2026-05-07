@@ -693,13 +693,20 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             }
 
         // We recommend mt1 and s1 and q1, etc. instead of mt, s, and q
-        const foundOptionalMarkersList = [];
         for (const optionallyNumberedMarker of OPTIONALLY_NUMBERED_MARKERS_LIST) {
-            if (fileText.indexOf(`\\${optionallyNumberedMarker} `) !== -1)
-                foundOptionalMarkersList.push(optionallyNumberedMarker);
+            const markerStr = `\\${optionallyNumberedMarker} `;
+            let searchPos = 0, charIndex;
+            while ((charIndex = fileText.indexOf(markerStr, searchPos)) !== -1) {
+                const lineNumber = fileText.slice(0, charIndex).split('\n').length;
+                const lineStart = fileText.lastIndexOf('\n', charIndex) + 1;
+                const lineEnd = fileText.indexOf('\n', charIndex);
+                const lineContent = fileText.slice(lineStart, lineEnd === -1 ? undefined : lineEnd);
+                const posInLine = charIndex - lineStart;
+                const excerpt = lineContent.slice(Math.max(0, posInLine - excerptHalfLength), posInLine + excerptHalfLengthPlus);
+                addNoticePartial({ priority: 260, message: `It’s recommended to use the explicitly-numbered USFM markers`, details: `found \\${optionallyNumberedMarker}`, lineNumber, excerpt, location: fileLocation });
+                searchPos = charIndex + markerStr.length;
+            }
         }
-        if (foundOptionalMarkersList.length)
-            addNoticePartial({ priority: 260, message: `It’s recommended to use the explicitly-numbered USFM markers`, details: `found ${foundOptionalMarkersList}`, location: fileLocation });
 
         // Now do the general global checks (e.g., for general punctuation) -- this is the raw USFM code
         // debugLog(`checkUSFMFileContents doing basic file checks on ${repoCode} (${fileText.length}) ${fileText}`);

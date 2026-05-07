@@ -145,11 +145,15 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     }
 
     if (fieldText[0] === ' ') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
-        if (fieldText[1] === ' ') // spaces plural
-            addNoticePartial({ priority: 110, message: `Unexpected leading spaces`, characterIndex: 0, excerpt, location: ourLocation });
-        else
-            addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation });
+        // In USFM, \q# markers can legitimately have a verse marker on the same line: "\q1  \v 2 text"
+        // This results in fieldText starting with " \v " -- valid USFM, not an error
+        if (!(fieldType === 'USFM line' && fieldText.startsWith(' \\v '))) {
+            const excerpt = fieldText.slice(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
+            if (fieldText[1] === ' ') // spaces plural
+                addNoticePartial({ priority: 110, message: `Unexpected leading spaces`, characterIndex: 0, excerpt, location: ourLocation });
+            else
+                addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation });
+        }
     } else if (fieldText[0] === '\u2060') {
         const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 770, message: `Unexpected leading word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
@@ -410,6 +414,8 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                     continue;
                 if (nextChar === '}' && repoCode === 'ST') // UST uses these
                     continue;
+                if (nextChar === ']' || nextChar === '}') // punctuation before closing brackets is OK (e.g., in AT text)
+                    continue;
                 if (nextChar === '…' && fieldName === 'OrigQuote') // discontiguous quote
                     continue;
                 if (nextTwoChars === '\u00A0»' || nextTwoChars === '\u00A0›') // French punctuation
@@ -485,6 +491,16 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrencesInString(fieldText, '(').toLocaleString()}, right=${countOccurrencesInString(fieldText, ')').toLocaleString()}`, location: ourLocation });
     // }
     if (fieldName !== 'GLQuote') { // NOTE: It's normal to have parts of quotes in the GLQuote field
+        // For markdown fields, strip content that shouldn't affect pair-matching counts:
+        // 1. [[...]] wiki-style rc:// links (double brackets, e.g. [[rc://*/ta/man/translate/figs-x]])
+        // 2. Standalone [...] AT markers: single brackets NOT followed by '(' and NOT containing '://'
+        //    e.g. [Alternate translation: text]. Brackets containing '://' are broken links, not AT markers.
+        const textForPairCheck = fieldType === 'markdown'
+            ? fieldText
+                .replace(/\[\[[^\]]*?\]\]/g, '')
+                .replace(/\[(?![^\]]*:\/\/)[^\]]*?\](?!\()/g, '')
+            : fieldText;
+
         // Check matched pairs in the field
         for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
             // Can’t check '‘’' coz they might be used as apostrophe
@@ -497,8 +513,8 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 && '([{“‘«‹'.indexOf(leftChar) !== -1)
                 continue; // Start/end can be on different lines for these cases
             if (!fieldType.startsWith('markdown') || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
-                const leftCount = countOccurrencesInString(fieldText, leftChar),
-                    rightCount = countOccurrencesInString(fieldText, rightChar);
+                const leftCount = countOccurrencesInString(textForPairCheck, leftChar),
+                    rightCount = countOccurrencesInString(textForPairCheck, rightChar);
                 if (leftCount !== rightCount
                     && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
                     // NOTE: These are higher priority than similar checks in a whole file which is less specific

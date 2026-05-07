@@ -1620,7 +1620,16 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
     // NOTE: This additional check using counts would fail if a link was found by more than one RegEx
     // const linkCount1 = thisChapterBibleLinkCount1 + thisVerseBibleLinkCount1 + thisBookBibleLinkCount1 + otherBookBibleLinkCount1 + TNLinkCount1 + twLinkCount1 + taLinkCount1 + generalLinkCount1;
     // if (totalLinks1 > linkCount1) {
-    const singlePartLeftoverLinksList = singlePartLinksList.filter(x => !processedLinkList.includes(x)); // Delete links that we processed above
+    const singlePartLeftoverLinksList = singlePartLinksList
+        .filter(x => !processedLinkList.includes(x))
+        .filter(x => {
+            // Filter out [text](non-link) patterns where the URL part is not a real link path.
+            // This prevents AT-style [text](prose) from being flagged as unusual links.
+            const urlMatch = x.match(/\[([^\]]*)\]\(([^)]+)\)/);
+            if (!urlMatch) return true;
+            const url = urlMatch[2].trim();
+            return url.includes('/') || url.includes('://') || url.startsWith('rc:');
+        });
     if (singlePartLeftoverLinksList.length)
         // if (singlePartLeftoverLinksList.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' processedLinkList (${processedLinkList.length}) = ${JSON.stringify(processedLinkList)}\n        singlePartLinksList(${singlePartLinksList.length})=${JSON.stringify(singlePartLinksList)}\nsinglePartLeftoverLinksList(${singlePartLeftoverLinksList.length})=${JSON.stringify(singlePartLeftoverLinksList)}`);
         // if (singlePartLeftoverLinksList.length) debugLog(`'${languageCode}', ${repoCode}, '${bookID}', '${fieldName}' singlePartLeftoverLinksList (${singlePartLeftoverLinksList.length}) = ${JSON.stringify(singlePartLeftoverLinksList)}`);
