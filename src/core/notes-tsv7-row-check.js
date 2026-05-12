@@ -7,6 +7,7 @@ import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
 // import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
+import { checkAlternateTranslationSyntax } from './at-syntax-check';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
@@ -356,7 +357,7 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
             if (V.indexOf('-') === -1) { // Not a verse bridge
                 if (V !== givenV)
                     addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
-                if (bookID === 'OBS' || V === 'intro') { }
+                if (bookID === 'OBS' || V === 'intro' || (V === 'front' && C !== 'front')) { }
                 else if (/^\d+$/.test(V)) {
                     let intV = Number(V);
                     if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
@@ -434,14 +435,19 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + supportReference.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < supportReference.length ? '…' : '');
                 addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex, excerpt, location: ourRowLocation });
             } else if (repoCode === 'TN2') { // More than just whitespace
-                const supportReferenceArticlePart = supportReference.replace('rc://*/ta/man/translate/', '');
-                // debugLog("supportReferenceArticlePart", supportReferenceArticlePart);
-                if (!supportReferenceArticlePart.startsWith('figs-')
-                    && !supportReferenceArticlePart.startsWith('grammar-')
-                    && !supportReferenceArticlePart.startsWith('translate-')
-                    && !supportReferenceArticlePart.startsWith('writing-')
-                    && supportReferenceArticlePart !== 'guidelines-sonofgodprinciples')
+                const taTrackMatch = supportReference.match(/^rc:\/\/\*\/ta\/man\/([^/]+)\/(.+)$/);
+                const isFullUrl = supportReference.startsWith('rc:');
+                if (isFullUrl && (!taTrackMatch || !['translate', 'checking', 'intro', 'process'].includes(taTrackMatch[1])))
                     addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
+                else if (!isFullUrl || taTrackMatch[1] === 'translate') {
+                    const supportReferenceArticlePart = isFullUrl ? taTrackMatch[2] : supportReference;
+                    if (!supportReferenceArticlePart.startsWith('figs-')
+                        && !supportReferenceArticlePart.startsWith('grammar-')
+                        && !supportReferenceArticlePart.startsWith('translate-')
+                        && !supportReferenceArticlePart.startsWith('writing-')
+                        && supportReferenceArticlePart !== 'guidelines-sonofgodprinciples')
+                        addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
+                }
                 SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, checkingOptions);
                 if (checkingOptions?.disableAllLinkFetchingFlag !== true)
                     await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, checkingOptions);
@@ -509,6 +515,10 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
                 const adjustedNote = note.replace(/\\n/g, '\n');
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', adjustedNote, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
+                if (repoCode === 'TN2') {
+                    for (const atNotice of checkAlternateTranslationSyntax(adjustedNote, 'Note', rowID, ourRowLocation))
+                        addNoticePartial(atNotice);
+                }
                 let regexMatchObject, linksList = [], foundSR = false;
                 while ((regexMatchObject = TA_REGEX.exec(adjustedNote))) {
                     // debugLog("Got TA Regex in Note", JSON.stringify(regexMatchObject));

@@ -259,7 +259,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
     const lowercaseBookID = bookID.toLowerCase();
 
     let validLineStartCharacters = VALID_LINE_START_CHARACTERS;
-    if (repoCode === 'LT' || repoCode === 'ST') validLineStartCharacters += '{';
+    if (['LT', 'ST', 'ULT', 'UST', 'GLT', 'GST'].includes(repoCode)) validLineStartCharacters += '{';
 
     const usfmResultObject = { successList: [], noticeList: [] };
 
@@ -381,111 +381,15 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         const MINIMUM_TEXT_WORDS = 4;
         const MINIMUM_WORD_LENGTH = 2;
         function hasText(verseObjects) {
-            let gotDeep = false;
-            for (const someObject of verseObjects) {
-                // debugLog(`CVCheck someObject=${JSON.stringify(someObject)}``);
-                if (someObject['type'] === 'text' && someObject['text'].length >= MINIMUM_TEXT_WORDS)
-                    return true;
-                if (someObject['type'] === 'word' && someObject['text'].length >= MINIMUM_WORD_LENGTH)
-                    return true;
-                if (someObject['type'] === 'milestone')
-                    for (const someSubobject of someObject['children']) {
-                        // debugLog("someSubobject", JSON.stringify(someSubobject));
-                        if (someSubobject['type'] === 'text' && someSubobject['text'].length >= MINIMUM_TEXT_WORDS)
-                            return true;
-                        if (someSubobject['type'] === 'word' && someSubobject['text'].length >= MINIMUM_WORD_LENGTH)
-                            return true;
-                        if (someSubobject['type'] === 'milestone')
-                            for (const someSub2object of someSubobject['children']) {
-                                // debugLog("someSub2object", JSON.stringify(someSub2object));
-                                if (someSub2object['type'] === 'text' && someSub2object['text'].length >= MINIMUM_TEXT_WORDS)
-                                    return true;
-                                if (someSub2object['type'] === 'word' && someSub2object['text'].length >= MINIMUM_WORD_LENGTH)
-                                    return true;
-                                if (someSub2object['type'] === 'milestone')
-                                    for (const someSub3object of someSub2object['children']) {
-                                        // debugLog("someSub3object", JSON.stringify(someSub3object));
-                                        if (someSub3object['type'] === 'text' && someSub3object['text'].length >= MINIMUM_TEXT_WORDS)
-                                            return true;
-                                        if (someSub3object['type'] === 'word' && someSub3object['text'].length >= MINIMUM_WORD_LENGTH)
-                                            return true;
-                                        if (someSub3object['type'] === 'milestone')
-                                            for (const someSub4object of someSub3object['children']) {
-                                                // debugLog("someSub4object", JSON.stringify(someSub4object));
-                                                if (someSub4object['type'] === 'text' && someSub4object['text'].length >= MINIMUM_TEXT_WORDS)
-                                                    return true;
-                                                if (someSub4object['type'] === 'word' && someSub4object['text'].length >= MINIMUM_WORD_LENGTH)
-                                                    return true;
-                                                if (someSub4object['type'] === 'milestone')
-                                                    for (const someSub5object of someSub4object['children']) {
-                                                        // debugLog("someSub5object", JSON.stringify(someSub5object));
-                                                        if (someSub5object['type'] === 'text' && someSub5object['text'].length >= MINIMUM_TEXT_WORDS)
-                                                            return true;
-                                                        if (someSub5object['type'] === 'word' && someSub5object['text'].length >= MINIMUM_WORD_LENGTH)
-                                                            return true;
-                                                        if (someSub5object['type'] === 'milestone')
-                                                            for (const someSub6object of someSub5object['children']) {
-                                                                // debugLog("someSub6object", bookID, CVlocation, JSON.stringify(someSub6object));
-                                                                if (someSub6object['type'] === 'text' && someSub6object['text'].length >= MINIMUM_TEXT_WORDS)
-                                                                    return true;
-                                                                if (someSub6object['type'] === 'word' && someSub6object['text'].length >= MINIMUM_WORD_LENGTH)
-                                                                    return true;
-                                                                if (someSub6object['type'] === 'milestone')
-                                                                    for (const someSub7object of someSub6object['children']) {
-                                                                        // debugLog("someSub7object", bookID, CVlocation, JSON.stringify(someSub7object));
-                                                                        if (someSub7object['type'] === 'text' && someSub7object['text'].length >= MINIMUM_TEXT_WORDS)
-                                                                            return true;
-                                                                        if (someSub7object['type'] === 'word' && someSub7object['text'].length >= MINIMUM_WORD_LENGTH)
-                                                                            return true;
-                                                                        if (someSub7object['type'] === 'milestone')
-                                                                            // UST Luke 15:3 has eight levels of nesting !!!
-                                                                            for (const someSub8object of someSub7object['children']) {
-                                                                                // debugLog("someSub8object", bookID, CVlocation, JSON.stringify(someSub8object));
-                                                                                if (someSub8object['type'] === 'text' && someSub8object['text'].length >= MINIMUM_TEXT_WORDS)
-                                                                                    return true;
-                                                                                if (someSub8object['type'] === 'word' && someSub8object['text'].length >= MINIMUM_WORD_LENGTH)
-                                                                                    return true;
-                                                                                if (someSub8object['type'] === 'milestone')
-                                                                                    for (const someSub9object of someSub8object['children']) {
-                                                                                        // debugLog("someSub9object", bookID, CVlocation, JSON.stringify(someSub9object));
-                                                                                        if (someSub9object['type'] === 'text' && someSub9object['text'].length >= MINIMUM_TEXT_WORDS)
-                                                                                            return true;
-                                                                                        if (someSub9object['type'] === 'word' && someSub9object['text'].length >= MINIMUM_WORD_LENGTH)
-                                                                                            return true;
-                                                                                        if (someSub9object['type'] === 'milestone')
-                                                                                            for (const someSub10object of someSub9object['children']) {
-                                                                                                // debugLog("someSub10object", bookID, CVlocation, JSON.stringify(someSub10object));
-                                                                                                if (someSub10object['type'] === 'text' && someSub10object['text'].length >= MINIMUM_TEXT_WORDS)
-                                                                                                    return true;
-                                                                                                if (someSub10object['type'] === 'word' && someSub10object['text'].length >= MINIMUM_WORD_LENGTH)
-                                                                                                    return true;
-                                                                                                if (someSub10object['type'] === 'milestone')
-                                                                                                    // UST Obadiah 1:8 has eleven levels of nesting !!!
-                                                                                                    for (const someSub11object of someSub10object['children']) {
-                                                                                                        // debugLog("someSub11object", bookID, CVlocation, JSON.stringify(someSub11object));
-                                                                                                        if (someSub11object['type'] === 'text' && someSub11object['text'].length >= MINIMUM_TEXT_WORDS)
-                                                                                                            return true;
-                                                                                                        if (someSub11object['type'] === 'word' && someSub11object['text'].length >= MINIMUM_WORD_LENGTH)
-                                                                                                            return true;
-                                                                                                        if (someSub11object['type'] === 'milestone')
-                                                                                                            gotDeep = true;
-                                                                                                    }
-                                                                                            }
-                                                                                    }
-                                                                            }
-                                                                    }
-                                                            }
-                                                    }
-                                            }
-                                    }
-                            }
-                    }
+            if (!Array.isArray(verseObjects)) return false;
+            for (const obj of verseObjects) {
+                if (!obj) continue;
+                if (obj.type === 'text' && obj.text && obj.text.length >= MINIMUM_TEXT_WORDS) return true;
+                if (obj.type === 'word' && obj.text && obj.text.length >= MINIMUM_WORD_LENGTH) return true;
+                if (obj.type === 'milestone' && obj.children && hasText(obj.children)) return true;
             }
-            if (gotDeep) logicAssert(false, `We need to add more depth levels to hasText() for ${bookID} ${chapterNumberString}:${verseNumberString}`);
-            // debugLog(`hasText() for ${chapterNumberString}:${verseNumberString} returning false with ${typeof verseObjects} (${verseObjects.length}): ${JSON.stringify(verseObjects)}`);
             return false;
         }
-        // end of hasText function
 
 
         // Main code for CVCheck function
@@ -563,15 +467,15 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 // Check that expected verses numbers were actually all there
                 // debugLog("Doing missing verse check");
                 for (let v = 1; v <= expectedVersesPerChapterList[chapterInt - 1]; v++) {
+                    const oftenMissing = books.isOftenMissing(bookID, chapterInt, v);
                     if (!discoveredVerseList.includes(v))
-                        if (books.isOftenMissing(bookID, chapterInt, v))
+                        if (oftenMissing)
                             addNoticePartial({ priority: 67, C: chapterNumberString, V: `${v}`, message: "Verse appears to be left out", location: CVlocation });
                         else
                             addNoticePartial({ priority: 867, C: chapterNumberString, V: `${v}`, message: "Verse appears to be missing", location: CVlocation });
-                    // Check for existing verses but missing text
-                    if (!discoveredVerseWithTextList.includes(v)) {
-                        // const firstVerseObject = result1.returnedJSON.chapters[chapterNumberString][v]['verseObjects'][0];
-                        // debugLog("firstVerseObject", JSON.stringify(firstVerseObject));
+                    // Check for existing verses but missing text -- but skip if the verse is intentionally
+                    // omitted in this versification (oftenMissing), since 67 already covers that case.
+                    if (!discoveredVerseWithTextList.includes(v) && !oftenMissing) {
                         addNoticePartial({ priority: 866, C: chapterNumberString, V: `${v}`, message: "Verse seems to have no text", location: CVlocation });
                     }
                 }
@@ -865,6 +769,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         // NOTE: replaceAll() is not generally available in browsers yet, so need to use RegExps
         let adjustedRest = rest.replace(/\\zaln-e\\\*/g, '').replace(/\\ts\\\*/g, '').replace(/\\k-e\\\*/g, '')
             .replace(/\\v /g, '')
+            .replace(/\\d /g, '') // Psalms descriptive title (inscription) marker — appears inline in \q1 \v 1 \d ...
             .replace(/\\k-s[^\\]+\\\*/g, ''); // This last one is a genuine RegExp because it includes the field contents
 
         // Remove any simple character markers
@@ -1697,7 +1602,6 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 lastIntC = intC; lastIntV = 0;
             } else if (marker === 'v') {
                 V = (rest) ? rest.split(' ', 1)[0] : '?';
-                console.log(C, V);
                 if (V.indexOf('-') < 0) { // no hyphen -> no verse bridge
                     try {
                         intV = ourParseInt(V);
@@ -1728,18 +1632,35 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             } else if ((vIndex = rest.indexOf('\\v ')) !== -1) {
                 // verse number marker follows another marker on the same line, so it’s inside `rest`
                 const restRest = rest.slice(vIndex + 3);
-                // debugLog(`mainUSFMCheck at ${bookID} ${C}:${V} ${n} \\${marker} got restRest='${restRest}'`);
-                try {
-                    intV = parseInt(restRest); // Parses the first integer that it finds
-                    // debugLog(`mainUSFMCheck  got intV=${intV}`);
-                    V = intV.toString();
-                } catch (usfmIIVerror) {
-                    addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
-                    intV = -999; // Used to prevent consequential errors
+                const Vstr = restRest.split(' ', 1)[0]; // could be "54" or "54-55"
+                if (Vstr.indexOf('-') >= 0) { // verse bridge
+                    const [firstV, secondV] = Vstr.split('-');
+                    let intFirstV, intSecondV;
+                    try {
+                        intFirstV = ourParseInt(firstV);
+                        intSecondV = ourParseInt(secondV);
+                    } catch (usfmV12error) {
+                        addNoticePartial({ priority: 762, C, V: Vstr, message: "Unable to convert verse bridge numbers to integers", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, Math.max(9, excerptLength))}${restRest.length > excerptLength ? '…' : ''}`, location: ourLocation });
+                        intFirstV = -999; intSecondV = -998;
+                    }
+                    V = Vstr;
+                    if (intSecondV <= intFirstV)
+                        addNoticePartial({ priority: 769, C, V, message: "Verse bridge numbers not in ascending order", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, Math.max(9, excerptLength))}${restRest.length > excerptLength ? '…' : ''} (${firstV} → ${secondV})`, location: ourLocation });
+                    else if (intFirstV > 0 && intFirstV !== lastIntV + 1)
+                        addNoticePartial({ priority: 766, C, V, message: "Bridged verse numbers didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, Math.max(9, excerptLength))}${restRest.length > excerptLength ? '…' : ''} (${lastV} → ${firstV})`, location: ourLocation });
+                    lastV = secondV; lastIntV = intSecondV;
+                } else {
+                    try {
+                        intV = parseInt(restRest); // Parses the first integer that it finds
+                        V = intV.toString();
+                    } catch (usfmIIVerror) {
+                        addNoticePartial({ priority: 720, C, V, message: "Unable to convert internal verse number to integer", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''}`, location: ourLocation });
+                        intV = -999;
+                    }
+                    if (intV > 0 && intV !== lastIntV + 1)
+                        addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
+                    lastV = intV.toString(); lastIntV = intV;
                 }
-                if (intV > 0 && intV !== lastIntV + 1)
-                    addNoticePartial({ priority: 761, C, V, message: "Verse number didn’t increment correctly", lineNumber: n, characterIndex: 3, excerpt: `${restRest.slice(0, excerptHalfLength)}${restRest.length > excerptHalfLength ? '…' : ''} (${lastV ? lastV : '0'} → ${V})`, location: ourLocation });
-                lastV = intV.toString(); lastIntV = intV;
             }
 
             if (marker === 'id' && !rest.startsWith(bookID)) {

@@ -209,7 +209,7 @@ export async function internalCheckTWL_TSV6Table(username, languageCode, repoCod
                     addNoticePartial({ priority: 739, C, V, message: "Missing chapter number", rowID, lineNumber: n + 1, location: ` after ${lastC}:${V}${ourLocation}` });
 
                 if (V) {
-                    if (V === 'intro') { }
+                    if (V === 'intro' || (V === 'front' && C !== 'front')) { }
                     else if (/^\d+$/.test(V)) {
                         let intV = Number(V);
                         if (intV === 0 && bookID !== 'PSA') // Psalms have \d titles

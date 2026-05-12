@@ -74,3 +74,6 @@ yalc.lock
 
 # next.js build output
 .next
+
+# IDE
+.history

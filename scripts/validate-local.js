@@ -53,6 +53,7 @@ function printResults(label, results, minPriority) {
   for (const n of notices) {
     const loc = [
       n.C && n.V ? `${n.C}:${n.V}` : null,
+      n.rowID ? `id=${n.rowID}` : null,
       n.lineNumber ? `line ${n.lineNumber}` : null,
       n.fieldName ? `field '${n.fieldName}'` : null,
     ].filter(Boolean).join(', ');

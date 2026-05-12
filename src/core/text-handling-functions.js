@@ -33,12 +33,13 @@ export const LEADING_ZERO_COMBINATIONS = [
 // NOTE: The following sequences include straight quotes, even though we don't usually recommend them
 //          but we don't want these particular errors to be the ones complaining about them
 export const BAD_CHARACTER_REGEXES = [ // Note: (?! denotes negative lookahead
-    ["punctuation not followed by space or closing quote", new RegExp('[?!](?! |"|”|\'|’|\\)|\\]|$)', 'g')],
-    ["comma not followed by space or digit", new RegExp('[,](?! |[0-9०-९]|"|”|\'|’|$)', 'g')],
-    ["colon not followed by space or digit", new RegExp('[:](?! |/|[0-9०-९]|"|”|$)', 'g')],
-    ["semicolon not followed by space or closing quote", new RegExp('[;](?! |"|”|\'|’|$)', 'g')],
-    ["period not followed by space or digit or closing quote", new RegExp('[.](?! |\\.|/|[0-9०-९]|"|”|\'|’|\\)|\\]|}|"|”|$)', 'g')],
-    ["Arabic comma not followed by space or digit", new RegExp('[،](?! |[0-9०-९]|"|”|\'|’|$)', 'g')], // u060C
+    // Em-dash (—) and en-dash (–) are allowed after sentence-ending punctuation for mid-clause asides like "dying yet—behold!—living".
+    ["punctuation not followed by space or closing quote", new RegExp('[?!](?! |"|”|\'|’|\\)|\\]|—|–|$)', 'g')],
+    ["comma not followed by space or digit", new RegExp('[,](?! |[0-9०-९]|"|”|\'|’|—|–|$)', 'g')],
+    ["colon not followed by space or digit", new RegExp('[:](?! |/|[0-9०-९]|"|”|—|–|$)', 'g')],
+    ["semicolon not followed by space or closing quote", new RegExp('[;](?! |"|”|\'|’|—|–|$)', 'g')],
+    ["period not followed by space or digit or closing quote", new RegExp('[.](?! |\\.|/|[0-9०-९]|"|”|\'|’|\\)|\\]|}|"|”|—|–|$)', 'g')],
+    ["Arabic comma not followed by space or digit", new RegExp('[،](?! |[0-9०-९]|"|”|\'|’|—|–|$)', 'g')], // u060C
 ];
 
 export function isWhitespace(myString) {

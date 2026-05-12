@@ -318,7 +318,7 @@ export async function checkTWL_TSV6DataRow(username, languageCode, repoCode, lin
             if (V.indexOf('-') === -1) { // Not a verse bridge
                 if (V !== givenV)
                     addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
-                if (bookID === 'OBS' || V === 'intro') { }
+                if (bookID === 'OBS' || V === 'intro' || (V === 'front' && C !== 'front')) { }
                 else if (/^\d+$/.test(V)) {
                     let intV = Number(V);
                     if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero

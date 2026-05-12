@@ -32,35 +32,35 @@ describe('checkNotesTSV7DataRow() - ', () => {
 
   describe('link tests - ', () => {
     it('should fail invalid doublet link', async () => {
-      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md))";
+      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: [May Yahweh fully give to you everything that you deserve] (See: [[rc://*/ta/man/translate/figs-parallelism]], [Doublet](../figs-doublet/01.md))";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'RUT', '2', '12', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(2);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail broken link start', async () => {
-      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [rc://*/ta/man/translate/figs-parallelism]]";
+      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: [May Yahweh fully give to you everything that you deserve] (See: [rc://*/ta/man/translate/figs-parallelism]]";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'RUT', '2', '12', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(3);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail broken link end', async () => {
-      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism]";
+      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: [May Yahweh fully give to you everything that you deserve] (See: [[rc://*/ta/man/translate/figs-parallelism]";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'RUT', '2', '12', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(3);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail double broken link start', async () => {
-      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: rc://*/ta/man/translate/figs-parallelism]])";
+      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: [May Yahweh fully give to you everything that you deserve] (See: rc://*/ta/man/translate/figs-parallelism]])";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'RUT', '2', '12', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail double broken link end', async () => {
-      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: “May Yahweh fully give to you everything that you deserve” (See: [[rc://*/ta/man/translate/figs-parallelism)";
+      const chosenLine = "2:12\tgnn5\t\tfigs-parallelism\tשְׁלֵמָ֗ה\t1\tThis is a poetic expression that is very similar to the previous sentence. Alternate translation: [May Yahweh fully give to you everything that you deserve] (See: [[rc://*/ta/man/translate/figs-parallelism)";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'RUT', '2', '12', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(2);
       expect(rawResults).toMatchSnapshot();
@@ -87,20 +87,20 @@ describe('checkNotesTSV7DataRow() - ', () => {
     });
 
     it('should succeed with dual links', async () => {
-      const chosenLine = "1:9\tzu6f\t\tfigs-activepassive\t\t0\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://*/ta/man/translate/figs-activepassive]] and [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "1:9\tzu6f\t\tfigs-activepassive\t\t0\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: [Let the waters…gather] or [Let the waters…come together] (See: [[rc://*/ta/man/translate/figs-activepassive]] and [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '1', '9', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(1);
     });
 
     it('should fail invalid first link', async () => {
-      const chosenLine = "1:9\tzu6f\t\tfigs-activepassive\t\t0\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://*/ta/man/translate/figs-activepassivez]] and [[rc://*/ta/man/translate/figs-imperative]])";
+      const chosenLine = "1:9\tzu6f\t\tfigs-activepassive\t\t0\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: [Let the waters…gather] or [Let the waters…come together] (See: [[rc://*/ta/man/translate/figs-activepassivez]] and [[rc://*/ta/man/translate/figs-imperative]])";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '1', '9', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 
     it('should fail invalid second link', async () => {
-      const chosenLine = "1:9\tzu6f\t\tfigs-activepassive\t\t0\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: “Let the waters…gather” or “Let the waters…come together” (See: [[rc://*/ta/man/translate/figs-activepassive]] and [[rc://*/ta/man/translate/figs-imperativez]])";
+      const chosenLine = "1:9\tzu6f\t\tfigs-activepassive\t\t0\tThis can be translated with an active verb. This is a command. By commanding that the waters gather together, God made them gather together. Alternate translation: [Let the waters…gather] or [Let the waters…come together] (See: [[rc://*/ta/man/translate/figs-activepassive]] and [[rc://*/ta/man/translate/figs-imperativez]])";
       const rawResults = await checkNotesTSV7DataRow(username, languageCode, repoCode, chosenLine, 'GEN', '1', '9', 'from test line', optionalCheckingOptions);
       expect(rawResults.noticeList.length).toBeGreaterThanOrEqual(1);
       expect(rawResults).toMatchSnapshot();
