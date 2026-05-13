@@ -292,6 +292,27 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     const QUOTE_FIELDS = ['Quote', 'OrigQuote', 'GLQuote'];
     const isQuoteField = QUOTE_FIELDS.includes(fieldName);
 
+    // Spaced slash (` / `) is a legitimate alternative-listing token in prose Note/Question/Response
+    // markdown fields (e.g., "14 words / 14 word"). Skip only when it is NOT inside an rc:// link,
+    // a wiki-style [[...]] link, or a markdown link URL `(...)` — those remain broken-link errors.
+    const SLASH_PROSE_FIELDS = ['Note', 'Question', 'Response', 'OccurrenceNote', 'Note line', 'OccurrenceNote line', 'Question line', 'Response line'];
+    const isProseMarkdownField = fieldType.startsWith('markdown') && SLASH_PROSE_FIELDS.includes(fieldName);
+    const isSlashInsideLink = (idx) => {
+        // Inside a [[...]] wiki link?
+        const lastDoubleOpen = fieldText.lastIndexOf('[[', idx);
+        const lastDoubleClose = fieldText.lastIndexOf(']]', idx);
+        if (lastDoubleOpen !== -1 && lastDoubleOpen > lastDoubleClose) return true;
+        // Inside a markdown link URL `(...)`?
+        const lastOpenParen = fieldText.lastIndexOf('(', idx);
+        const lastCloseParen = fieldText.lastIndexOf(')', idx);
+        if (lastOpenParen !== -1 && lastOpenParen > lastCloseParen
+            && fieldText[lastOpenParen - 1] === ']') return true;
+        // Inside an rc:// or other URL? Find a `://` between the last whitespace and idx.
+        const lineStart = Math.max(fieldText.lastIndexOf('\n', idx), fieldText.lastIndexOf(' ', idx - 1)) + 1;
+        if (fieldText.slice(lineStart, idx).includes('://')) return true;
+        return false;
+    };
+
     if (cutoffPriorityLevel < 195 && !isQuoteField) {
         // Check for punctuation chars following space and at start of line
         //  Removed © and leading currency symbols $€₱
@@ -305,6 +326,12 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         for (const punctCharBeingChecked of afterSpaceCheckList) {
             if (cutoffPriorityLevel < 191 && (characterIndex = fieldText.indexOf(' ' + punctCharBeingChecked)) >= 0) {
                 const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
+                // Skip spaced slash ` / ` in prose Note/Question/Response when outside any link context.
+                if (punctCharBeingChecked === '/' && isProseMarkdownField
+                    && fieldText.slice(characterIndex + 2, characterIndex + 3) === ' '
+                    && !isSlashInsideLink(characterIndex + 1)) {
+                    continue;
+                }
                 if (punctCharBeingChecked !== '-' || '1234567890'.indexOf(nextChar) === -1) { // Allow negative numbers, e.g., -1
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
@@ -345,6 +372,13 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         if (!fieldType.startsWith('YAML')) beforeSpaceCheckList += '[';
         for (const punctCharBeingChecked of beforeSpaceCheckList) {
             if ((characterIndex = fieldText.indexOf(punctCharBeingChecked + ' ')) !== -1) {
+                // Spaced slash ` / ` in prose Note/Question/Response is an allowed alternative-listing token
+                // when outside link contexts. See matching logic for priority 191/71 above.
+                if (punctCharBeingChecked === '/' && isProseMarkdownField
+                    && fieldText[characterIndex - 1] === ' '
+                    && !isSlashInsideLink(characterIndex)) {
+                    continue;
+                }
                 if (punctCharBeingChecked === '[' && fieldType.startsWith('markdown')) {
                     let searchFrom = 0, foundIdx = -1, idx;
                     while ((idx = fieldText.indexOf('[ ', searchFrom)) !== -1) {
@@ -516,6 +550,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 || (fieldType === 'markdown' && fieldName === ''))
                 && '([{“‘«‹'.indexOf(leftChar) !== -1)
                 continue; // Start/end can be on different lines for these cases
+            // Per-line markdown checks (fieldName ends with ' line' like 'Note line') often have
+            // multi-line smart quotations where the opener and closer are on different lines.
+            // Skip smart-quote pair-checking at line scope; bracket pairs are still enforced.
+            if (fieldType === 'markdown' && fieldName.endsWith(' line') && '“‘«‹'.indexOf(leftChar) !== -1)
+                continue;
             if (!fieldType.startsWith('markdown') || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
                 let leftCount = countOccurrencesInString(textForPairCheck, leftChar);
                 const rightCount = countOccurrencesInString(textForPairCheck, rightChar);

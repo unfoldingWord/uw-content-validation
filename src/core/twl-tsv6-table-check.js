@@ -239,7 +239,9 @@ export async function internalCheckTWL_TSV6Table(username, languageCode, repoCod
                             //   addNoticePartial({priority:556, `Skipped verses with '${V}' verse number after '${lastV}'${withString}`);
                         }
                     }
-                    else
+                    else if (/^[,\d-]+$/.test(V) && V.split(',').every(p => /^\d+(?:-\d+)?$/.test(p))) {
+                        // Comma-separated list of verses and/or ranges — row-check validates each part.
+                    } else
                         addNoticePartial({ priority: 794, C, V, message: "Bad verse number", rowID, lineNumber: n + 1, excerpt: reference, location: ourLocation });
 
                 }

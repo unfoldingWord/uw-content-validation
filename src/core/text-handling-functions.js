@@ -34,7 +34,9 @@ export const LEADING_ZERO_COMBINATIONS = [
 //          but we don't want these particular errors to be the ones complaining about them
 export const BAD_CHARACTER_REGEXES = [ // Note: (?! denotes negative lookahead
     // Em-dash (—) and en-dash (–) are allowed after sentence-ending punctuation for mid-clause asides like "dying yet—behold!—living".
-    ["punctuation not followed by space or closing quote", new RegExp('[?!](?! |"|”|\'|’|\\)|\\]|—|–|$)', 'g')],
+    // `?!` (exclaim after question) is allowed; `!?` (question after exclamation) is still flagged via the next rule.
+    ["punctuation not followed by space or closing quote", new RegExp('[?](?! |"|”|\'|’|\\)|\\]|!|—|–|$)', 'g')],
+    ["punctuation not followed by space or closing quote", new RegExp('[!](?! |"|”|\'|’|\\)|\\]|—|–|$)', 'g')],
     ["comma not followed by space or digit", new RegExp('[,](?! |[0-9०-९]|"|”|\'|’|—|–|$)', 'g')],
     ["colon not followed by space or digit", new RegExp('[:](?! |/|[0-9०-९]|"|”|—|–|$)', 'g')],
     ["semicolon not followed by space or closing quote", new RegExp('[;](?! |"|”|\'|’|—|–|$)', 'g')],
