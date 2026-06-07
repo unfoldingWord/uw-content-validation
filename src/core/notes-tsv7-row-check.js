@@ -7,6 +7,7 @@ import { checkMarkdownText } from './markdown-text-check';
 import { checkSupportReferenceInTA } from './ta-reference-check';
 // import { checkNotesLinksToOutside } from './notes-links-check';
 import { checkOriginalLanguageQuoteAndOccurrence } from './orig-quote-check';
+import { checkAlternateTranslationSyntax } from './at-syntax-check';
 // eslint-disable-next-line no-unused-vars
 import { parameterAssert, aboutToOverwrite } from './utilities';
 
@@ -353,23 +354,70 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
             addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Reference', location: ` ?:${V}${ourRowLocation}` });
 
         if (V?.length) { // can be undefined if no colon at split above
-            if (V !== givenV)
-                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
-            if (bookID === 'OBS' || V === 'intro') { }
-            else if (/^\d+$/.test(V)) {
-                let intV = Number(V);
-                if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
-                    addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+            if (V.indexOf(',') !== -1) { // verse list, e.g., 1,3,8,12 or 17,25-26
+                const parts = V.split(',');
+                let listIncludesGivenV = false;
+                const intGivenV = Number(givenV);
+                for (const partRaw of parts) {
+                    const part = partRaw.trim();
+                    if (/^\d+$/.test(part)) {
+                        const intP = Number(part);
+                        if (intP === intGivenV) listIncludesGivenV = true;
+                        if (intP === 0 && bookID !== 'PSA')
+                            addNoticePartial({ priority: 814, message: "Invalid zero verse number in list", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        else if (haveGoodChapterNumber && intP > numVersesThisChapter)
+                            addNoticePartial({ priority: 813, message: "Invalid large verse number in list", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                    } else if (/^\d+-\d+$/.test(part)) {
+                        const [a, b] = part.split('-').map(Number);
+                        if (intGivenV >= a && intGivenV <= b) listIncludesGivenV = true;
+                        if (a >= b)
+                            addNoticePartial({ priority: 808, message: "Bad verse range in list", details: "Second verse should be greater than first", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        else if (haveGoodChapterNumber && b > numVersesThisChapter)
+                            addNoticePartial({ priority: 813, message: "Invalid large verse number in list", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                    } else {
+                        addNoticePartial({ priority: 811, message: "Bad verse number in list", rowID, fieldName: 'Reference', excerpt: V, location: ` part '${part}'${ourRowLocation}` });
+                    }
+                }
+                if (!Number.isNaN(intGivenV) && !listIncludesGivenV)
+                    addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ${givenV} to be in list`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+            } else if (V.indexOf('-') === -1) { // Not a verse bridge
+                if (V !== givenV)
+                    addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                if (bookID === 'OBS' || V === 'intro' || (V === 'front' && C !== 'front')) { }
+                else if (/^\d+$/.test(V)) {
+                    let intV = Number(V);
+                    if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
+                        addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                    else {
+                        if (haveGoodChapterNumber) {
+                            if (intV > numVersesThisChapter)
+                                addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        } else
+                            addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Reference', location: ourRowLocation });
+                    }
+                }
+                else
+                    addNoticePartial({ priority: 811, message: "Bad verse number", rowID, fieldName: 'Reference', location: ` '${V}'${ourRowLocation}` });
+            } else { // verse bridge/range
+                if (countOccurrencesInString(V, '-') > 1)
+                    addNoticePartial({ priority: 808, message: "Bad verse range", details: "Too many hyphens", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
                 else {
-                    if (haveGoodChapterNumber) {
-                        if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                    const [V1, V2] = V.split('-');
+                    if (/^\d+$/.test(V1) && /^\d+$/.test(V2)) {
+                        const intV1 = Number(V1), intV2 = Number(V2);
+                        if (intV1 >= intV2)
+                            addNoticePartial({ priority: 808, message: "Bad verse range", details: "Second verse should be greater than first", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        else if (intV1 === 0 && bookID !== 'PSA')
+                            addNoticePartial({ priority: 814, message: "Invalid zero verse number in range", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        else if (haveGoodChapterNumber) {
+                            if (intV2 > numVersesThisChapter)
+                                addNoticePartial({ priority: 813, message: "Invalid large verse number in range", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
+                        } else
+                            addNoticePartial({ priority: 812, message: "Unable to check verse range", rowID, fieldName: 'Reference', location: ourRowLocation });
                     } else
-                        addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Reference', location: ourRowLocation });
+                        addNoticePartial({ priority: 808, message: "Bad verse range", details: "Non-numeric verse numbers", rowID, fieldName: 'Reference', excerpt: V, location: ourRowLocation });
                 }
             }
-            else
-                addNoticePartial({ priority: 811, message: "Bad verse number", rowID, fieldName: 'Reference', location: ` '${V}'${ourRowLocation}` });
         }
         else
             addNoticePartial({ priority: 810, message: "Missing verse number", rowID, fieldName: 'Reference', location: ` after ${C}:?${ourRowLocation}` });
@@ -413,19 +461,22 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + supportReference.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < supportReference.length ? '…' : '');
                 addNoticePartial({ priority: 971, message: "Unexpected line break in single-line field", fieldName: 'GLQuote', rowID, characterIndex, excerpt, location: ourRowLocation });
             } else if (repoCode === 'TN2') { // More than just whitespace
-                const supportReferenceArticlePart = supportReference.replace('rc://*/ta/man/translate/', '');
-                // debugLog("supportReferenceArticlePart", supportReferenceArticlePart);
-                if (!supportReferenceArticlePart.startsWith('figs-')
-                    && !supportReferenceArticlePart.startsWith('grammar-')
-                    && !supportReferenceArticlePart.startsWith('translate-')
-                    && !supportReferenceArticlePart.startsWith('writing-')
-                    && supportReferenceArticlePart !== 'guidelines-sonofgodprinciples')
+                const taTrackMatch = supportReference.match(/^rc:\/\/\*\/ta\/man\/([^/]+)\/(.+)$/);
+                const isFullUrl = supportReference.startsWith('rc:');
+                if (isFullUrl && (!taTrackMatch || !['translate', 'checking', 'intro', 'process'].includes(taTrackMatch[1])))
                     addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
+                else if (!isFullUrl || taTrackMatch[1] === 'translate') {
+                    const supportReferenceArticlePart = isFullUrl ? taTrackMatch[2] : supportReference;
+                    if (!supportReferenceArticlePart.startsWith('figs-')
+                        && !supportReferenceArticlePart.startsWith('grammar-')
+                        && !supportReferenceArticlePart.startsWith('translate-')
+                        && !supportReferenceArticlePart.startsWith('writing-')
+                        && supportReferenceArticlePart !== 'guidelines-sonofgodprinciples')
+                        addNoticePartial({ priority: 788, message: "Only 'Just-In-Time Training' TA articles allowed here", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
+                }
                 SRSuggestion = ourCheckTextField(rowID, 'SupportReference', supportReference, true, ourRowLocation, checkingOptions);
                 if (checkingOptions?.disableAllLinkFetchingFlag !== true)
                     await ourCheckSupportReferenceInTA(rowID, 'SupportReference', supportReference, ourRowLocation, checkingOptions);
-                if (note.indexOf(supportReference) < 0)
-                    addNoticePartial({ priority: 787, message: "Link to TA should also be in Note", fieldName: 'SupportReference', excerpt: supportReference, rowID, location: ourRowLocation });
             }
             if ((characterIndex = supportReference.indexOf('\u200B') !== -1)) {
                 const charCount = countOccurrencesInString(supportReference, '\u200B');
@@ -490,6 +541,10 @@ export async function checkNotesTSV7DataRow(username, languageCode, repoCode, li
                 const adjustedNote = note.replace(/\\n/g, '\n');
                 ASuggestion = await ourMarkdownTextChecks(rowID, 'Note', adjustedNote, true, ourRowLocation, checkingOptions);
                 // await ourCheckNotesLinksToOutside(rowID, 'Note', adjustedNote, ourRowLocation, linkCheckingOptions);
+                if (repoCode === 'TN2') {
+                    for (const atNotice of checkAlternateTranslationSyntax(adjustedNote, 'Note', rowID, ourRowLocation))
+                        addNoticePartial(atNotice);
+                }
                 let regexMatchObject, linksList = [], foundSR = false;
                 while ((regexMatchObject = TA_REGEX.exec(adjustedNote))) {
                     // debugLog("Got TA Regex in Note", JSON.stringify(regexMatchObject));

@@ -91,7 +91,7 @@ describe('checkUSFMText() - ', () => {
 `; // There's a minimum number of words/characters expected in each verse
       const rawResults = await checkUSFMText(username, languageCode, repoCode, '2JN', 'test.usfm', usfmText, 'from test snippet', optionalCheckingOptions);
       // console.log(`checkUSFMText from usfmText='${usfmText}' got rawResults=${JSON.stringify(rawResults)}`);
-      expect(rawResults.noticeList.length).toEqual(2);
+      expect(rawResults.noticeList.length).toEqual(1);
       expect(rawResults).toMatchSnapshot();
     });
 

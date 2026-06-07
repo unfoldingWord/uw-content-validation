@@ -1,7 +1,7 @@
 import Path from 'path';
 import yaml from 'yaml';
+import axios from 'axios';
 import localforage from 'localforage';
-import { setup } from 'axios-cache-adapter';
 import JSZip from 'jszip';
 import * as books from './books';
 import { CATALOG_NEXT_ONLY_REPO_CODES_LIST } from './defaults';
@@ -21,7 +21,7 @@ const OBS_PICTURE_ZIP_FILENAME = 'obs-images-360px.zip';
 const OBS_PICTURE_ZIP_URI = `https://cdn.door43.org/obs/jpg/${OBS_PICTURE_ZIP_FILENAME}`;
 
 
-// caches failed http file fetches so we don’t waste time with repeated attempts
+// caches failed http file fetches so we don't waste time with repeated attempts
 const failedFetchStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'CV-failed-store',
@@ -39,40 +39,37 @@ const cachedFetchStore = localforage.createInstance({
   name: 'CV-web-cache',
 });
 
-// caches the unzipped files requested so we don’t do repeated unzipping of the same file which is slow in JS
+// caches the unzipped files requested so we don't do repeated unzipping of the same file which is slow in JS
 const unzippedFileStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'CV-unzip-store',
 });
 
-// API for http requests
-// NOTE: Even if data expires in this AxiosCacheAdapter, the localforage caches don’t have the same / any expiry ages
-//        (We expect the users of the demos to manually clear the caches when an update is required.)
-const Door43Api = setup({
-  baseURL: DOOR43_BASE_URL,
-  cache: {
-    store: cachedFetchStore,
-    maxAge: 1 * 60 * 60 * 1000, // 1 hour (unless they manually clear the cache)
-    exclude: { query: false },
-    key: req => {
-      // if (req.params) debugger
-      let serialized = req.params instanceof URLSearchParams ?
-        req.params.toString() : JSON.stringify(req.params) || '';
-      return req.url + serialized;
-    },
-  },
-});
+// Cached HTTP GET using cachedFetchStore (localforage) as the backing cache.
+// NOTE: The cache has no automatic expiry — users of the demos clear it manually when needed.
+async function cachedAxiosGet(url, params) {
+  const cacheKey = url + (params ? JSON.stringify(params) : '');
+  try {
+    const cached = await cachedFetchStore.getItem(cacheKey);
+    if (cached !== null) return { data: cached, fromCache: true };
+  } catch (e) { /* ignore cache read errors */ }
+  const response = await axios.get(url, { params });
+  try {
+    await cachedFetchStore.setItem(cacheKey, response.data);
+  } catch (e) { /* ignore cache write errors */ }
+  return { data: response.data, fromCache: false };
+}
 
 
 // Caches the path names of files which have been already checked
 //  Used for storing paths to TA and TW articles and lexicon entries that have already been checked
-//      so that we don’t needlessly check them again each time they're linked to
+//      so that we don't needlessly check them again each time they're linked to
 const checkedArticleStore = localforage.createInstance({
   driver: [localforage.INDEXEDDB],
   name: 'CV-checked-path-store',
 });
 
-// Sadly we have to clear this for each run, otherwise we wouldn’t get any warnings that were from these checks
+// Sadly we have to clear this for each run, otherwise we wouldn't get any warnings that were from these checks
 export async function clearCheckedArticleCache() {
   userLog("clearCheckedArticleCache()…");
   await checkedArticleStore.clear();
@@ -147,7 +144,7 @@ export async function clearCaches() {
   // results.forEach(x => userLog("Done it", x));
   await failedFetchStore.clear();
   await zippedJsonStore.clear();
-  await cachedFetchStore.clear(); // This is the one used by the Axion Door43Api (above)
+  await cachedFetchStore.clear();
   await unzippedFileStore.clear();
   await clearCheckedArticleCache(); // Used for checking TA and TW articles referred to by TN links
   await clearStoredSegmentCache(); // Used for caching verse segments extracted from USFM, etc.
@@ -164,7 +161,7 @@ export function formRepoName(languageCode, repoCode) {
   //    userLog(`formRepoName('${languageCode}', '${repoCode}')…`);
 
   // TODO: Should we also check the username 'unfoldingWord' and/or 'Door43-Catalog' here???
-  //        (We don’t currently have the username available in this function.)
+  //        (We don't currently have the username available in this function.)
   if (repoCode === 'LT') repoCode = languageCode === 'en' ? 'ULT' : 'GLT';
   if (repoCode === 'ST') repoCode = languageCode === 'en' ? 'UST' : 'GST';
 
@@ -245,7 +242,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
 
   contents = await getFileFromZip({ username, repository, path, branchOrReleaseTag: branch });
   // if (contents)
-  //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ1 files coz too many
+  //   if (filePath.indexOf('_tq/') < 0) // Don't log for TQ1 files coz too many
   //     userLog(`  cachedGetFile got ${filePath} from zipfile`);
   if (!contents) {
     contents = await cachedFetchFileFromServerWithBranch({ username, repository, path, branch });
@@ -254,7 +251,7 @@ export async function cachedGetFile({ username, repository, path, branch }) {
   if (contents) {
     // save unzipped file in cache to speed later retrieval
     await unzippedFileStore.setItem(filePath.toLowerCase(), contents);
-    // if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ1 files coz too many
+    // if (filePath.indexOf('_tq/') < 0) // Don't log for TQ1 files coz too many
     //   userLog(`cachedGetFile saved ${filePath} to cache for next time`);
   }
   // else console.error(`cachedGetFile(${username}, ${repository}, ${path}, ${branch}) -- failed to get file`);
@@ -353,7 +350,7 @@ export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, 
     for (const bookID of bookIDList) {
       if (bookID !== 'OBS') {
         const whichTestament = books.testament(bookID); // returns 'old' or 'new'
-        logicAssert(whichTestament === 'old' || whichTestament === 'new', `preloadReposIfNecessary() couldn’t find testament for '${bookID}'`);
+        logicAssert(whichTestament === 'old' || whichTestament === 'new', `preloadReposIfNecessary() couldn't find testament for '${bookID}'`);
         const origLangRepo = whichTestament === 'old' ? 'UHB' : 'UGNT';
         if (!repos_.includes(origLangRepo))
           repos_.unshift(origLangRepo);
@@ -464,7 +461,7 @@ export async function preloadReposIfNecessary(givenUsername, givenLanguageCode, 
 async function cachedFetchFileFromServerWithBranch({ username, repository, path, branch = 'master' }) {
   // functionLog(`cachedFetchFileFromServerWithBranch(${username}, ${repository}, ${path}, ${branch})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
-  // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
+  // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
   // const repositoryExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
   // let uri;
@@ -484,7 +481,7 @@ async function cachedFetchFileFromServerWithBranch({ username, repository, path,
 export async function cachedFetchFileFromServerWithTag({ username, repository, path, tag }) {
   // functionLog(`cachedFetchFileFromServerWithTag(${username}, ${repository}, ${path}, ${tag})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
-  // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
+  // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
   // const repositoryExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
   // let uri;
@@ -504,7 +501,7 @@ export async function cachedFetchFileFromServerWithTag({ username, repository, p
 async function cachedFetchFileFromServerWorker(uri, username, repository, path, branchOrTag) {
   // functionLog(`cachedFetchFileFromServerWorker(${uri}, ${username}, ${repository}, ${path}, ${branchOrTag})…`);
   // TODO: Check how slow this next call is -- can it be avoided or cached?
-  // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
+  // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
   // const repositoryExistsOnDoor43 = await repositoryExistsOnDoor43({ username, repository });
   // let uri;
@@ -533,7 +530,7 @@ async function cachedFetchFileFromServerWorker(uri, username, repository, path, 
 
 
 /**
- *  older getFile without that doesn’t use the unzippedFileStore
+ *  older getFile without that doesn't use the unzippedFileStore
  * @param {string} username
  * @param {string} repository
  * @param {string} path
@@ -608,12 +605,9 @@ export async function repositoryExistsOnDoor43({ username, repository }) {
 
 async function cachedGetFileUsingPartialURL({ uri, params }) {
   // functionLog(`cachedGetFileUsingPartialURL(${uri}, ${JSON.stringify(params)})…`);
-  // debugLog(`  get querying: ${baseURL+uri}`);
-  const response = await Door43Api.get(DOOR43_BASE_URL + uri, { params });
-  if (response.request.fromCache !== true) {
+  const response = await cachedAxiosGet(DOOR43_BASE_URL + uri, params);
+  if (!response.fromCache)
     userLog(`  cachedGetFileUsingPartialURL downloaded Door43 ${uri}`);
-    // let stop = 1 / undefined;
-  }
   // debugLog(`  cachedGetFileUsingPartialURL returning: ${JSON.stringify(response.data)}`);
   return response.data;
 };
@@ -648,7 +642,7 @@ export async function cachedGetFileUsingFullURL({ uri, params }) {
       pictureContents = null;
     }
     // if (contents)
-    //   if (filePath.indexOf('_tq/') < 0) // Don’t log for TQ1 files coz too many
+    //   if (filePath.indexOf('_tq/') < 0) // Don't log for TQ1 files coz too many
     //     userLog(`  cachedGetFile got ${filePath} from zipfile`);
     if (pictureContents) {
       // save unzipped file in cache to speed later retrieval
@@ -658,8 +652,8 @@ export async function cachedGetFileUsingFullURL({ uri, params }) {
     }
     // else console.error(`cachedGetFileUsingFullURL(${uri}) -- failed to get file from zip`);
   } // end of OBS picture bit
-  const response = await Door43Api.get(uri, { params });
-  if (response.request.fromCache !== true) userLog(`  cachedGetFileUsingFullURL downloaded ${uri}`);
+  const response = await cachedAxiosGet(uri, params);
+  if (!response.fromCache) userLog(`  cachedGetFileUsingFullURL downloaded ${uri}`);
   // debugLog(`  cachedGetFileUsingFullURL returning: ${response.data}`);
   return response.data;
 };
@@ -717,11 +711,11 @@ export async function cachedGetRepositoryTreeFile({ username, repository, branch
 
 async function downloadRepositoryZipFile({ username, repository, branchOrReleaseTag }) {
   functionLog(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrReleaseTag})…`);
-  // RJH removed this 2Oct2020 -- what’s the point -- it just slows things down --
+  // RJH removed this 2Oct2020 -- what's the point -- it just slows things down --
   //      if it needs to be checked, should be checked before this point
   // const repoExists = await repositoryExistsOnDoor43({ username, repository });
   // if (!repoExists) {
-  //   console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrReleaseTag}) -- repo doesn’t even exist`);
+  //   console.error(`downloadRepositoryZipFile(${username}, ${repository}, ${branchOrReleaseTag}) -- repo doesn't even exist`);
   //   return null;
   // }
 
@@ -822,14 +816,14 @@ export async function getFileListFromZip({ username, repository, branchOrRelease
       zip.forEach(function (relativePath) {
         // debugLog(`relPath=${relativePath}`)
         // consoleLogObject('fileObject', fileObject);
-        if (!relativePath.endsWith('/')) // it’s not a folder
+        if (!relativePath.endsWith('/')) // it's not a folder
         {
           if (relativePath.startsWith(`${repository}/`)) // remove repo name prefix
             relativePath = relativePath.slice(repository.length + 1);
           if (relativePath.length
             && !relativePath.startsWith('.git') // skips files in these folders
             && !relativePath.startsWith('.apps') // skips files in this folder
-            && (!optionalPrefix || relativePath.startsWith(optionalPrefix))) // it’s the correct prefix
+            && (!optionalPrefix || relativePath.startsWith(optionalPrefix))) // it's the correct prefix
             pathList.push(relativePath);
         }
       })

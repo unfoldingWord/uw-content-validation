@@ -357,23 +357,44 @@ export async function checkTN_TSV9DataRow(username, languageCode, repoCode, line
             addNoticePartial({ priority: 820, message: "Missing chapter number", rowID, fieldName: 'Chapter', location: ` ?:${V}${ourRowLocation}` });
 
         if (V.length) {
-            if (V !== givenV)
-                addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
-            if (bookID === 'OBS' || V === 'intro') { }
-            else if (/^\d+$/.test(V)) {
-                let intV = Number(V);
-                if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
-                    addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+            if (V.indexOf('-') === -1) { // Not a verse bridge
+                if (V !== givenV)
+                    addNoticePartial({ priority: 975, message: "Wrong verse number", details: `expected ‘${givenV}’`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                if (bookID === 'OBS' || V === 'intro') { }
+                else if (/^\d+$/.test(V)) {
+                    let intV = Number(V);
+                    if (intV === 0 && bookID !== 'PSA') // Psalms have \d as verse zero
+                        addNoticePartial({ priority: 814, message: "Invalid zero verse number", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                    else {
+                        if (haveGoodChapterNumber) {
+                            if (intV > numVersesThisChapter)
+                                addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                        } else
+                            addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Verse', location: ourRowLocation });
+                    }
+                }
+                else
+                    addNoticePartial({ priority: 811, message: "Bad verse number", rowID, fieldName: 'Verse', location: ` '${V}'${ourRowLocation}` });
+            } else { // verse bridge/range
+                if (countOccurrencesInString(V, '-') > 1)
+                    addNoticePartial({ priority: 808, message: "Bad verse range", details: "Too many hyphens", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
                 else {
-                    if (haveGoodChapterNumber) {
-                        if (intV > numVersesThisChapter)
-                            addNoticePartial({ priority: 813, message: "Invalid large verse number", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                    const [V1, V2] = V.split('-');
+                    if (/^\d+$/.test(V1) && /^\d+$/.test(V2)) {
+                        const intV1 = Number(V1), intV2 = Number(V2);
+                        if (intV1 >= intV2)
+                            addNoticePartial({ priority: 808, message: "Bad verse range", details: "Second verse should be greater than first", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                        else if (intV1 === 0 && bookID !== 'PSA')
+                            addNoticePartial({ priority: 814, message: "Invalid zero verse number in range", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                        else if (haveGoodChapterNumber) {
+                            if (intV2 > numVersesThisChapter)
+                                addNoticePartial({ priority: 813, message: "Invalid large verse number in range", details: `${bookID} chapter ${C} only has ${numVersesThisChapter} verses`, rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
+                        } else
+                            addNoticePartial({ priority: 812, message: "Unable to check verse range", rowID, fieldName: 'Verse', location: ourRowLocation });
                     } else
-                        addNoticePartial({ priority: 812, message: "Unable to check verse number", rowID, fieldName: 'Verse', location: ourRowLocation });
+                        addNoticePartial({ priority: 808, message: "Bad verse range", details: "Non-numeric verse numbers", rowID, fieldName: 'Verse', excerpt: V, location: ourRowLocation });
                 }
             }
-            else
-                addNoticePartial({ priority: 811, message: "Bad verse number", rowID, fieldName: 'Verse', location: ` '${V}'${ourRowLocation}` });
         }
         else
             addNoticePartial({ priority: 810, message: "Missing verse number", rowID, fieldName: 'Verse', location: ` after ${C}:?${ourRowLocation}` });

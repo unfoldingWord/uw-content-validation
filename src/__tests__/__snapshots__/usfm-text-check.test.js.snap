@@ -80,14 +80,6 @@ Object {
       "message": "Verse number didn’t increment correctly",
       "priority": 763,
     },
-    Object {
-      "bookID": "2JN",
-      "excerpt": "5, 000",
-      "filename": "text extracted from test.usfm",
-      "location": " from test snippet",
-      "message": "Found separated digits",
-      "priority": 498,
-    },
   ],
   "successList": Array [
     "Checked all 14 lines for 2JN from test snippet",

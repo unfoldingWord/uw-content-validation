@@ -1,0 +1,19 @@
+# Netlify build config for uw-content-validation.
+#
+# This repo is an NPM library plus a react-styleguidist demo site — it is NOT a
+# Create React App. The Netlify dashboard previously defaulted to
+# `react-scripts build`, which fails react-scripts 3.x's jest preflight check.
+# This file overrides that and builds the styleguide demo instead.
+#
+# Built on Node 24. The toolchain (webpack 4, react-styleguidist 10) predates
+# OpenSSL 3 (bundled in Node 17+), so --openssl-legacy-provider is required to
+# re-enable the legacy hashing webpack 4 depends on. Drop the flag once the
+# build chain is modernized (webpack 5 / styleguidist 13+).
+
+[build]
+  command = "yarn styleguide:build"
+  publish = "styleguide"
+
+[build.environment]
+  NODE_VERSION = "24"
+  NODE_OPTIONS = "--openssl-legacy-provider"

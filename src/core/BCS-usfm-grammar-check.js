@@ -84,76 +84,6 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
             ourErrorObject.priority = 140; // from 840
         return { isValidUSFM: false, error: ourErrorObject, warnings: [] };
     }
-    let parserMessages;
-    parserMessages = parserToJSONResultObject._messages; // Throw away the JSON (if any)
-    // debugLog(`  Finished BCS USFM grammar check with messages: ${JSON.stringify(parserResult)}\n and warnings: ${JSON.stringify(ourUsfmParser.warnings)}.`);
-
-    // TODO: I think most of the following code is now obsolete and can be deleted
-    let parseError;
-    parseError = parserMessages._error;
-    let ourErrorMessage, lineNumberString, characterIndex, excerpt;
-    // NOTE: The following code is quite fragile
-    //  as it depends on the precise format of the error message returned from USFMParser
-    let ourErrorObject = {};
-    if (parseError) {
-        debugLog("Oh! This USFMGrammar check code IS still needed!!!");
-        const contextRE = /(\d+?)\s\|\s(.+)/g;
-        for (const errorLine of parseError.split('\n')) {
-            // debugLog(`BCS errorLine=${errorLine}`);
-            if (errorLine.startsWith('>')) {
-                const regexResult = contextRE.exec(errorLine.slice(1).trim());
-                // debugLog(`  regexResult: ${JSON.stringify(regexResult)}`);
-                if (regexResult) {
-                    lineNumberString = regexResult[1];
-                    excerpt = regexResult[2];
-                }
-            }
-            else if (errorLine.endsWith('^')) {
-                characterIndex = errorLine.indexOf('^') - 8;
-                if (characterIndex < 0) characterIndex = 0; // Just in case
-                if (excerpt.length)
-                    excerpt = (characterIndex > excerptHalfLength ? '…' : '') + excerpt.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < excerpt.length ? '…' : '')
-            }
-            else ourErrorMessage = errorLine; // We only want the last one
-        }
-        // debugLog(`  ourErrorMessage: '${ourErrorMessage}' lineNumberString=${lineNumberString} characterIndex=${characterIndex} excerpt='${excerpt}'`);
-
-        // Some of these "errors" need to be degraded in priority
-
-        let adjustedPriority = 594; // We don’t make these extra high coz the messages are hard for users to interpret
-        if (excerpt === '\\s5' // Temporarily, even though \s5 fields are not valid USFM
-            || ourErrorMessage.startsWith('Expected "f*", "+"') // Might neeed a OHM schema fix?
-        )
-            adjustedPriority = 294;
-
-        ourErrorObject = {
-            priority: adjustedPriority, message: `USFMGrammar: ${ourErrorMessage}`,
-            filename,
-            characterIndex, excerpt,
-            location: givenLocation
-        };
-
-        // Save our line number
-        if (lineNumberString && lineNumberString.length) {
-            // ourErrorObject.lineNumber = Number(lineNumberString);
-            //  but we need a temporary fix for the BCS bug which doesn’t include blank lines in the count
-            let lineNumber = Number(lineNumberString)
-            let notified = false;
-            const lines = fileText.split('\n');
-            for (let n = 1; n <= lines.length; n++) {
-                if (n >= lineNumber) break; // Gone far enough
-                if (!lines[n - 1]) {
-                    lineNumber += 1; // Increment error line number for each blank line
-                    if (!notified) {
-                        userLog("Temporarily adjusting BCS grammar error line number to account for blank lines");
-                        notified = true;
-                    }
-                }
-            }
-            ourErrorObject.lineNumber = lineNumber;
-        }
-    }
-
     // debugLog(`  Warnings: ${JSON.stringify(parseWarnings)}`);
     let ourWarnings = [];
     for (const warningString of parseWarnings) {
@@ -164,7 +94,7 @@ export function runBCSGrammarCheck(strictnessString, bookID, fileText, filename,
         ourWarnings.push(adjustedString);
     }
 
-    return { isValidUSFM: !parseError, error: ourErrorObject, warnings: ourWarnings };
+    return { isValidUSFM: true, warnings: ourWarnings };
 }
 // end of runBCSGrammarCheck function
 

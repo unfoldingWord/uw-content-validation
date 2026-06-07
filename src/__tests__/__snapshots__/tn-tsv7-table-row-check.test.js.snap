@@ -7,17 +7,6 @@ Object {
       "C": "1",
       "V": "2",
       "bookID": "GEN",
-      "excerpt": "figs-imperative",
-      "fieldName": "SupportReference",
-      "location": " from test line",
-      "message": "Link to TA should also be in Note",
-      "priority": 787,
-      "rowID": "n7qw",
-    },
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
       "fieldName": "Note",
       "location": " from test line",
       "message": "Missing Note field",
@@ -31,17 +20,6 @@ Object {
 exports[`checkNotesTSV7DataRow() -  Occurrence Note tests -  should find white space 1`] = `
 Object {
   "noticeList": Array [
-    Object {
-      "C": "1",
-      "V": "2",
-      "bookID": "GEN",
-      "excerpt": "figs-imperative",
-      "fieldName": "SupportReference",
-      "location": " from test line",
-      "message": "Link to TA should also be in Note",
-      "priority": 787,
-      "rowID": "m7qw",
-    },
     Object {
       "C": "1",
       "V": "2",
@@ -656,6 +634,19 @@ Object {
       "C": "2",
       "V": "12",
       "bookID": "RUT",
+      "details": "left=0, right=1",
+      "fieldName": "Note",
+      "lineNumber": 1,
+      "location": " from test line",
+      "message": "Mismatched [[ ]] link characters",
+      "priority": 845,
+      "repoCode": "TN2",
+      "rowID": "gnn5",
+    },
+    Object {
+      "C": "2",
+      "V": "12",
+      "bookID": "RUT",
       "details": "left=0, right=2",
       "fieldName": "Note",
       "lineNumber": 1,
@@ -672,17 +663,6 @@ Object {
 exports[`checkNotesTSV7DataRow() -  link tests -  should fail if SupportReference link differs from link in OccurrenceNote 1`] = `
 Object {
   "noticeList": Array [
-    Object {
-      "C": "1",
-      "V": "6",
-      "bookID": "GEN",
-      "excerpt": "figs-imperative",
-      "fieldName": "SupportReference",
-      "location": " from test line",
-      "message": "Link to TA should also be in Note",
-      "priority": 787,
-      "rowID": "urb3",
-    },
     Object {
       "C": "1",
       "V": "6",
@@ -900,17 +880,6 @@ Object {
       "location": " from test line",
       "message": "Only 'Just-In-Time Training' TA articles allowed here",
       "priority": 788,
-      "rowID": "w3r5",
-    },
-    Object {
-      "C": "2",
-      "V": "3",
-      "bookID": "GEN",
-      "excerpt": "Laugh",
-      "fieldName": "SupportReference",
-      "location": " from test line",
-      "message": "Link to TA should also be in Note",
-      "priority": 787,
       "rowID": "w3r5",
     },
     Object {

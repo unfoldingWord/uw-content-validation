@@ -121,8 +121,12 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     }
 
     if (cutoffPriorityLevel < 638 && isWhitespace(fieldText)) {
-        addNoticePartial({ priority: 638, message: "Only found whitespace", location: ourLocation });
-        return result;
+        // \NONE is used by the USFM parser when no recognized marker starts a line —
+        // a whitespace-only such line is just a blank separator, not a content gap.
+        if (fieldName !== '\\NONE') {
+            addNoticePartial({ priority: 638, message: "Only found whitespace", location: ourLocation });
+            return result;
+        }
     }
 
     if (cutoffPriorityLevel < 993 && (characterIndex = fieldText.indexOf('<<<<<<<')) !== -1) {
@@ -145,11 +149,15 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     }
 
     if (fieldText[0] === ' ') {
-        const excerpt = fieldText.slice(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
-        if (fieldText[1] === ' ') // spaces plural
-            addNoticePartial({ priority: 110, message: `Unexpected leading spaces`, characterIndex: 0, excerpt, location: ourLocation });
-        else
-            addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation });
+        // In USFM, \q# markers can legitimately have a verse marker on the same line: "\q1  \v 2 text"
+        // This results in fieldText starting with " \v " -- valid USFM, not an error
+        if (!(fieldType === 'USFM line' && fieldText.startsWith(' \\v '))) {
+            const excerpt = fieldText.slice(0, excerptLength).replace(/ /g, '␣') + (fieldText.length > excerptLength ? '…' : '');
+            if (fieldText[1] === ' ') // spaces plural
+                addNoticePartial({ priority: 110, message: `Unexpected leading spaces`, characterIndex: 0, excerpt, location: ourLocation });
+            else
+                addNoticePartial({ priority: 109, message: `Unexpected leading space`, characterIndex: 0, excerpt, location: ourLocation });
+        }
     } else if (fieldText[0] === '\u2060') {
         const excerpt = fieldText.slice(0, excerptLength).replace(/\u2060/g, '‡') + (fieldText.length > excerptLength ? '…' : '');
         addNoticePartial({ priority: 770, message: `Unexpected leading word-joiner (u2060) character`, characterIndex: 0, excerpt, location: ourLocation });
@@ -191,7 +199,8 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         while (suggestion.toLowerCase().slice(0, 6) === '<br />') suggestion = suggestion.slice(6);
     }
 
-    if (cutoffPriorityLevel < 95 && fieldText[fieldText.length - 1] === ' ')
+    if (cutoffPriorityLevel < 95 && fieldText[fieldText.length - 1] === ' '
+        && fieldType.indexOf('USFM') === -1) // Trailing spaces are valid in USFM
         // Markdown gives meaning to two spaces at the end of a line
         if (!fieldType.startsWith('markdown') || fieldText.length < 3 || fieldText[fieldText.length - 2] !== ' ' || fieldText[fieldText.length - 3] === ' ') {
             const excerpt = (fieldText.length > excerptLength ? '…' : '') + fieldText.substring(fieldText.length - 10).replace(/ /g, '␣');
@@ -219,22 +228,6 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         while (suggestion.toLowerCase().substring(suggestion.length - 4) === '<br>') suggestion = suggestion.substring(0, suggestion.length - 4);
         while (suggestion.toLowerCase().substring(suggestion.length - 5) === '<br/>') suggestion = suggestion.substring(0, suggestion.length - 5);
         while (suggestion.toLowerCase().substring(suggestion.length - 6) === '<br />') suggestion = suggestion.substring(0, suggestion.length - 6);
-    }
-    if (cutoffPriorityLevel < 124
-        && (characterIndex = fieldText.indexOf('  ')) >= 0
-        && (!fieldType.startsWith('markdown') || characterIndex !== fieldText.length - 2)) {
-        const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
-        const doubleCount = countOccurrencesInString(fieldText, '  ');
-        let notice;
-        if (doubleCount === 1)
-            notice = { priority: 124, message: "Unexpected double spaces", excerpt, location: ourLocation };
-        else
-            notice = { priority: 224, message: "Multiple unexpected double spaces", details: `${doubleCount} occurrences—only first is displayed`, excerpt, location: ourLocation };
-        if ((fieldType !== 'raw' && fieldType !== 'text') || fieldName.slice(0, 6) !== 'from \\')
-            notice.characterIndex = characterIndex; // characterIndex means nothing for processed USFM
-        if (cutoffPriorityLevel < notice.priority)
-            addNoticePartial(notice);
-        // Note: replacing double-spaces in the suggestion is done later -- after other suggestion modifications which might affect it
     }
     if (cutoffPriorityLevel < 583 && (characterIndex = fieldText.indexOf('\n')) !== -1) {
         const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
@@ -298,19 +291,52 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
             }
         }
     }
-    if (cutoffPriorityLevel < 195) {
+    // Quote-type fields hold original-language fragments where typography conventions differ
+    // (Greek/Hebrew/etc. legitimately allow space after — … , ; ! ? . ) and before ( [ ).
+    const QUOTE_FIELDS = ['Quote', 'OrigQuote', 'GLQuote'];
+    const isQuoteField = QUOTE_FIELDS.includes(fieldName);
+
+    // Spaced slash (` / `) is a legitimate alternative-listing token in prose Note/Question/Response
+    // markdown fields (e.g., "14 words / 14 word"). Skip only when it is NOT inside an rc:// link,
+    // a wiki-style [[...]] link, or a markdown link URL `(...)` — those remain broken-link errors.
+    const SLASH_PROSE_FIELDS = ['Note', 'Question', 'Response', 'OccurrenceNote', 'Note line', 'OccurrenceNote line', 'Question line', 'Response line'];
+    const isProseMarkdownField = fieldType.startsWith('markdown') && SLASH_PROSE_FIELDS.includes(fieldName);
+    const isSlashInsideLink = (idx) => {
+        // Inside a [[...]] wiki link?
+        const lastDoubleOpen = fieldText.lastIndexOf('[[', idx);
+        const lastDoubleClose = fieldText.lastIndexOf(']]', idx);
+        if (lastDoubleOpen !== -1 && lastDoubleOpen > lastDoubleClose) return true;
+        // Inside a markdown link URL `(...)`?
+        const lastOpenParen = fieldText.lastIndexOf('(', idx);
+        const lastCloseParen = fieldText.lastIndexOf(')', idx);
+        if (lastOpenParen !== -1 && lastOpenParen > lastCloseParen
+            && fieldText[lastOpenParen - 1] === ']') return true;
+        // Inside an rc:// or other URL? Find a `://` between the last whitespace and idx.
+        const lineStart = Math.max(fieldText.lastIndexOf('\n', idx), fieldText.lastIndexOf(' ', idx - 1)) + 1;
+        if (fieldText.slice(lineStart, idx).includes('://')) return true;
+        return false;
+    };
+
+    if (cutoffPriorityLevel < 195 && !isQuoteField) {
         // Check for punctuation chars following space and at start of line
         //  Removed © and leading currency symbols $€₱
         // Note that this works for French punctuation, because ?! etc, should be preceded by a non-breaking space (not a regular space)
         let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
         // if (['en','hbo','el-x-koine'].includes(languageCode) ) afterSpaceCheckList += '’'; // These languages don't have words starting with apostrophe/right-single-quotation-mark
         if (!fieldType.startsWith('markdown')) afterSpaceCheckList += '_*~'; // These are used for markdown formatting
-        if (fieldType.indexOf('USFM') === -1 || (fieldText.indexOf('x-lemma') === -1 && fieldText.indexOf('x-tw') === -1)) afterSpaceCheckList += '|';
+        const isAlignmentField = fieldName === '\\zaln-s' || fieldName === '\\w' || fieldName === '\\k-s';
+        if (!isAlignmentField && (fieldType.indexOf('USFM') === -1 || (fieldText.indexOf('x-lemma') === -1 && fieldText.indexOf('x-tw') === -1))) afterSpaceCheckList += '|';
         if (!fieldType.startsWith('YAML')) afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
         // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
         for (const punctCharBeingChecked of afterSpaceCheckList) {
             if (cutoffPriorityLevel < 191 && (characterIndex = fieldText.indexOf(' ' + punctCharBeingChecked)) >= 0) {
                 const nextChar = fieldText.slice(characterIndex + 1, characterIndex + 2);
+                // Skip spaced slash ` / ` in prose Note/Question/Response when outside any link context.
+                if (punctCharBeingChecked === '/' && isProseMarkdownField
+                    && fieldText.slice(characterIndex + 2, characterIndex + 3) === ' '
+                    && !isSlashInsideLink(characterIndex + 1)) {
+                    continue;
+                }
                 if (punctCharBeingChecked !== '-' || '1234567890'.indexOf(nextChar) === -1) { // Allow negative numbers, e.g., -1
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
@@ -341,7 +367,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
             suggestion = suggestion.replace(/| /g, '|');
     }
 
-    if (cutoffPriorityLevel < 192) {
+    if (cutoffPriorityLevel < 192 && !isQuoteField) {
         // Check for punctuation chars before space
         //  Removed ' (can be normal, e.g., Jesus' cloak)
         //  Removed ©
@@ -351,6 +377,24 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         if (!fieldType.startsWith('YAML')) beforeSpaceCheckList += '[';
         for (const punctCharBeingChecked of beforeSpaceCheckList) {
             if ((characterIndex = fieldText.indexOf(punctCharBeingChecked + ' ')) !== -1) {
+                // Spaced slash ` / ` in prose Note/Question/Response is an allowed alternative-listing token
+                // when outside link contexts. See matching logic for priority 191/71 above.
+                if (punctCharBeingChecked === '/' && isProseMarkdownField
+                    && fieldText[characterIndex - 1] === ' '
+                    && !isSlashInsideLink(characterIndex)) {
+                    continue;
+                }
+                if (punctCharBeingChecked === '[' && fieldType.startsWith('markdown')) {
+                    let searchFrom = 0, foundIdx = -1, idx;
+                    while ((idx = fieldText.indexOf('[ ', searchFrom)) !== -1) {
+                        const lineStart = fieldText.lastIndexOf('\n', idx) + 1;
+                        const tickCount = (fieldText.slice(lineStart, idx).match(/`/g) || []).length;
+                        if (tickCount % 2 === 0) { foundIdx = idx; break; }
+                        searchFrom = idx + 1;
+                    }
+                    if (foundIdx === -1) continue;
+                    characterIndex = foundIdx;
+                }
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                 // Lower priority for em-dash in markdown and for forward slash (used to list alternatives, e.g., "yes / no")
                 // debugLog(`Got space after ${punctCharBeingChecked} in ${fieldType} around ${excerpt}: priority ${punctCharBeingChecked === '—' && fieldType.startsWith('markdown') ? 72 : 192}`);
@@ -365,7 +409,7 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         }
     }
 
-    if (cutoffPriorityLevel < 193) {
+    if (cutoffPriorityLevel < 193 && !isQuoteField) {
         // Check for punctuation chars at end of line
         //  Removed ' (can be normal, e.g., Jesus' cloak)
         let beforeEOLCheckList = '([{<⟨،、‒–—―‹«‐‘“/⁄·@©\\•^†‡°¡¿※№×ºª‰‱¶′″‴§|‖¦℗℠™¤₳฿₵¢₡₢$₫₯֏₠€ƒ₣₲₴₭₺₾ℳ₥₦₧₱₰£៛₽₹₨₪৳₸₮₩¥';
@@ -409,6 +453,8 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (nextChar === '\\' && fieldType === 'USFM line') // probably another USFM marker
                     continue;
                 if (nextChar === '}' && repoCode === 'ST') // UST uses these
+                    continue;
+                if (nextChar === ']' || nextChar === '}') // punctuation before closing brackets is OK (e.g., in AT text)
                     continue;
                 if (nextChar === '…' && fieldName === 'OrigQuote') // discontiguous quote
                     continue;
@@ -466,6 +512,8 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                     && (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)
                     && (fieldType !== 'USFM line' || (fieldName !== '\\id' // Some USFM producers put in a date like "Mar 03 2021"
                         && fieldText.indexOf('\\w 0') === -1)) // A leading zero in a \w field might be a false alarm (it's the end of the \w marker)
+                    && !(badZeroCharCombination === ':0' && /^:\d\d ?(AM|PM|am|pm)\b/.test(fieldText.slice(characterIndex))) // 9:00 AM is a time, not a numeric leading zero
+                    && !(badZeroCharCombination === ':0' && /^\d+:\d\d$/.test(fieldText)) // \d+:\d\d as a whole field is a time literal (e.g., from a USFM \w marker), not a leading zero
                 ) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
                     addNoticePartial({ priority: 92, message: `Unexpected leading zero`, characterIndex, excerpt, location: ourLocation });
@@ -484,7 +532,18 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     //     userLog(`checkTextField(${fieldType}, ${fieldName}, '${fieldText}', ${allowedLinks}, ${ourLocation}) found ${countOccurrencesInString(fieldText, '(')} '(' but ${countOccurrencesInString(fieldText, ')')} ')'`);
     //     addNoticePartial({ priority: 1, message: `Mismatched ( ) characters`, details: `left=${countOccurrencesInString(fieldText, '(').toLocaleString()}, right=${countOccurrencesInString(fieldText, ')').toLocaleString()}`, location: ourLocation });
     // }
-    if (fieldName !== 'GLQuote') { // NOTE: It's normal to have parts of quotes in the GLQuote field
+    // Quote-type fields hold partial fragments and may legitimately have unbalanced pairs.
+    if (!isQuoteField) {
+        // For markdown fields, strip content that shouldn't affect pair-matching counts:
+        // 1. [[...]] wiki-style rc:// links (double brackets, e.g. [[rc://*/ta/man/translate/figs-x]])
+        // 2. Standalone [...] AT markers: single brackets NOT followed by '(' and NOT containing '://'
+        //    e.g. [Alternate translation: text]. Brackets containing '://' are broken links, not AT markers.
+        const textForPairCheck = fieldType === 'markdown'
+            ? fieldText
+                .replace(/\[\[[^\]]*?\]\]/g, '')
+                .replace(/\[(?![^\]]*:\/\/)[^\]]*?\](?!\()/g, '')
+            : fieldText;
+
         // Check matched pairs in the field
         for (const punctSet of OPEN_CLOSE_PUNCTUATION_PAIRS) {
             // Can’t check '‘’' coz they might be used as apostrophe
@@ -496,9 +555,16 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 || (fieldType === 'markdown' && fieldName === ''))
                 && '([{“‘«‹'.indexOf(leftChar) !== -1)
                 continue; // Start/end can be on different lines for these cases
+            // Per-line markdown checks (fieldName ends with ' line' like 'Note line') often have
+            // multi-line smart quotations where the opener and closer are on different lines.
+            // Skip smart-quote pair-checking at line scope; bracket pairs are still enforced.
+            if (fieldType === 'markdown' && fieldName.endsWith(' line') && '“‘«‹'.indexOf(leftChar) !== -1)
+                continue;
             if (!fieldType.startsWith('markdown') || leftChar !== '<') { // > is a markdown block marker and also used for HTML, e.g., <br>
-                const leftCount = countOccurrencesInString(fieldText, leftChar),
-                    rightCount = countOccurrencesInString(fieldText, rightChar);
+                let leftCount = countOccurrencesInString(textForPairCheck, leftChar);
+                const rightCount = countOccurrencesInString(textForPairCheck, rightChar);
+                if (leftChar === '‘') // 's‘' is almost always a possessive apostrophe miscoded as a left single quote
+                    leftCount -= (textForPairCheck.match(/s‘/g) || []).length;
                 if (leftCount !== rightCount
                     && (rightChar !== '’' || leftCount > rightCount)) { // Closing single quote is also used as apostrophe in English
                     // NOTE: These are higher priority than similar checks in a whole file which is less specific
