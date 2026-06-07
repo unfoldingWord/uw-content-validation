@@ -227,11 +227,6 @@ let sections = [
 				// description: ''
 			},
 			{
-				name: 'Basic text-field link check',
-				content: 'src/core/field-link-check.md',
-				// description: ''
-			},
-			{
 				name: 'Basic text-field check',
 				content: 'src/core/field-text-check.md',
 				// description: ''
