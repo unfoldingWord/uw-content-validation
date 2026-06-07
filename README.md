@@ -1,219 +1,184 @@
-[![Custom badge](https://img.shields.io/endpoint?color=%2374b9ff&url=https%3A%2F%2Fraw.githubusercontent.com%2unfoldingWord%2Fcontent-validation%2Fmaster%2Fcoverage%2Fshields.json)]()
-[![Install, Build & Run Cypress](https://github.com/unfoldingWord/uw-content-validation/workflows/Install,%20Build%20&%20Run%20Cypress/badge.svg)]()
+[![CI](https://github.com/unfoldingWord/uw-content-validation/actions/workflows/test.yml/badge.svg)](https://github.com/unfoldingWord/uw-content-validation/actions/workflows/test.yml)
+[![npm version](https://img.shields.io/npm/v/uw-content-validation.svg)](https://www.npmjs.com/package/uw-content-validation)
 
 # uW Content/Resource Validation functions
 
-GH Pages: [[https://unfoldingword.github.io/uw-content-validation/]]
+**Documentation & live demos:** https://content-validation.netlify.app/
 
-This repository contains JavaScript functions for validating/checking for errors in text that is passed to the functions. This text might be a line in a file (especially a TSV file when a line contains a number of distinct fields), or the entire text of a file that’s perhaps open in an editor in the enclosing app.
+This repository contains JavaScript functions for validating/checking for errors in [Door43](https://git.door43.org/)/[unfoldingWord](https://www.unfoldingword.org/) Bible-translation content. The text passed to a function might be a single line/field of a file (e.g., one TSV row, for immediate feedback in an editor), or the entire contents of a file open in an enclosing app.
 
-The basic functions return an object containing two lists:
+The package is published to NPM as [`uw-content-validation`](https://www.npmjs.com/package/uw-content-validation) and is used by [tC Create](https://github.com/unfoldingWord/tc-create-app) and the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
 
-1. successList: a list of strings giving an overview of what checks have been made,
-1. noticeList: a list of objects with fields that can be filtered, sorted, combined, and then displayed as error or warning messages.
+Every check returns an object containing two lists:
 
-Note that the object may also contain other relevant fields such as `checkedFileCount`, `checkedFilenames`, `checkedFilenameExtensions`, `checkedFilesizes`, `checkedRepoNames`, and `elapsedSeconds`.
+1. `successList`: a list of strings giving an overview of what checks were made,
+1. `noticeList`: a list of objects with fields that can be filtered, sorted, combined, and then displayed as error or warning messages.
 
-There are three sample notice processing functions that show how to:
+The returned object may also contain other relevant fields such as `checkedFileCount`, `checkedFilenames`, `checkedFilenameExtensions`, `checkedFilesizes`, `checkedRepoNames`, and `elapsedSeconds`.
 
-1. Divide the noticeList into a list of errors and a list of warnings,
-1. Divide the noticeList into a list of severe, medium, and low priority warnings,
-1. Convert the noticeList into a list of warnings sorted by priority,
+There are three sample notice-processing functions that show how to:
 
-In addition, there are Styleguidist pages viewable at [[https://unfoldingword.github.io/uw-content-validation/]] which show how these core functions may be used, effectively producing a primitive app that checks Door43.org files, repositories (repos), book packages, etc. as well as demonstrating the basic functions.
+1. Divide the `noticeList` into a list of errors and a list of warnings,
+1. Divide the `noticeList` into severe, medium, and low priority lists,
+1. Convert the `noticeList` into a single list sorted by priority.
+
+The [Styleguidist site](https://content-validation.netlify.app/) shows how these core functions are used, effectively producing a primitive app that checks Door43 files, repositories, and book packages, as well as demonstrating the individual low-level functions.
+
+## What it checks
+
+The library validates the following Door43/unfoldingWord resource types — for both Bible books and [Open Bible Stories](https://www.openbiblestories.org/) (OBS):
+
+| Content | Format | Examples |
+|---|---|---|
+| Bible text | [USFM](https://ubsicap.github.io/usfm/) (including word/phrase alignment) | original languages `UHB` (Hebrew), `UGNT` (Greek); Gateway-Language `LT` (literal) and `ST` (simplified) translations |
+| Translation/Study Notes & Questions | 7-column TSV | `TN` (TN2), `SN`, `TQ`, `SQ` |
+| Translation Word Links | 6-column TSV | `TWL` |
+| Legacy Translation Notes | 9-column TSV (deprecated, still supported) | old `TN` |
+| Articles | Markdown (and Markdown fields inside TSV) | `TA` (Translation Academy), `TW` (Translation Words) |
+| Metadata | YAML | repository `manifest` files |
+| Other | Plain text | — |
+
+Among the things the checks look for: malformed TSV rows/columns and missing or mis-formatted required fields; USFM marker validity and word-alignment integrity (via three independent USFM checkers); link integrity (`rc://` links, the existence of linked TA/TW articles and lexicon entries); `Quote`/`OrigQuote` matching against the original-language UHB/UGNT text; punctuation, whitespace, and unexpected-character anomalies; Markdown structure; and YAML well-formedness. Many of these can fetch related files from `git.door43.org` to verify cross-resource links — fetching is toggleable via `checkingOptions` (see below).
+
+### Public API
+
+The published entry points (in `src/core/wrapper.js`, re-exported from `src/index.js`) each take `(username, languageCode, …, checkingOptions)` and return `{ successList, noticeList }`:
+
+| Function | Checks |
+|---|---|
+| `checkTN_TSV7Table` | a TN2 7-column notes table |
+| `checkSN_TSV7Table` | a Study Notes 7-column table |
+| `checkTQ_TSV7Table` | a Translation Questions 7-column table |
+| `checkSQ_TSV7Table` | a Study Questions 7-column table |
+| `checkTWL_TSV6Table` | a Translation Word Links 6-column table |
+| `checkTA_markdownArticle` | a single Translation Academy article |
+| `checkTW_markdownArticle` | a single Translation Words article |
+| `checkDeprecatedTN_TSV9Table` | a legacy 9-column Translation Notes table |
+
+Prefer these wrapped functions over the internal `internalCheck…`/`check…` functions when integrating externally — the wrappers also apply notice-disabling (suppression of known false positives) before returning.
 
 ## The Stack
 
-- Javascript for primary functions.
-- React (functional components & hooks) for demonstration applets.
-- MaterialUI for UI/UX baseline design components.
-- Styleguidist for Playground Documentation.
-- Yarn for dependencies, publishing, and deploying.
-- Github + NPM + Github Pages for Hosting.
-- Cypress for testing
+- JavaScript for the core validation functions.
+- React (functional components & hooks) for the demonstration applets.
+- Material-UI for UI/UX baseline design components.
+- React Styleguidist for the interactive playground/documentation.
+- Yarn for dependencies and publishing.
+- **GitHub** for source, **NPM** for the published package, and **Netlify** for the documentation/demo site (with per-PR deploy previews).
+- Jest + ESLint for testing, run on GitHub Actions CI.
 
 ## Design Philosophy
 
-This code is designed to thoroughly check various types of Bible-related content data files. This includes:
+This code is designed to thoroughly check Bible-related content data files. It is quite possible for the package to give multiple different notices for a single mistake. For example, a punctuation abnormality in a quoted text might produce a notice about the bad punctuation as well as a notice about not being able to match the quote. The package errs on the side that having additional warnings is better than missing one (and then later being confused about why a data file won’t load). Because of these consequential warnings, it’s good to rerun the checks from time to time on your latest files as you fix multiple errors.
 
-1. [Unified Standard Format Marker](ubsicap.github.io/usfm/) (USFM) Bible content files, including original language Bibles and Bible translations aligned by word/phrase to the original words/phrases
-1. Legacy Translation Notes (TN) tables in Tab-Separated Values (9-column TSV) files
-1. New tables in Tab-Separated Values (TSV) files (for TWL, TN2 and TQ, SN, and SQ)
-1. Markdown files (for TA, TW, and TQ1; also markdown fields in TSV files)
-1. Plain-text files
-1. Metadata (manifest) YAML files
+There is also a separate function for checking individual TSV rows (e.g., TN, TN2, TQ), intended to provide immediate user feedback when built into a TSV editor.
 
-Note: There is also a separate function for checking individual TSV lines (e.g., TN, TN2, TQ) which is intended to be able to provide immediate user feedback if built into a TSV editor.
+### Notice Objects (in `noticeList`)
 
-The top-level checking demonstrations return:
+The lower-level checking functions provide the list of success-message strings plus one list of `notices` (warnings/errors combined). Each notice is an object with some or all of the following fields (as available/relevant).
 
-1. A list of things that were checked (successList)
-1. Typically a list of (higher-priority) errors and a list of (lower-priority) warnings, but other formats for display of messages are also demonstrated.
+There are two compulsory fields in every notice object:
 
-Note that it’s quite possible for the package to give multiple different notices for a single mistake. For example, a punctuation abnormality in a quoted text might advise about the bad punctuation as well as advising about not being able to match the quote. The package errs on the side that having additional warnings is better than missing a warning (and then later being confused about why a data file won’t load). These consequential warnings mean that, if possible, it’s good to rerun the checks from time to time on your latest files as you're fixing multiple errors.
-
-### Notice Objects (in noticeList)
-
-However, the lower-level checking functions provide only the list of success message strings and one list of `notices` (i.e., warnings/errors combined) typically consisting of an object with some or all of the following fields (as available/relevant):
-
-There are two compulsory fields in all of these notice objects:
-
-1. `priority`: A notice priority number in the range 1-1,000. Each different type of warning/error has a unique number (but not each instance of those warnings/errors). By default, notice priority numbers 700 and over are considered `errors` and 0-699 are considered `warnings`, but in truth, that’s rather arbitrary.
-1. `message`: The actual general descriptive text of the notice (starts with a capital letter)
+1. `priority`: A notice priority number in the range 1–1,000. Each *type* of warning/error has a unique number (but not each *instance*). By default, priority numbers 700 and over are considered `errors` and 0–699 are considered `warnings`, but that’s somewhat arbitrary and configurable.
+1. `message`: The general descriptive text of the notice (starts with a capital letter).
 
 All of the following fields may be missing or undefined, i.e., they’re all optional:
 
 1. `details`: More helpful details about the notice (if applicable; doesn’t start with a capital letter)
-1. `repoCode`: brief repository code (if available), e.g., 'UHB', 'LT', 'ST', 'TN', 'TQ', forthcoming 'TN2', old 'TQ1', etc.
-1. `repoName`: Door43 repository name (if available), e.g., 'en_ta', 'hi_tw'
+1. `repoCode`: brief repository code (if available), e.g., `UHB`, `UGNT`, `LT`, `ST`, `TN`, `TN2`, `TQ`, `TWL`, etc.
+1. `repoName`: Door43 repository name (if available), e.g., `en_ta`, `hi_tw`
 1. `filename`: filename string (if available)
-1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or [OBS](https://www.openbiblestories.org/) (if relevant)
+1. `bookID`: The 3-character UPPERCASE [book identifier](http://ubsicap.github.io/usfm/identification/books.html) or `OBS` (if relevant)
 1. `C`: The chapter number or OBS story number (if relevant)
 1. `V`: The verse number or OBS frame number (if relevant)
-1. `rowID`: 4-character ID field for TSV row (if relevant)
+1. `rowID`: 4-character ID field for a TSV row (if relevant)
 1. `lineNumber`: A one-based line number in the file (if available)
-1. `fieldName`: name of TSV field (if relevant)
-1. `characterIndex`: A **zero-based** integer character index which indicates the position of the error in the given text (line or field) (if available)
-1. `excerpt`: An excerpt (if available) from the checked text which indicates the area containing the problem. Where helpful, some character substitutions have already been made, for example, if the notice is about spaces, it is generally helpful to display spaces as a visible character in an attempt to best highlight the issue to the user. (The length of the excerpt defaults to ten characters, but is settable as an option.)
-1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'". (Still not completely sure what should be left in this string now that we have added optional `repoName`, `filename`, `rowID`, `lineNumber`, `fieldName` fields.)
-1. `extra`: for a check that looks in multiple repos, this contains extra identifying information (typically the `repoCode`) to help the user determine what resource/repo/file that the notice applies to (which, in the demos, is then often prepended to the `message`).
+1. `fieldName`: name of the TSV field (if relevant)
+1. `characterIndex`: A **zero-based** integer character index indicating the position of the error in the given text (line or field) (if available)
+1. `excerpt`: An excerpt (if available) from the checked text indicating the area containing the problem. Where helpful, some character substitutions have already been made — for example, if the notice is about spaces, spaces are generally displayed as a visible character to best highlight the issue. (The excerpt length defaults to 20 characters, but is settable as an option.)
+1. `location`: A string indicating the context of the notice, e.g., "in line 17 of 'someBook.usfm'".
+1. `extra`: for a check that looks in multiple repos, this contains extra identifying information (typically the `repoCode`) to help the user determine which resource/repo/file the notice applies to (which, in the demos, is then often prepended to the `message`).
 
-Keeping our notices in this format, rather than the simplicity of just saving an array of single strings, allows the above *notice components* to be processed at a higher level, e.g., to allow user-controlled filtering, sorting, etc. For example, in a rush it might be good to display the highest priority messages first, and fix a few of those. On the other hand, if working systematically through, it might be good to sort by filename and line-number so that warnings about the same part of a file can be viewed together irrespective of their different priority numbers.
+Keeping notices in this structured format (rather than just an array of strings) allows the *notice components* to be processed at a higher level — e.g., user-controlled filtering and sorting. In a rush it might be good to display the highest-priority messages first; when working systematically it might be better to sort by filename and line-number so that warnings about the same part of a file can be viewed together irrespective of priority.
 
-The default in the demos is to funnel all the raw notices through the supplied `processNoticesToErrorsWarnings` function (in demos/notice-processing-functions.fs) which does the following:
+The default in the demos is to funnel all the raw notices through the supplied `processNoticesToErrorsWarnings` function (in `src/demos/notice-processing-functions.js`) which:
 
-1. Removes excess repeated errors. For example, if there’s a systematic error in a file, say with unneeded leading spaces in every field, rather than returning with hundreds of errors, only the first several errors will be returned, followed by an "errors suppressed" message. (The number of each error displayed is settable as an option—zero means display all errors with no suppression.)
-1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable as an option.)
-1. Optionally drops the lowest priority notices and/or certain given notice types (by priority number).
+1. Removes excess repeated errors. For example, if there’s a systematic error in a file (say, an unneeded leading space in every field), rather than returning hundreds of errors, only the first several are returned, followed by an "errors suppressed" message. (The number displayed is settable; zero means display all.)
+1. Separates notices into error and warning lists based on the priority number. (The switch-over point is settable.)
+1. Optionally drops the lowest-priority notices and/or certain given notice types (by priority number).
 
-There is a second version of the function which splits into `Severe`, `Medium`, and `Low` priority lists instead. And a third version that leaves them as notices, but allows for a Bright red...Dull red colour gradient instead.
-
-However, the user is, of course, free to create their own alternative version of these functions. This is possibly also the place to consider localisation of all the notices into different interface languages???
+A second version splits into `Severe`, `Medium`, and `Low` lists instead; a third leaves them as notices but applies a bright-red → dull-red colour gradient. Callers are, of course, free to write their own.
 
 ## User-settable Options
 
 ### Checking Options
 
-There is provision for checking to be altered and/or sped-up when the calling app sets some or all of the following fields in `checkingOptions`:
+Checking can be altered and/or sped up when the calling app sets some or all of the following fields in `checkingOptions`:
 
-- `disableAllLinkFetchingFlag`: a boolean (true/false) which if set to true, stops the package from fetching (hence checking) links, e.g., when a translation note refers to Translation Academy it won’t check that the TA article actually exists, and also stops the checking of any extra files like LICENSE.md—this gives a dramatic speed-up to many checks (but, of course, it means that the data might still contain quite major errors)
-- `disableLexiconLinkFetchingFlag`: this one boolean (true/false) flag exists to stop the package from fetching lexicon links. This is a separate flag so that the main link fetching (see the flag immediately above) can be enabled without slowing down the checks considerably by fetching/testing thousands of lexicon links.
-- `disableLinkedTAArticlesCheckFlag`, `disableLinkedTWArticlesCheckFlag`, `disableLinkedLexiconEntriesCheckFlag`: boolean (true/false) flags which if set to true, stop the functions from checking the CONTENT of articles linked to from other places. These flags only make a difference if the appropriate link fetching (the above two flags) is enabled.
-- `getFile`: a function which takes the four parameters ({username, repository, path, branch}) and returns the full text of the relevant Door43 file—default is to use our own function and associated caching
-- `fetchRepositoryZipFile`: a function which takes the three parameters ({username, repository, branch}) and returns the contents of the zip file containing all the Door43 files—default is to use our own function and associated caching
-- `getFileListFromZip`: takes the same three parameters and returns a list/array containing the filepaths of all the files in the zip file from Door43—default is to use our own function and associated caching
-- `originalLanguageVerseText`: the Hebrew/Aramaic or Greek original language text for the book/chapter/verse of the TSV line being checked—this enables `Quote` fields to be checked without needing to load and parse the actual USFM file
-- `originalLanguageRepoUsername` and `originalLanguageRepoBranch`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the UHB and UGNT files for checking
-- `taRepoUsername`, `taRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TA files for checking
-- `taRepoLanguageCode`, and `taRepoSectionName`: can be used to specify how the `SupportReference` field is checked in TA—defaults are 'en' and 'translate'
-- `twRepoUsername`, `twRepoBranchName`: these two fields can be used to specify the username/organisation and/or the branch/tag name for fetching the TW files for checking
-- `excerptLength`: an integer which defines how long excerpts of lines containing errors should be—the default is 20 characters—the package attempts to place the error in the middle of the excerpt
-- `cutoffPriorityLevel`: an integer which can define notices to not be detected—defaults to 0 so none are dropped. Note that this will also affect the `suggestion` response. (Only partially implemented at present, so drops some but not all low priority notices.)
-- `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (thus suppressing) notices for warnings which are expected in certain files and hence we don’t want them displayed. Note that this is always set to `true` for the demos (because they suppress these notices later—see the `showDisabledNoticesFlag` below).
+- `disableAllLinkFetchingFlag`: a boolean which, if true, stops the package from fetching (hence checking) links — e.g., when a translation note refers to Translation Academy it won’t check that the TA article actually exists — and also stops checking of extra files like `LICENSE.md`. This gives a dramatic speed-up (but means the data might still contain major errors).
+- `disableLexiconLinkFetchingFlag`: a boolean to stop the package from fetching lexicon links specifically, so that the main link fetching can be enabled without slowing the checks down by fetching/testing thousands of lexicon links.
+- `disableLinkedTAArticlesCheckFlag`, `disableLinkedTWArticlesCheckFlag`, `disableLinkedLexiconEntriesCheckFlag`: booleans which, if true, stop the functions from checking the *content* of articles linked from other places. These only make a difference if the appropriate link fetching (above) is enabled.
+- `getFile`: a function taking `{username, repository, path, branch}` that returns the full text of the relevant Door43 file — default uses our own function and associated caching.
+- `fetchRepositoryZipFile`: a function taking `{username, repository, branch}` that returns the contents of the zip file containing all the Door43 files — default uses our own function and caching.
+- `getFileListFromZip`: takes the same parameters and returns an array of the filepaths of all files in the Door43 zip file — default uses our own function and caching.
+- `originalLanguageVerseText`: the Hebrew/Aramaic or Greek original-language text for the book/chapter/verse of the TSV row being checked — this enables `Quote` fields to be checked without needing to load and parse the actual USFM file.
+- `originalLanguageRepoUsername`, `originalLanguageRepoBranch`: specify the username/organisation and/or branch/tag for fetching the UHB and UGNT files.
+- `taRepoUsername`, `taRepoBranchName`: specify the username/organisation and/or branch/tag for fetching the TA files.
+- `taRepoLanguageCode`, `taRepoSectionName`: specify how the `SupportReference` field is checked in TA — defaults are `en` and `translate`.
+- `twRepoUsername`, `twRepoBranchName`: specify the username/organisation and/or branch/tag for fetching the TW files.
+- `excerptLength`: an integer defining how long excerpts of lines containing errors should be — default 20 characters; the package attempts to place the error in the middle of the excerpt.
+- `cutoffPriorityLevel`: an integer that can define notices to not be detected — defaults to 0 so none are dropped. (Only partially implemented.)
+- `suppressNoticeDisablingFlag`: Defaults to `false`, i.e., to removing (suppressing) notices for warnings expected in certain files that we don’t want displayed. This is always set to `true` for the demos (because they suppress these notices later — see `showDisabledNoticesFlag` below).
 
-    Currently this supressing is only done in the (exported) `internalCheckTN_TSV9Table` and `checkNotesTSV7Table` functions which we know to be called by [tC Create](https://github.com/unfoldingWord/tc-create-app) as well as `checkManifestText`, `checkMarkdownText`, `checkPlainText`, `internalCheckTN_TSV9Table`, `checkUSFMText`, and `checkYAMLText` called by the [Content Validation App](https://github.com/unfoldingWord-box3/content-validation-app).
+Most high-level demonstrations allow a choice of one of three display formats for notices:
 
-Most of the high-level demonstrations allow a choice of one of three display formats for notices:
-
-- 'SingleList' (recommended): sorts notices by priority (highest first) then colours the highest ones bright red, slowly fading to black for the lowest priorities
-- 'ErrorsWarnings': arbitrarily divides notices into a list of *errors* and a list of *warnings*, each displayed in different colours
-- 'SevereMediumLow': divides notices into three lists which are displayed in different colours
+- `SingleList` (recommended): sorts notices by priority (highest first), colouring the highest bright red, fading to black for the lowest.
+- `ErrorsWarnings`: divides notices into an *errors* list and a *warnings* list, displayed in different colours.
+- `SevereMediumLow`: divides notices into three lists displayed in different colours.
 
 ### Processing Options
 
-In addition, there are some options in the display of notices for the demonstrations, set in `optionalProcessingOptions` used by the sample notice processing functions:
+There are also options for the display of notices in the demonstrations, set in `optionalProcessingOptions` and used by the sample notice-processing functions:
 
-- `ignorePriorityNumberList`: a list (array) of integers that causes of notices with these priority values to be dropped during notice processing
-- `sortBy`: a string which can be set to 'ByPriority', 'ByRepo', or 'AsFound'—the default is 'ByPriority', i.e., unsorted
-- `errorPriorityLevel`: an integer which can define *errors* (vs *warnings*) (if relevant)—defaults to 700 (and above)
-- `severePriorityLevel`: an integer which can define *severe* errors (if relevant)—defaults to 800 (and above)
-- `mediumPriorityLevel`: an integer which can define *medium* errors (if relevant)—defaults to 600 (and up to `severePriorityLevel`)
-- `cutoffPriorityLevel` (deprecated): an integer which can define notices to be dropped/ignored—defaults to 0 so none are dropped
-- `maximumSimilarMessages`: an integer which defines how many of a certain notice to display, before summarising and saying something like *99 similar errors suppressed*—zero means don’t ever summarise notices—defaults to 3
-- `showDisabledNoticesFlag`: some content files produce false alarms, e.g., a discussion of using the , as punctuation. Where known, these false alarm notices are disabled from being shown. Setting this flag to 'true' would show these notices (with the word "(disabled)" added) instead—the default is 'false'.
+- `ignorePriorityNumberList`: a list of integers; notices with these priority values are dropped during processing.
+- `sortBy`: `ByPriority` (default), `ByRepo`, or `AsFound`.
+- `errorPriorityLevel`: an integer defining *errors* (vs *warnings*) — defaults to 700 (and above).
+- `severePriorityLevel`: an integer defining *severe* errors — defaults to 800 (and above).
+- `mediumPriorityLevel`: an integer defining *medium* errors — defaults to 600 (and up to `severePriorityLevel`).
+- `maximumSimilarMessages`: how many of a certain notice to display before summarising (e.g., *99 similar errors suppressed*) — zero means never summarise — defaults to 3.
+- `showDisabledNoticesFlag`: some content files produce false alarms (e.g., a discussion of using the `,` as punctuation). Where known, these are disabled from being shown. Setting this to `true` shows them anyway (with "(disabled)" added) — default `false`.
 
-## Still To Do
+## Development
 
-There is a list of open issues at [[https://github.com/unfoldingWord/uw-content-validation/issues]] (and you can add suggestions and bug reports there at any time). But in summary, still unfinished (in rough priority order):
+You will need `node.js` (16+) and `yarn` installed.
 
-1. Keep up with changes are more repos are converted to the new TSV formats
-1. Handle the fact that Door43-Catalog repos now have different formats (old markdown) than unfoldingWord repos (new TSV)
-1. Finish moving `cutoffPriorityLevel` from `processingOptions` to `checkingOptions`
-1. The `suggestion` mechanism is working, but more suggestions need to be created
-1. Checking of general markdown and naked links (esp. in plain text and markdown files)
-1. Work through all [Issues](https://github.com/unfoldingWord/uw-content-validation/issues)
-1. Work through all `ToDo`s in code
-1. Standardise parameters according to best practice (i.e., dereferencing, etc.)—might be too late now coz it would affect API presented to users???
-1. Document the API (with JsDoc)
-1. Improve general documentation in the code and readMe files
-1. Is our `RepoCheck` the same as `ResourceContainerCheck`? Or is the latter more specific?
-1. Understand and standardise React stuff in the demos, e.g., e.g., withStyles, etc.
-1. Check for and remove left-over (but unused) code from the source projects that the original code was copied from
-1. Remove all debug code and console logging, and to consider possible speed and memory optimizations (incl. async and/or multi-worker operations)
-1. Add a Scripture Burrito check (once Door43 has that available).
+1. Install dependencies with `yarn`.
+1. Run the Styleguide locally with `yarn start`.
+1. Visit `localhost:6060` in your browser. (For Chromebooks, see the note below.)
+1. Modify the code and documentation, and check the result in the Styleguide.
+    - Update `styleguide.config.js` to match any new component/section names.
+1. See `userLog()` debug output in the browser console (in Chrome, CTRL-SHIFT-J).
 
-Known bugs:
+Tests (ESLint + Jest with coverage) are run with `yarn test`, and on every push via GitHub Actions ("CI" workflow). Run a single test file with `yarn jest src/__tests__/<file>.test.js --watchAll=false`.
 
-1. Not all demos have all options available
-1. Demos likely to fail on Door43-Catalog as we move unfoldingWord repos to the new TSV formats
-1. Work on checking naked links in text files is not yet completed
-1. File caching (i.e., demos not checking latest file versions) is still a frustration for some users and needs to be investigated more—presumably it’s out of control of this package and its demos???
-
-Known check deficiencies:
-
-1. ULT/UST quotes in TranslationAcademy are not yet checked
-
-## Functionality and Limitations
-
-See component `README` for details.
-
-# How to install
-
-Once you have this codebase forked and cloned to your local machine, you can start modifying the codebase. You will need to ensure `node.js` and `yarn` are already installed.
-
-### Installation and Running the Styleguide Locally
-
-1. Install the npm dependencies with `yarn`.
-1. Run the Styleguide with `yarn start`.
-1. Ensure that the Styleguide is running by visiting `localhost:6060` on your web browser. (for Chromebooks see note below)
-1. Modify the code and documentation in your code editor and check out the Styleguide.
-    - Update the styleguide.config.js to match your new component names.
-1. See debug `userLog()` output in browser console—in chrome, CTRL-SHIFT-J to open.
-
-### Setting up NPM Publishing
-
-1. Rename your library:
-    - the folder
-    - repo on Github
-1. Update the `package.json`:
-    - change the `name` and `description` of your app
-    - change the URLs of your `homepage` and `repository`
-1. Create an account on `npmjs.org` if you don’t have one already.
+> **Note:** the React Styleguidist toolchain uses webpack 4, which is incompatible with the OpenSSL provider bundled in Node 17+. The `styleguide:start`/`styleguide:build` scripts therefore set `NODE_OPTIONS=--openssl-legacy-provider`, and the Netlify build pins `NODE_VERSION` in `netlify.toml`.
 
 ### Publishing to NPM
 
-The scripts in the `package.json` file do all of the heavy lifting.
+The scripts in `package.json` do the heavy lifting.
 
-1. Commit and push all changes to your github repo.
+1. Commit and push all changes.
 1. Run `yarn publish`:
-    - login to NPM using your credentials if asked.
-    - enter the new version number using symver.
-    - wait for the code to be transpiled and published to NPM.
-    - wait for the styleguide to be built and deployed to GHPages.
-1. Visit your published library on NPM.
-1. Visit your deployed Styleguide on GHPages.
+    - log in to NPM if asked,
+    - enter the new version number (semver),
+    - the code is transpiled to `dist/` and published to NPM, then the release is git-tagged.
+1. Visit the published library on [NPM](https://www.npmjs.com/package/uw-content-validation).
 
-### Deploying Styleguide to GHPages
-
-You can optionally deploy the styleguide to GHPages without publishing to NPM.
-
-1. Run `yarn deploy`
-1. There is a `predeploy` hook that builds the Styleguide.
-1. That’s it!
+The documentation/demo site at https://content-validation.netlify.app/ is built and deployed automatically by **Netlify** on every push to `master` (and a deploy preview is built for each pull request), so no manual docs deploy is required.
 
 ## Chromebook Linux Beta Notes
 
-Must use `hostname -I` to get the host address. **Neither `localhost` nor `127.0.0.1` will work.**
+Use `hostname -I` to get the host address. **Neither `localhost` nor `127.0.0.1` will work.**
 
 ```
 $ hostname -I
