@@ -11,7 +11,7 @@
  *   node -r @babel/register scripts/validate-local.js DEU --resource tn
  *   node -r @babel/register scripts/validate-local.js DEU --min-priority 700
  *
- * Expects local DCS clones at ../git.door43.org/<repo>/<file>
+ * Expects local DCS clones at ../git.door43.org/unfoldingWord/<repo>/<file>
  */
 
 import fs from 'fs';
@@ -19,7 +19,7 @@ import path from 'path';
 import { checkTN_TSV7Table, checkTQ_TSV7Table, checkTWL_TSV6Table } from '../src/core/wrapper';
 import { checkUSFMText } from '../src/core/usfm-text-check';
 
-const DCS_ROOT = path.resolve(__dirname, '../../git.door43.org');
+const DCS_ROOT = path.resolve(__dirname, '../../git.door43.org/unfoldingWord');
 const USERNAME = 'unfoldingWord';
 const LANGUAGE_CODE = 'en';
 

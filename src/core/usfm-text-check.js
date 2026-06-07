@@ -63,7 +63,7 @@ const MAIN_NOTE_MARKERS_LIST = ['f', 'x'];
 const SPECIAL_MARKERS_LIST = ['w', 'zaln-s', 'k-s', // NOTE that we have \w in TWO places
     'qt-s', 'qt1-s', 'qt2-s',
     'lit'];
-const MILESTONE_MARKERS_LIST = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*']; // Is this a good way to handle it???
+const MILESTONE_MARKERS_LIST = ['ts\\*', 'ts-s', 'ts-e', 'k-e\\*', 'qs*']; // Is this a good way to handle it???
 const TEXT_MARKERS_WITHOUT_CONTENT_LIST = ['b', 'ib', 'ie'];
 const MARKERS_WITHOUT_CONTENT_LIST = [].concat(TEXT_MARKERS_WITHOUT_CONTENT_LIST).concat(MILESTONE_MARKERS_LIST);
 const ALLOWED_LINE_START_MARKERS_LIST = [].concat(INTRO_LINE_START_MARKER_LIST).concat(HEADING_TYPE_MARKERS_LIST)
@@ -338,11 +338,31 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
 
         // debugLog("  Warnings:", JSON.stringify(grammarCheckResult.warnings));
         // Display these warnings but with a lower priority
-        for (const warningString of grammarCheckResult.warnings)
-            if (!warningString.startsWith("Empty lines present") // we allow empty lines in our USFM
-                && !warningString.startsWith("Trailing spaces present at line end") // we find these ourselves
-            )
-                addNoticePartial({ priority: 102, message: `USFMGrammar: ${warningString}`, location: fileLocation });
+        // Suppress "Consecutive use of empty paragraph markers" when every consecutive-paragraph-marker
+        // pair in the file is \b before \q# (a valid poetry stanza break per USFM spec).
+        // Count \b followed by \q# pairs in the file — these are valid poetry stanza breaks per USFM spec
+        // but usfm-grammar reports each as "Consecutive use of empty paragraph markers".
+        let stanzaBreakCount = 0;
+        {
+            const lines = fileText.split('\n').map(l => l.trimEnd());
+            for (let i = 0; i < lines.length - 1; i++) {
+                if (lines[i] !== '\\b') continue;
+                let j = i + 1;
+                while (j < lines.length && lines[j] === '') j++;
+                if (j < lines.length && /^\\q[0-9]?(\s|$)/.test(lines[j])) stanzaBreakCount++;
+            }
+        }
+        let consecutiveWarningSuppressBudget = stanzaBreakCount;
+        for (const warningString of grammarCheckResult.warnings) {
+            if (warningString.startsWith("Empty lines present")) continue; // we allow empty lines
+            if (warningString.startsWith("Trailing spaces present at line end")) continue; // we find these ourselves
+            if (warningString.startsWith("Attribute value empty for x-lemma")) continue; // common in single-letter Hebrew prepositions
+            if (warningString.startsWith("Consecutive use of empty paragraph markers") && consecutiveWarningSuppressBudget > 0) {
+                consecutiveWarningSuppressBudget--;
+                continue; // attribute this to a \b + \q# stanza break
+            }
+            addNoticePartial({ priority: 102, message: `USFMGrammar: ${warningString}`, location: fileLocation });
+        }
 
         /* Disable this extra check -- no real advantage gained I think
         if (!grammarCheckResult.isValidUSFM) {
@@ -1215,39 +1235,35 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             //  i.e., they occur in aligned translations (not in the UHB or UGNT)
             // The parameter normally starts with a |
             dataAssert(repoCode !== 'UHB' && repoCode !== 'UGNT', `checkZALNAttributes did not expect an original language repo: '${repoCode}'`);
-            let zalnSuggestion, regexMatchObject, attributeCounter = 0;
+            let zalnSuggestion, regexMatchObject;
             const zalnAttributes = {};
+            const attrNames = [];
+            const attrExcerpts = [];
             while ((regexMatchObject = ATTRIBUTE_REGEX.exec(zalnContents))) {
-                attributeCounter += 1;
-                // debugLog(`  Got attribute Regex in \\zaln-s: ${attributeCounter} '${JSON.stringify(regexMatchObject2)}`);
                 const attributeName = regexMatchObject[1], attributeValue = regexMatchObject[2];
                 zalnAttributes[attributeName] = attributeValue;
-                if (attributeCounter === 1) {
-                    if (attributeName !== 'x-strong')
-                        addNoticePartial({ priority: 830, message: "Unexpected first \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
-                } else if (attributeCounter === 2) {
-                    if (attributeName !== 'x-lemma')
-                        addNoticePartial({ priority: 829, message: "Unexpected second \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
-                } else if (attributeCounter === 3) {
-                    if (attributeName !== 'x-morph')
-                        addNoticePartial({ priority: 828, message: "Unexpected third \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
-                } else if (attributeCounter === 4) {
-                    if (attributeName !== 'x-occurrence')
-                        addNoticePartial({ priority: 827, message: "Unexpected fourth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
-                } else if (attributeCounter === 5) {
-                    if (attributeName !== 'x-occurrences')
-                        addNoticePartial({ priority: 826, message: "Unexpected fifth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
-                } else if (attributeCounter === 6) {
-                    if (attributeName !== 'x-content')
-                        addNoticePartial({ priority: 825, message: "Unexpected sixth \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
-                } else if (attributeCounter === 7) {
-                    if (attributeName !== 'x-ref') // For aligning of bridged verses
-                        addNoticePartial({ priority: 819, message: "Unexpected seventh \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
-                } else // #8 or more
-                    addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: regexMatchObject[0], location: lineLocation });
+                attrNames.push(attributeName);
+                attrExcerpts.push(regexMatchObject[0]);
             }
-            if (attributeCounter < 6)
-                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected 6-7 attributes but only found ${attributeCounter}`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
+            const attributeCounter = attrNames.length;
+            if (attributeCounter < 6) {
+                // Too few attributes — emit a single consolidated notice rather than cascading position mismatches.
+                addNoticePartial({ priority: 834, message: "Seems too few translation \\zaln-s attributes", details: `expected 6-7 attributes but only found ${attributeCounter}: [${attrNames.join(', ')}]`, lineNumber, C, V, excerpt: regexMatchObject1[0], location: lineLocation });
+            } else {
+                // Full set present — validate each attribute is in its expected position.
+                const EXPECTED = ['x-strong', 'x-lemma', 'x-morph', 'x-occurrence', 'x-occurrences', 'x-content', 'x-ref'];
+                const POSITION_PRIORITY = { 1: 830, 2: 829, 3: 828, 4: 827, 5: 826, 6: 825, 7: 819 };
+                const POSITION_NAME = ['', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh'];
+                for (let i = 0; i < attributeCounter; i++) {
+                    const pos = i + 1;
+                    if (i < 7) {
+                        if (attrNames[i] !== EXPECTED[i])
+                            addNoticePartial({ priority: POSITION_PRIORITY[pos], message: `Unexpected ${POSITION_NAME[pos]} \\zaln-s attribute`, details, lineNumber, C, V, excerpt: attrExcerpts[i], location: lineLocation });
+                    } else {
+                        addNoticePartial({ priority: 833, message: "Unexpected extra \\zaln-s attribute", details, lineNumber, C, V, excerpt: attrExcerpts[i], location: lineLocation });
+                    }
+                }
+            }
             // debugLog(`checkZALNAttributes has ${bookID} ${C}:${V} attributes: ${JSON.stringify(attributes)}`);
 
             // The Strongs, lemma and morph fields are copied from the original UHB/UGNT files
@@ -1549,8 +1565,8 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
             let line = lines[n - 1];
             if (C === '0') V = n.toString();
             // debugLog(`line '${line}'${atString}`);
-            if (!line) {
-                // addNoticePartial({priority:103, "Unexpected blank line", 0, '', location:ourLocation});
+            if (!line || !line.trim()) {
+                // Skip empty lines and lines containing only whitespace — they are blank separators.
                 continue;
             }
             let characterIndex;

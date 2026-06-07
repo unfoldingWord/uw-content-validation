@@ -7,7 +7,7 @@ const path = require('path');
 const { checkTN_TSV7Table, checkTQ_TSV7Table, checkTWL_TSV6Table } = require('../src/core/wrapper');
 const { checkUSFMText } = require('../src/core/usfm-text-check');
 
-const DCS_ROOT = path.resolve(__dirname, '../../git.door43.org');
+const DCS_ROOT = path.resolve(__dirname, '../../git.door43.org/unfoldingWord');
 const USERNAME = 'unfoldingWord';
 const LANGUAGE_CODE = 'en';
 

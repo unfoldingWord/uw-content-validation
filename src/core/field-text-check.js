@@ -121,8 +121,12 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
     }
 
     if (cutoffPriorityLevel < 638 && isWhitespace(fieldText)) {
-        addNoticePartial({ priority: 638, message: "Only found whitespace", location: ourLocation });
-        return result;
+        // \NONE is used by the USFM parser when no recognized marker starts a line —
+        // a whitespace-only such line is just a blank separator, not a content gap.
+        if (fieldName !== '\\NONE') {
+            addNoticePartial({ priority: 638, message: "Only found whitespace", location: ourLocation });
+            return result;
+        }
     }
 
     if (cutoffPriorityLevel < 993 && (characterIndex = fieldText.indexOf('<<<<<<<')) !== -1) {
@@ -320,7 +324,8 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         let afterSpaceCheckList = ')}>⟩:,،、‒–—―!.›»‐-?’”;/⁄·@•^†‡°¡¿※#№÷×ºª%‰‱¶′″‴§‖¦℗®℠™¤₳฿₵¢₡₢₫₯֏₠ƒ₣₲₴₭₺₾ℳ₥₦₧₰£៛₽₹₨₪৳₸₮₩¥';
         // if (['en','hbo','el-x-koine'].includes(languageCode) ) afterSpaceCheckList += '’'; // These languages don't have words starting with apostrophe/right-single-quotation-mark
         if (!fieldType.startsWith('markdown')) afterSpaceCheckList += '_*~'; // These are used for markdown formatting
-        if (fieldType.indexOf('USFM') === -1 || (fieldText.indexOf('x-lemma') === -1 && fieldText.indexOf('x-tw') === -1)) afterSpaceCheckList += '|';
+        const isAlignmentField = fieldName === '\\zaln-s' || fieldName === '\\w' || fieldName === '\\k-s';
+        if (!isAlignmentField && (fieldType.indexOf('USFM') === -1 || (fieldText.indexOf('x-lemma') === -1 && fieldText.indexOf('x-tw') === -1))) afterSpaceCheckList += '|';
         if (!fieldType.startsWith('YAML')) afterSpaceCheckList += '\'"'; // These are used for YAML strings, e.g., version: '0.15'
         // if (fieldName === 'OrigQuote' || fieldName === 'Quote') afterSpaceCheckList += '…'; // NOT NEEDED -- this is specifically checked elsewhere
         for (const punctCharBeingChecked of afterSpaceCheckList) {
