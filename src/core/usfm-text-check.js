@@ -852,7 +852,10 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         let nextZIndex;
         while ((nextZIndex = adjustedRest.indexOf('\\zaln-s ')) !== -1) {
             // functionLog(`checkUSFMLineText here with ${marker}='${adjustedRest}'`);
-            const ixZEnd = adjustedRest.indexOf('\\*');
+            // Search for the closing \* AFTER the \zaln-s, otherwise a stray earlier \* (e.g., from a
+            //  malformed line where a marker is missing its trailing space) would leave the \zaln-s in
+            //  place and grow adjustedRest forever -- an infinite loop. See line 944.
+            const ixZEnd = adjustedRest.indexOf('\\*', nextZIndex);
             // debugLog(`  ${nextZIndex} and ${ixZEnd}`);
             if (ixZEnd >= 0) {
                 // dataAssert(ixZEnd > nextZIndex, `Expected closure at ${ixZEnd} to be AFTER \\zaln-s (${nextZIndex})`);
@@ -866,7 +869,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         // Remove any other \w fields in the line
         let nextWIndex;
         while ((nextWIndex = adjustedRest.indexOf('\\w ')) !== -1) {
-            const ixWordEnd = adjustedRest.indexOf('|');
+            const ixWordEnd = adjustedRest.indexOf('|', nextWIndex);
             if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') !== -1) {
                 const characterIndex = nextWIndex + 5; // Presumably, a little bit into the word
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
@@ -875,7 +878,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 break;
             }
             dataAssert(ixWordEnd > nextWIndex + 3, `Why2 is w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
-            const ixWEnd = adjustedRest.indexOf('\\w*');
+            const ixWEnd = adjustedRest.indexOf('\\w*', nextWIndex);
             if (ixWEnd >= 0) {
                 dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\w (${nextWIndex})`);
                 adjustedRest = adjustedRest.slice(0, nextWIndex) + adjustedRest.slice(nextWIndex + 3, ixWordEnd) + adjustedRest.slice(ixWEnd + 3, adjustedRest.length);
@@ -887,7 +890,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         }
         // Remove any other \+w fields in the line
         while ((nextWIndex = adjustedRest.indexOf('\\+w ')) !== -1) {
-            const ixWordEnd = adjustedRest.indexOf('|');
+            const ixWordEnd = adjustedRest.indexOf('|', nextWIndex);
             if (ixWordEnd < 0 && adjustedRest.indexOf('lemma="') !== -1) {
                 const characterIndex = nextWIndex + 6; // Presumably, a little bit into the word
                 const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + adjustedRest.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus).replace(/ /g, '␣') + (characterIndex + excerptHalfLengthPlus < adjustedRest.length ? '…' : '')
@@ -896,7 +899,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                 break;
             }
             dataAssert(ixWordEnd > nextWIndex + 4, `Why2 is +w| = ${ixWordEnd}? nextWIndex=${nextWIndex} ${languageCode} ${bookID} ${C}:${V} ${lineNumber}`);
-            const ixWEnd = adjustedRest.indexOf('\\+w*');
+            const ixWEnd = adjustedRest.indexOf('\\+w*', nextWIndex);
             if (ixWEnd >= 0) {
                 dataAssert(ixWEnd > nextWIndex, `Expected closure at ${ixWEnd} to be AFTER \\+w (${nextWIndex})`);
                 adjustedRest = adjustedRest.slice(0, nextWIndex) + adjustedRest.slice(nextWIndex + 4, ixWordEnd) + adjustedRest.slice(ixWEnd + 4, adjustedRest.length);
@@ -909,7 +912,7 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
         // Remove any other \f fields in the line
         let nextFIndex;
         while ((nextFIndex = adjustedRest.indexOf('\\f + ')) !== -1) {
-            const ixFEnd = adjustedRest.indexOf('\\f*');
+            const ixFEnd = adjustedRest.indexOf('\\f*', nextFIndex);
             if (ixFEnd >= 0) {
                 dataAssert(ixFEnd > nextWIndex, `Expected closure at ${ixFEnd} to be AFTER \\w (${nextFIndex})`);
                 // Remove the footnote entirely — inlining its text causes false positives

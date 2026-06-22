@@ -317,6 +317,33 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
         return false;
     };
 
+    // Is the character at idx on a markdown list-item line (e.g., "  - v. 1: ..." or "* A - praise ...")?
+    // In structure outlines (e.g., chapter-intro notes) a dash inside a list item is an intentional
+    //  separator that introduces a label's meaning or an example — "A - praise to Yahweh" means
+    //  "A: praise to Yahweh" — not a hyphen that should have been an em-dash, so don't flag it.
+    const isMarkdownListItemLine = (idx) => {
+        if (!fieldType.startsWith('markdown')) return false;
+        const lineStart = fieldText.lastIndexOf('\n', idx) + 1;
+        return /^\s*([*+-]|\d+\.)\s/.test(fieldText.slice(lineStart, lineStart + 12));
+    };
+
+    // Is the character at idx inside a markdown bold (**...**) or backtick code span whose contents are
+    //  purely punctuation (no letters/digits)? Such spans are literal punctuation examples, e.g., a note
+    //  explaining closing quote markers as **’ ” ’** or **“ ’ ”**, so spacing inside them is intentional.
+    const isInsidePunctuationExampleSpan = (idx) => {
+        if (!fieldType.startsWith('markdown')) return false;
+        for (const delimiter of ['**', '`']) {
+            const start = fieldText.lastIndexOf(delimiter, idx);
+            if (start === -1) continue;
+            const contentStart = start + delimiter.length;
+            const end = fieldText.indexOf(delimiter, contentStart);
+            if (end === -1 || end < idx) continue;
+            const content = fieldText.slice(contentStart, end);
+            if (content.length && !/[A-Za-z0-9]/.test(content)) return true;
+        }
+        return false;
+    };
+
     if (cutoffPriorityLevel < 195 && !isQuoteField) {
         // Check for punctuation chars following space and at start of line
         //  Removed © and leading currency symbols $€₱
@@ -335,6 +362,14 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (punctCharBeingChecked === '/' && isProseMarkdownField
                     && fieldText.slice(characterIndex + 2, characterIndex + 3) === ' '
                     && !isSlashInsideLink(characterIndex + 1)) {
+                    continue;
+                }
+                // Hyphens on markdown list-item lines are intentional bullets/separators, not missing em-dashes.
+                if ((punctCharBeingChecked === '-' || punctCharBeingChecked === '–') && isMarkdownListItemLine(characterIndex)) {
+                    continue;
+                }
+                // Punctuation inside a markdown punctuation-example span (e.g., **’ ” ’**) is a literal example.
+                if (isInsidePunctuationExampleSpan(characterIndex + 1)) {
                     continue;
                 }
                 if (punctCharBeingChecked !== '-' || '1234567890'.indexOf(nextChar) === -1) { // Allow negative numbers, e.g., -1
@@ -382,6 +417,10 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                 if (punctCharBeingChecked === '/' && isProseMarkdownField
                     && fieldText[characterIndex - 1] === ' '
                     && !isSlashInsideLink(characterIndex)) {
+                    continue;
+                }
+                // Punctuation inside a markdown punctuation-example span (e.g., **“ ’ ”**) is a literal example.
+                if (isInsidePunctuationExampleSpan(characterIndex)) {
                     continue;
                 }
                 if (punctCharBeingChecked === '[' && fieldType.startsWith('markdown')) {
@@ -512,7 +551,11 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                     && (fieldType !== 'YAML' || fieldText.indexOf('sort:') === -1)
                     && (fieldType !== 'USFM line' || (fieldName !== '\\id' // Some USFM producers put in a date like "Mar 03 2021"
                         && fieldText.indexOf('\\w 0') === -1)) // A leading zero in a \w field might be a false alarm (it's the end of the \w marker)
-                    && !(badZeroCharCombination === ':0' && /^:\d\d ?(AM|PM|am|pm)\b/.test(fieldText.slice(characterIndex))) // 9:00 AM is a time, not a numeric leading zero
+                    && !(badZeroCharCombination === ':0'
+                        && /^:\d\d\b/.test(fieldText.slice(characterIndex)) // looks like the minutes of a clock time, e.g., 2:00
+                        // ...and AM/PM appears anywhere after it (a time, not a verse reference) e.g., "from about 2:00 to 6:00 AM".
+                        // Match only uppercase AM/PM (the content team's convention) plus dotted a.m./p.m., so the English word "am" doesn't trigger it.
+                        && (/\bAM\b|\bPM\b/.test(fieldText.slice(characterIndex)) || /[ap]\.m\./i.test(fieldText.slice(characterIndex))))
                     && !(badZeroCharCombination === ':0' && /^\d+:\d\d$/.test(fieldText)) // \d+:\d\d as a whole field is a time literal (e.g., from a USFM \w marker), not a leading zero
                 ) { // "sort: 0" is ok in manifests
                     const excerpt = (characterIndex > excerptHalfLength ? '…' : '') + fieldText.substring(characterIndex - excerptHalfLength, characterIndex + excerptHalfLengthPlus) + (characterIndex + excerptHalfLengthPlus < fieldText.length ? '…' : '');
@@ -581,7 +624,10 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                         if ((!fieldType.startsWith('markdown') || regexMatchObject[0][0] !== '_')
                             && (!fieldType.startsWith('YAML') || leftChar !== '{')
                             // TODO: We have to allow for a blank language code until we change checkPlainText()
-                            && (languageCode !== 'en' || regexMatchObject[0][2] !== 's' || fieldText.indexOf('(s)') === -1)) {
+                            && (languageCode !== 'en' || regexMatchObject[0][2] !== 's' || fieldText.indexOf('(s)') === -1)
+                            // Allow a single letter in parentheses between letters, e.g., the "(a)" in a grammar/poetry
+                            //  structure notation like "AB(a)b" — not a misplaced parenthesis.
+                            && !(leftChar === '(' && /^[A-Za-z]\([A-Za-z]\)[A-Za-z]/.test(fieldText.slice(regexMatchObject.index, regexMatchObject.index + 5)))) {
                             // debugLog(`Got possible misplaced '${languageCode}' left ${leftChar} in ${fieldType} ${fieldName} '${fieldText}': ${JSON.stringify(regexMatchObject)}`);
                             let thisPriority = 717, thisMessage = `Misplaced ${leftChar} character`;
                             if (leftChar === '(' && regexMatchObject[0][2] === 's') { thisPriority = 17; thisMessage = `Possible misplaced ${leftChar} character`; } // Lower priority for words like 'thing(s)'
@@ -591,7 +637,9 @@ export function checkTextField(username, languageCode, repoCode, fieldType, fiel
                     if (rightChar !== '’') // Can’t check '‘’' coz they might be used as apostrophe
                         while ((regexMatchObject = rightRegex.exec(fieldText)))
                             if ((!fieldType.startsWith('markdown') || regexMatchObject[0][2] !== '_')
-                                && (!fieldType.startsWith('YAML') || rightChar !== '}')) {
+                                && (!fieldType.startsWith('YAML') || rightChar !== '}')
+                                // Allow the ")" in a single-letter-in-parentheses structure like "AB(a)b".
+                                && !(rightChar === ')' && /^[A-Za-z]\([A-Za-z]\)[A-Za-z]$/.test(fieldText.slice(regexMatchObject.index - 2, regexMatchObject.index + 3)))) {
                                 // debugLog(`Got misplaced right ${rightChar} in ${fieldType} ${fieldName} '${fieldText}':`, JSON.stringify(regexMatchObject));
                                 if (cutoffPriorityLevel < 716)
                                     addNoticePartial({ priority: 716, message: `Misplaced ${rightChar} character`, excerpt: regexMatchObject[0], location: ourLocation });

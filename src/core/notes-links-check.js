@@ -51,6 +51,11 @@ const BOOK_CHAPTER_RANGE_OTHER_BOOK_REGEX = new RegExp('\\[((?:1 |2 |3 )?)([\\w 
 // Cross-chapter verse range, cross-book: [2 Kings 18:9–19:34](../2ki/18/09.md). Path points to first chapter:verse.
 const BCV_TO_BCV_OTHER_BOOK_REGEX = new RegExp('\\[((?:1 |2 |3 )?)([\\w ]+? )([0-9०-९]{1,3}):([0-9०-९]{1,3})[–-]([0-9०-९]{1,3}):([0-9०-९]{1,3})\\]\\((?:\\.{2}/)?\\.{2}/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\.md\\)', 'g');
 
+// Connector/reference words that can precede a chapter or verse number in link display text,
+//  e.g. "[verses 11:1–9](../11/01.md)" or "[chapter 10](../10/01.md)". These are not book names,
+//  so the book-name capture group must not flag them as unknown Bible book names.
+const REFERENCE_WORD_REGEX = new RegExp('^(?:chapters?|verses?)$', 'i');
+
 const TN_FULL_HELP_CV_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3}):([0-9०-९]{1,3})(?:[–-][0-9०-९]{1,3})?\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
 const TN_FULL_HELP_C_REGEX = new RegExp('\\[((?:1 |2 |3 )?)((?:[\\w ]+? )?)([0-9०-९]{1,3})\\]\\(rc://([^ /]+?)/tn/help/([123a-z]{3})/(\\d{1,3})/(\\d{1,3})\\)', 'g'); // [Song of Solomon 29:23-24](rc://en/tn/help/sng/29/23)
 
@@ -754,7 +759,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                const checkResult = REFERENCE_WORD_REGEX.test(optionalB1) ? true : books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     addNoticePartial(optionalB1 === 'Song of Solomon' ?
@@ -822,7 +827,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                const checkResult = REFERENCE_WORD_REGEX.test(optionalB1) ? true : books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     addNoticePartial(optionalB1 === 'Song of Solomon' ?
@@ -878,7 +883,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                const checkResult = REFERENCE_WORD_REGEX.test(optionalB1) ? true : books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     addNoticePartial(optionalB1 === 'Song of Solomon' ?
@@ -1033,7 +1038,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                const checkResult = REFERENCE_WORD_REGEX.test(optionalB1) ? true : books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     addNoticePartial(optionalB1 === 'Song of Solomon' ?
@@ -1091,7 +1096,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         B1 = `${optionalN1}${B1}`.trim(); // e.g., 1 Timothy
         dataAssert(B1.length, `BCV_V_TO_OTHER_BOOK_BIBLE_REGEX should have B1 with '${totalLink}'`);
         if (defaultLanguageCode === 'en') { // should be able to check the book name
-            const checkResult = books.isGoodEnglishBookName(B1);
+            const checkResult = REFERENCE_WORD_REGEX.test(B1) ? true : books.isGoodEnglishBookName(B1);
             // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
             if (checkResult === undefined || checkResult === false)
                 addNoticePartial(B1 === 'Song of Solomon' ?
@@ -1155,7 +1160,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                const checkResult = REFERENCE_WORD_REGEX.test(optionalB1) ? true : books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     addNoticePartial(optionalB1 === 'Song of Solomon' ?
@@ -1220,7 +1225,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                const checkResult = REFERENCE_WORD_REGEX.test(optionalB1) ? true : books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     addNoticePartial(optionalB1 === 'Song of Solomon' ?
@@ -1273,7 +1278,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         }
         B1 = `${optionalN1}${B1}`.trim(); // e.g., 1 Timothy
         if (B1.length && defaultLanguageCode === 'en') { // should be able to check the book name
-            const checkResult = books.isGoodEnglishBookName(B1);
+            const checkResult = REFERENCE_WORD_REGEX.test(B1) ? true : books.isGoodEnglishBookName(B1);
             // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
             if (checkResult === undefined || checkResult === false)
                 addNoticePartial(B1 === 'Song of Solomon' ?
@@ -1330,7 +1335,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         }
         B1 = `${optionalN1}${B1}`.trim(); // e.g., 1 Timothy
         if (B1.length && defaultLanguageCode === 'en') { // should be able to check the book name
-            const checkResult = books.isGoodEnglishBookName(B1);
+            const checkResult = REFERENCE_WORD_REGEX.test(B1) ? true : books.isGoodEnglishBookName(B1);
             // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
             if (checkResult === undefined || checkResult === false)
                 addNoticePartial(B1 === 'Song of Solomon' ?
@@ -1388,14 +1393,29 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         const linkChapterInt = ourParseInt(C2);
         const linkVerseInt = ourParseInt(V2);
         const intC1 = ourParseInt(C1);
+        const linkBookCode = B2;
+        let numChaptersThisBook;
+        try { numChaptersThisBook = books.chaptersInBook(linkBookCode); } catch (e) { numChaptersThisBook = 0; }
+        if (numChaptersThisBook === 1) {
+            // One-chapter book (e.g., jud, oba, phm, 2jn, 3jn): a reference like "Jude 6" with no colon
+            //  is a VERSE within the single chapter, not a chapter. The path should point to chapter 01
+            //  at that verse, e.g., [Jude 6](../../jud/01/06.md).
+            const verseInt = intC1;
+            if (linkChapterInt !== 1)
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `1 vs ${linkChapterInt} (one-chapter book link should point to chapter 01)`, excerpt: totalLink, location: ourLocation });
+            else if (verseInt !== linkVerseInt)
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${C1} vs ${linkVerseInt}`, excerpt: totalLink, location: ourLocation });
+            let numVersesThisChapter;
+            try { numVersesThisChapter = books.versesInChapter(linkBookCode, 1); } catch (e) { numVersesThisChapter = 0; }
+            if (!verseInt || verseInt < 1 || verseInt > numVersesThisChapter)
+                addNoticePartial({ priority: 655, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${C1} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
+            continue;
+        }
         if (intC1 !== linkChapterInt)
             addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1} vs ${linkChapterInt}`, excerpt: totalLink, location: ourLocation });
         else if (linkVerseInt !== 1)
             addNoticePartial({ priority: 742, message: "Whole-chapter Bible link should point to verse 01", details: `path verse is ${V2}`, excerpt: totalLink, location: ourLocation });
         // Range-check the chapter against the linked book
-        const linkBookCode = B2;
-        let numChaptersThisBook;
-        try { numChaptersThisBook = books.chaptersInBook(linkBookCode); } catch (e) { numChaptersThisBook = 0; }
         if (!linkChapterInt || linkChapterInt < 1 || linkChapterInt > numChaptersThisBook)
             addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${linkChapterInt} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
     }
@@ -1412,15 +1432,32 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         processedLinkList.push(totalLink);
         const linkChapterInt = ourParseInt(C2), linkVerseInt = ourParseInt(V2);
         const intC1a = ourParseInt(C1a), intC1b = ourParseInt(C1b);
+        const linkBookCode = B2;
+        let numChaptersThisBook;
+        try { numChaptersThisBook = books.chaptersInBook(linkBookCode); } catch (e) { numChaptersThisBook = 0; }
+        if (numChaptersThisBook === 1) {
+            // One-chapter book (e.g., jud, oba, phm, 2jn, 3jn): a reference like "Jude 6–7" with no colon
+            //  is a VERSE range within the single chapter, not a chapter range. The path should point
+            //  to chapter 01 at the first verse of the range, e.g., [Jude 6–7](../../jud/01/06.md).
+            const firstVerseInt = intC1a, secondVerseInt = intC1b;
+            if (firstVerseInt >= secondVerseInt)
+                addNoticePartial({ priority: 741, message: "Verse range out of order in markdown Bible link", details: `${C1a}–${C1b}`, excerpt: totalLink, location: ourLocation });
+            if (linkChapterInt !== 1)
+                addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `1 vs ${linkChapterInt} (one-chapter book link should point to chapter 01)`, excerpt: totalLink, location: ourLocation });
+            else if (firstVerseInt !== linkVerseInt)
+                addNoticePartial({ priority: 742, message: "Verse numbers of markdown Bible link don’t match", details: `${C1a} vs ${linkVerseInt} (link should point to first verse of the range)`, excerpt: totalLink, location: ourLocation });
+            let numVersesThisChapter;
+            try { numVersesThisChapter = books.versesInChapter(linkBookCode, 1); } catch (e) { numVersesThisChapter = 0; }
+            if (secondVerseInt > numVersesThisChapter)
+                addNoticePartial({ priority: 655, message: "Bad verse number in markdown Bible link", details: `${linkBookCode} ${C1b} vs ${numVersesThisChapter} verses`, excerpt: totalLink, location: ourLocation });
+            continue;
+        }
         if (intC1a >= intC1b)
             addNoticePartial({ priority: 741, message: "Chapter range out of order in markdown Bible link", details: `${C1a}–${C1b}`, excerpt: totalLink, location: ourLocation });
         if (intC1a !== linkChapterInt)
             addNoticePartial({ priority: 743, message: "Chapter numbers of markdown Bible link don’t match", details: `${C1a} vs ${linkChapterInt} (link should point to first chapter of the range)`, excerpt: totalLink, location: ourLocation });
         else if (linkVerseInt !== 1)
             addNoticePartial({ priority: 742, message: "Chapter-range Bible link should point to verse 01", details: `path verse is ${V2}`, excerpt: totalLink, location: ourLocation });
-        const linkBookCode = B2;
-        let numChaptersThisBook;
-        try { numChaptersThisBook = books.chaptersInBook(linkBookCode); } catch (e) { numChaptersThisBook = 0; }
         if (intC1b > numChaptersThisBook)
             addNoticePartial({ priority: 655, message: "Bad chapter number in markdown Bible link", details: `${linkBookCode} ${C1b} vs ${numChaptersThisBook} chapters`, excerpt: totalLink, location: ourLocation });
     }
@@ -1466,7 +1503,7 @@ export async function checkNotesLinksToOutside(username, languageCode, repoCode,
         if (optionalB1) {
             optionalB1 = `${optionalN1}${optionalB1}`.trim(); // e.g., 1 Timothy
             if (defaultLanguageCode === 'en') { // should be able to check the book name
-                const checkResult = books.isGoodEnglishBookName(optionalB1);
+                const checkResult = REFERENCE_WORD_REGEX.test(optionalB1) ? true : books.isGoodEnglishBookName(optionalB1);
                 // debugLog(optionalB1, "isGoodEnglishBookName checkResult", checkResult);
                 if (checkResult === undefined || checkResult === false)
                     addNoticePartial({ priority: 144, message: "Unknown Bible book name in TN link", details: totalLink, excerpt: optionalB1, location: ourLocation });
