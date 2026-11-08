@@ -1195,7 +1195,8 @@ export async function checkUSFMText(username, languageCode, repoCode, bookID, fi
                         if (!V2) // no range requested
                             break; // Don’t go into the next verse or chapter
                         else { // there is a range requested
-                            const thisV = bookLine.slice(3);
+                            // Only the verse number: USFM allows the verse's text on the same line as \v
+                            const thisV = bookLine.slice(3).trim().split(/\s+/)[0];
                             const intV = Number(thisV);
                             // debugLog(`getOriginalWordLists got verse number ${intV} for range ${V1} and ${V2} (${intV2})`)
                             if (intV > intV2) break; // we're past the bit we want
